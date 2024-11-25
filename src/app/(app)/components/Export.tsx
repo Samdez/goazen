@@ -1,5 +1,5 @@
 import { endOfWeek, startOfWeek } from 'date-fns'
-import type { Event } from '../payload-types'
+import type { Event } from '../../../payload-types'
 import * as React from 'react'
 
 function getDay(date: Date) {

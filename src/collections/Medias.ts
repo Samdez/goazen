@@ -6,7 +6,6 @@ const Medias: CollectionConfig = {
     read: () => true,
   },
   upload: {
-    // staticURL: "/media",
     staticDir: 'media',
     mimeTypes: ['image/*'],
     formatOptions: {
