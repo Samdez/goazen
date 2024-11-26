@@ -1,11 +1,10 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import EventThumbnail from './components/EventThumbnail'
 import { getEvents } from './queries/get-events'
 import { z } from 'zod'
 import EventsGrid from './components/EventsGrid'
 
-export const searchParamsSchema = z.object({
+const searchParamsSchema = z.object({
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   activeTime: z.enum(['day', 'week']).optional(),
@@ -14,7 +13,7 @@ export const searchParamsSchema = z.object({
 export default async function Page({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const currSearchParams = await searchParams
 
