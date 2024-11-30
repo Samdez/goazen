@@ -7,11 +7,9 @@ export async function getLocations(cityName?: string) {
   const locations = await payload.find({
     collection: 'locations',
     sort: 'name',
-    limit: 100,
+    limit: 1000,
     where: {
-      city: {
-        equals: cityName,
-      },
+      ...(cityName ? { city: { equals: cityName } } : {}),
     },
   })
   return locations

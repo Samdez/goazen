@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { Location } from '@/payload-types'
@@ -10,10 +10,7 @@ async function LocationCard({ location, isEven }: { location?: Location; isEven:
   const placeholderImage = await getPlaceholderImage()
 
   const imageUrl =
-    !(typeof location.image === 'string') && location.image
-      ? location.image?.url
-      : typeof placeholderImage.ImagePlaceholder !== 'string' &&
-        placeholderImage.ImagePlaceholder?.url
+    !(typeof location.image === 'string') && location.image ? location.image?.url : placeholderImage
 
   return (
     <>

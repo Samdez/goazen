@@ -1,10 +1,11 @@
 import Image from 'next/image'
-import { env } from '@/env'
-import EventsCarousel from '@/components/EventsCarousel'
-import { serializeRichText } from '@/lib/serializeRichText'
 import { Node } from 'slate'
 import { getEvents } from '@/app/(app)/queries/get-events'
 import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
+import { getLocation } from '@/app/(app)/queries/get-location'
+import EventsCarousel from '@/app/(app)/components/EventsCarousel'
+import { serializeRichText } from '@/lib/serialize-rich-text'
+import { env } from 'env'
 
 export async function generateMetadata({
   params,
@@ -40,7 +41,9 @@ const generateMetaDescription = (nodes: Node[]) => {
 }
 
 async function LocationPage({ params }: { params: Promise<{ city: string; location: string }> }) {
-  const { city, location: locationParam } = await params
+  console.log(env)
+
+  const { location: locationParam } = await params
   const location = await getLocation(locationParam)
   const { docs: events } = await getEvents({
     locationId: location.id,
@@ -55,7 +58,7 @@ async function LocationPage({ params }: { params: Promise<{ city: string; locati
       <h1 className="text-center text-6xl font-bold text-black">{location.name}</h1>
       <h2 className="text-4xl text-black">Prochains concerts: </h2>
       {events.length ? (
-        <EventsCarousel events={events} placeholderImageUrl={placeholderImageUrl} />
+        <EventsCarousel events={events} placeholderImageUrl={placeholderImageUrl || ''} />
       ) : (
         <div className="flex h-36 items-center">
           <p className="text-4l text-black">Rien de prévu ici à notre connaissance...😔</p>
@@ -77,7 +80,7 @@ async function LocationPage({ params }: { params: Promise<{ city: string; locati
           height="450"
           loading="lazy"
           allowFullScreen
-          src={`https://www.google.com/maps/embed/v1/place?q=place_id:${location.place_id}&key=${env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
+          src={`https://www.google.com/maps/embed/v1/place?q=place_id:${location.place_id}&key=${env.GOOGLE_MAPS_API_KEY}`}
         ></iframe>
       </div>
     </div>

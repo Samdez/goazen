@@ -2,7 +2,13 @@ import { Event } from '@/payload-types'
 import { formatDate } from '@/utils'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '../../../components/ui/card'
 import { getPlaceholderImage } from '../queries/get-placeholder-image'
 
 function EventThumbnail({

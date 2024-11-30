@@ -1,7 +1,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { slugifyString } from '@/lib/utils'
-import { fetchPlaceholderImage, getEvent } from '@/src/app/queries'
+import { slugifyString } from '@/utils'
+import { Button } from '@/components/ui/button'
+import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
+import { getEvent } from '@/app/(app)/queries/get-event'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }) {
   const slugParam = (await params).slug
@@ -30,14 +32,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-async function EventPage({ params }: { params: { slug: string[] } }) {
-  const event = await getEvent(params.slug[0].split('_').reverse()[0])
-  const placeholderImage = await fetchPlaceholderImage()
+async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
+  const slugParam = await params
+  const event = await getEvent(slugParam.slug[0].split('_').reverse()[0])
+  const placeholderImage = await getPlaceholderImage()
 
   const imageUrl =
-    !(typeof event.image === 'string') && event.image
-      ? event.image?.url
-      : placeholderImage.ImagePlaceholder.url
+    !(typeof event.image === 'string') && event.image ? event.image?.url : placeholderImage
   const imageTitle = !(typeof event.image === 'string') && event.image ? event.image?.title : ''
   const locationName = !(typeof event.location === 'string') ? event.location?.name || '' : ''
   const locationCity = !(typeof event.location === 'string') ? event.location?.city : ''
