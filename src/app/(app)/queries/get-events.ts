@@ -1,5 +1,4 @@
 'use server'
-
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
@@ -18,37 +17,32 @@ export async function getEvents({
   startDate,
   endDate,
   page,
+  locationId,
+  limit = 100,
 }: {
   startDate?: string
   endDate?: string
   page?: number
+  locationId?: string
+  limit?: number
 }) {
   const extendedStartDate = startDate && extendEndDateToEndOfPreviousDay(startDate)
   const extendedEndDate = endDate && extendEndDateToEndOfDay(endDate)
   const payload = await getPayload({ config })
+
   const events = await payload.find({
     collection: 'events',
-    limit: 12,
-    sort: 'date',
-    page,
     where: {
       and: [
-        ...(extendedStartDate
-          ? [
-              {
-                date: { greater_than_equal: extendedStartDate },
-              },
-            ]
-          : []),
-        ...(extendedEndDate
-          ? [
-              {
-                date: { less_than_equal: extendedEndDate },
-              },
-            ]
-          : []),
+        ...(locationId ? [{ location: { equals: locationId } }] : []),
+        ...(extendedStartDate ? [{ date: { greater_than: extendedStartDate } }] : []),
+        ...(extendedEndDate ? [{ date: { less_than: extendedEndDate } }] : []),
       ],
     },
+    limit,
+    sort: 'date',
+    page,
   })
+
   return events
 }

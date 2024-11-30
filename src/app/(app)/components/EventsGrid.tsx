@@ -8,14 +8,16 @@ import { useInView } from 'react-intersection-observer'
 
 export default function EventsGrid({
   initialEvents,
-  placeholderImageUrl,
   initialNextPage,
   startDate,
+  placeholderImageUrl,
+  locationId,
 }: {
   initialEvents: Event[]
-  placeholderImageUrl: string
   initialNextPage?: number | null
   startDate: string
+  placeholderImageUrl: string
+  locationId?: string
 }) {
   const [events, setEvents] = useState<Event[]>(initialEvents)
   const [nextPage, setNextPage] = useState(initialNextPage)
@@ -23,7 +25,11 @@ export default function EventsGrid({
   const { ref, inView } = useInView()
 
   const loadMoreEvents = async () => {
-    const newEvents = await getEvents({ page: nextPage ? nextPage : undefined, startDate })
+    const newEvents = await getEvents({
+      page: nextPage ? nextPage : undefined,
+      startDate,
+      locationId,
+    })
     setEvents((events) => [...events, ...newEvents.docs])
     setNextPage((prevPage) => (newEvents.nextPage ? newEvents.nextPage : prevPage))
     setHasNextPage(newEvents.hasNextPage)
@@ -35,11 +41,11 @@ export default function EventsGrid({
   }, [inView])
 
   return (
-    <>
+    <div className="flex flex-wrap justify-around gap-24 px-12 pb-32">
       {events.map((event) => (
-        <EventThumbnail event={event} placeholderImageUrl={placeholderImageUrl} key={event.id} />
+        <EventThumbnail event={event} key={event.id} placeholderImageUrl={placeholderImageUrl} />
       ))}
-      {hasNextPage && <div ref={ref}>Loading...</div>}
-    </>
+      {/* {hasNextPage && <div ref={ref}>Loading...</div>} */}
+    </div>
   )
 }

@@ -62,6 +62,7 @@ const Locations: CollectionConfig = {
         ],
       },
     },
+    { name: 'LocationEvents', type: 'join', collection: 'events', on: 'location' },
   ],
 }
 

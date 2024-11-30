@@ -20,7 +20,11 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    locations: {
+      LocationEvents: 'events';
+    };
+  };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     medias: MediasSelect<false> | MediasSelect<true>;
@@ -177,6 +181,10 @@ export interface Location {
     | null;
   image?: (string | null) | Media;
   slug?: string | null;
+  LocationEvents?: {
+    docs?: (string | Event)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -349,6 +357,7 @@ export interface LocationsSelect<T extends boolean = true> {
   city?: T;
   image?: T;
   slug?: T;
+  LocationEvents?: T;
   updatedAt?: T;
   createdAt?: T;
 }
