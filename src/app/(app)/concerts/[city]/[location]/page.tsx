@@ -41,8 +41,6 @@ const generateMetaDescription = (nodes: Node[]) => {
 }
 
 async function LocationPage({ params }: { params: Promise<{ city: string; location: string }> }) {
-  console.log(env)
-
   const { location: locationParam } = await params
   const location = await getLocation(locationParam)
   const { docs: events } = await getEvents({

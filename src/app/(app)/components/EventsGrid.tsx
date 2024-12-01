@@ -5,6 +5,8 @@ import EventThumbnail from './EventThumbnail'
 import { useEffect, useState } from 'react'
 import { getEvents } from '../queries/get-events'
 import { useInView } from 'react-intersection-observer'
+import { PacmanLoader } from 'react-spinners'
+import { PaginatedDocs } from 'payload'
 
 export default function EventsGrid({
   initialEvents,
@@ -12,16 +14,18 @@ export default function EventsGrid({
   startDate,
   placeholderImageUrl,
   locationId,
+  hasNextPageProps,
 }: {
   initialEvents: Event[]
   initialNextPage?: number | null
+  hasNextPageProps: boolean
   startDate: string
   placeholderImageUrl: string
   locationId?: string
 }) {
   const [events, setEvents] = useState<Event[]>(initialEvents)
   const [nextPage, setNextPage] = useState(initialNextPage)
-  const [hasNextPage, setHasNextPage] = useState(true)
+  const [hasNextPage, setHasNextPage] = useState(hasNextPageProps)
   const { ref, inView } = useInView()
 
   const loadMoreEvents = async () => {
@@ -34,8 +38,9 @@ export default function EventsGrid({
     setNextPage((prevPage) => (newEvents.nextPage ? newEvents.nextPage : prevPage))
     setHasNextPage(newEvents.hasNextPage)
   }
+
   useEffect(() => {
-    if (inView) {
+    if (inView && hasNextPage) {
       loadMoreEvents()
     }
   }, [inView])
@@ -45,7 +50,11 @@ export default function EventsGrid({
       {events.map((event) => (
         <EventThumbnail event={event} key={event.id} placeholderImageUrl={placeholderImageUrl} />
       ))}
-      {/* {hasNextPage && <div ref={ref}>Loading...</div>} */}
+      {hasNextPage && (
+        <div className="flex h-32 w-full items-center justify-center" ref={ref}>
+          <PacmanLoader />
+        </div>
+      )}
     </div>
   )
 }

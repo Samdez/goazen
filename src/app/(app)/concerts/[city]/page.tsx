@@ -5,6 +5,7 @@ import { getLocations } from '../../queries/get-locations'
 import { getPlaceholderImage } from '../../queries/get-placeholder-image'
 import { PacmanLoader } from 'react-spinners'
 import { Event } from '@/payload-types'
+import { PaginatedDocs } from 'payload'
 
 export default async function CityPage({ params }: { params: Promise<{ city: string }> }) {
   const city = (await params).city
@@ -34,8 +35,8 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
     >
       <EventsGrid
         initialEvents={events}
+        hasNextPageProps={false}
         startDate={new Date().toISOString()}
-        // hasNextPageInitial={false}
         placeholderImageUrl={placeholderImage}
       />
     </Suspense>
