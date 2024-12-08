@@ -1,8 +1,1 @@
-# blank
-
-blank
-
-## Attributes
-
-- **Database**: mongodb
-- **Storage Adapter**: localDisk
+A NextJS app using Payload CMS V3
