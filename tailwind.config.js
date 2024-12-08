@@ -1,5 +1,9 @@
+import defaultTheme from 'tailwindcss/defaultTheme'
+import typography from '@tailwindcss/typography'
+// Import any other plugins you're using
+
 /** @type {import('tailwindcss').Config} */
-export default {
+const config = {
   darkMode: ['class'],
   content: ['./src/**/*.{jsx,tsx}'], // tell tailwind where to look
   theme: {
@@ -55,3 +59,5 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 }
+
+export default config
