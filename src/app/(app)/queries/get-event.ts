@@ -1,10 +1,8 @@
 'use server'
 
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { payload } from '../client/payload-client'
 
 export async function getEvent(slug: string) {
-  const payload = await getPayload({ config })
   const event = await payload.findByID({ collection: 'events', id: slug })
   return event
 }

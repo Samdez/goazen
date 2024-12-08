@@ -1,6 +1,6 @@
 'use server'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+
+import { payload } from '../client/payload-client'
 
 function extendEndDateToEndOfDay(date: string) {
   return new Date(new Date(date).setUTCHours(24, 0, 0, 0))
@@ -28,7 +28,6 @@ export async function getEvents({
 }) {
   const extendedStartDate = startDate && extendEndDateToEndOfPreviousDay(startDate)
   const extendedEndDate = endDate && extendEndDateToEndOfDay(endDate)
-  const payload = await getPayload({ config })
 
   const events = await payload.find({
     collection: 'events',

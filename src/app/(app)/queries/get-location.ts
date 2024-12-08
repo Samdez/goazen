@@ -1,9 +1,7 @@
 'use server'
-import { getPayload } from 'payload'
-import config from '@payload-config'
+import { payload } from '../client/payload-client'
 
 export async function getLocation(slug: string) {
-  const payload = await getPayload({ config })
   const location = await payload.find({
     collection: 'locations',
     where: { slug: { equals: slug } },
