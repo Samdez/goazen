@@ -4,6 +4,8 @@ import EventsGrid from './components/EventsGrid'
 import { getPlaceholderImage } from './queries/get-placeholder-image'
 import { Suspense } from 'react'
 import { PacmanLoader } from 'react-spinners'
+import FilterSection from './components/FilterSection'
+import { getCategories } from './queries/get-categories'
 
 const searchParamsSchema = z.object({
   startDate: z.string().optional(),
@@ -24,6 +26,7 @@ export default async function Page({
     endDate,
   } = searchParamsSchema.parse(currSearchParams)
 
+  const categories = await getCategories()
   const initialEvents = await getEvents({ startDate })
   const placeholderImage = await getPlaceholderImage()
   if (!placeholderImage) {
@@ -32,6 +35,7 @@ export default async function Page({
   }
   return (
     <div className="flex flex-wrap justify-around gap-24 px-12 pb-32">
+      <FilterSection activeTime={activeTime} categories={categories} />
       <Suspense
         fallback={
           <div className="mx-auto mt-[14vh] flex min-h-screen w-full justify-center">
@@ -45,6 +49,7 @@ export default async function Page({
           initialNextPage={initialEvents.nextPage}
           hasNextPageProps={initialEvents.hasNextPage}
           startDate={startDate}
+          endDate={endDate}
           placeholderImageUrl={placeholderImage}
         />
       </Suspense>

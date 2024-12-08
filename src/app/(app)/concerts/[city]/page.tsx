@@ -5,7 +5,7 @@ import { getLocations } from '../../queries/get-locations'
 import { getPlaceholderImage } from '../../queries/get-placeholder-image'
 import { PacmanLoader } from 'react-spinners'
 import { Event } from '@/payload-types'
-import { PaginatedDocs } from 'payload'
+import EventThumbnail from '../../components/EventThumbnail'
 
 export default async function CityPage({ params }: { params: Promise<{ city: string }> }) {
   const city = (await params).city
@@ -33,12 +33,11 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
         </div>
       }
     >
-      <EventsGrid
-        initialEvents={events}
-        hasNextPageProps={false}
-        startDate={new Date().toISOString()}
-        placeholderImageUrl={placeholderImage}
-      />
+      <div className="flex flex-wrap justify-around gap-24 px-12 pb-32">
+        {events.map((event) => (
+          <EventThumbnail event={event} key={event.id} placeholderImageUrl={placeholderImage} />
+        ))}
+      </div>
     </Suspense>
   )
 }

@@ -1,25 +1,31 @@
 'use client'
 
-import { Event } from '@/payload-types'
-import EventThumbnail from './EventThumbnail'
+import type { Event } from '@/payload-types'
 import { useEffect, useState } from 'react'
-import { getEvents } from '../queries/get-events'
 import { useInView } from 'react-intersection-observer'
 import { PacmanLoader } from 'react-spinners'
-import { PaginatedDocs } from 'payload'
+import { getEvents } from '../queries/get-events'
+import EventThumbnail from './EventThumbnail'
+import EmptyEventsSection from './EmptyEventsSection'
+import { useCategory } from '../hooks/useGenre'
+import { useSearchParams } from 'next/navigation'
 
 export default function EventsGrid({
   initialEvents,
   initialNextPage,
   startDate,
+  endDate,
   placeholderImageUrl,
   locationId,
   hasNextPageProps,
+  activeTime,
 }: {
   initialEvents: Event[]
   initialNextPage?: number | null
   hasNextPageProps: boolean
-  startDate: string
+  startDate?: string
+  endDate?: string
+  activeTime?: string
   placeholderImageUrl: string
   locationId?: string
 }) {
@@ -27,11 +33,14 @@ export default function EventsGrid({
   const [nextPage, setNextPage] = useState(initialNextPage)
   const [hasNextPage, setHasNextPage] = useState(hasNextPageProps)
   const { ref, inView } = useInView()
+  const category = useCategory()
+  const searchParams = useSearchParams()
 
   const loadMoreEvents = async () => {
     const newEvents = await getEvents({
       page: nextPage ? nextPage : undefined,
       startDate,
+      endDate,
       locationId,
     })
     setEvents((events) => [...events, ...newEvents.docs])
@@ -40,10 +49,21 @@ export default function EventsGrid({
   }
 
   useEffect(() => {
+    const loadInitialEvents = async () => {
+      const eventsData = await getEvents({ startDate, endDate, category })
+      setEvents(eventsData.docs)
+    }
+    loadInitialEvents()
+  }, [searchParams])
+  useEffect(() => {
     if (inView && hasNextPage) {
       loadMoreEvents()
     }
   }, [inView])
+
+  if (!events.length) {
+    return <EmptyEventsSection activeTime={activeTime} category={category} />
+  }
 
   return (
     <div className="flex flex-wrap justify-around gap-24 px-12 pb-32">
