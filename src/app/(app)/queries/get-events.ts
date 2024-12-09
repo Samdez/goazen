@@ -19,12 +19,14 @@ export async function getEvents({
   page,
   category,
   locationId,
+  limit,
 }: {
   startDate?: string
   endDate?: string
   page?: number
   category?: string
   locationId?: string
+  limit?: number
 }) {
   const extendedStartDate = startDate && extendEndDateToEndOfPreviousDay(startDate)
   const extendedEndDate = endDate && extendEndDateToEndOfDay(endDate)
@@ -41,6 +43,7 @@ export async function getEvents({
     },
     sort: 'date',
     page,
+    limit,
   })
 
   return events

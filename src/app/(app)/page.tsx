@@ -19,7 +19,6 @@ export default async function Page({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const currSearchParams = await searchParams
-
   const {
     activeTime,
     startDate = new Date().toISOString(),
