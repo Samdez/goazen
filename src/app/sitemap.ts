@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
-import { getEvents } from './queries/get-events'
-import { getLocations } from './queries/get-locations'
+import { getEvents } from './(app)/queries/get-events'
+import { getLocations } from './(app)/queries/get-locations'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const events = await getEvents({ limit: 1000, startDate: new Date().toISOString() })
@@ -27,6 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }
   })
+
   return [
     {
       url: 'https://goazen.info',
