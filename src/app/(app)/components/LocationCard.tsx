@@ -3,14 +3,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { Location } from '@/payload-types'
-import { getPlaceholderImage } from '../queries/get-placeholder-image'
 
-async function LocationCard({ location, isEven }: { location?: Location; isEven: boolean }) {
+function LocationCard({
+  location,
+  isEven,
+  placeholderImageUrl,
+}: {
+  location?: Location
+  isEven: boolean
+  placeholderImageUrl: string
+}) {
   if (!location) return
-  const placeholderImage = await getPlaceholderImage()
 
   const imageUrl =
-    !(typeof location.image === 'string') && location.image ? location.image?.url : placeholderImage
+    !(typeof location.image === 'string') && location.image
+      ? location.image?.url
+      : placeholderImageUrl
 
   return (
     <>
