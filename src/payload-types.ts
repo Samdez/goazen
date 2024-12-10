@@ -136,6 +136,10 @@ export interface Event {
   sold_out?: boolean | null;
   ticketing_url?: string | null;
   slug?: string | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -185,6 +189,10 @@ export interface Location {
     docs?: (string | Event)[] | null;
     hasNextPage?: boolean | null;
   } | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -333,6 +341,12 @@ export interface EventsSelect<T extends boolean = true> {
   sold_out?: T;
   ticketing_url?: T;
   slug?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -358,6 +372,12 @@ export interface LocationsSelect<T extends boolean = true> {
   image?: T;
   slug?: T;
   LocationEvents?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

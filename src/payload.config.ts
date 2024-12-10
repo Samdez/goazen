@@ -13,6 +13,7 @@ import { ImagePlaceholder } from './app/globals/ImagePlaceholder'
 import Events from './collections/Events'
 import Categories from './collections/Categories'
 import Locations from './collections/Locations'
+import { seoPlugin } from '@payloadcms/plugin-seo'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -62,6 +63,13 @@ export default buildConfig({
         },
         region: process.env.S3_REGION,
       },
+    }),
+    seoPlugin({
+      collections: ['events', 'locations'],
+      // uploadsCollection: 'media',
+      generateTitle: ({ doc }) => `goazen.info — ${doc.title}`,
+      generateDescription: ({ doc }) => doc.description,
+      tabbedUI: true,
     }),
   ],
 })
