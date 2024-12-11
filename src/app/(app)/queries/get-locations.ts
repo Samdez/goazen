@@ -1,14 +1,23 @@
 'use server'
 import { payload } from '../client/payload-client'
 
-export async function getLocations(cityName?: string) {
+export async function getLocations({
+  cityName,
+  page = 1,
+  limit = 10,
+}: {
+  cityName?: string
+  page?: number
+  limit?: number
+}) {
   const locations = await payload.find({
     collection: 'locations',
     sort: 'name',
-    limit: 1000,
+    limit,
     where: {
       ...(cityName ? { city: { equals: cityName } } : {}),
     },
+    page,
   })
   return locations
 }

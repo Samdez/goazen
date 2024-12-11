@@ -40,7 +40,7 @@ function LocationCard({
                 alt={location.name}
                 src={imageUrl || ''}
                 width={250}
-                height={250}
+                height="0"
                 className="object-cover transition hover:scale-110"
                 priority={true}
               />

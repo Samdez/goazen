@@ -14,7 +14,7 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
     console.error('No placeholder image found')
     return
   }
-  const locations = await getLocations(city)
+  const locations = await getLocations({ cityName: city })
 
   let events: Event[] = []
   for (const location of locations.docs) {
