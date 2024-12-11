@@ -3,7 +3,7 @@ import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
-import { buildConfig } from 'payload'
+import { buildConfig, getPayload } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import Users from './collections/Users'
@@ -14,11 +14,12 @@ import Events from './collections/Events'
 import Categories from './collections/Categories'
 import Locations from './collections/Locations'
 import { seoPlugin } from '@payloadcms/plugin-seo'
+import { buildEventSEODescription, buildEventSEOTitle } from './utils'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-export default buildConfig({
+const config = buildConfig({
   admin: {
     user: Users.slug,
     importMap: {
@@ -66,10 +67,31 @@ export default buildConfig({
     }),
     seoPlugin({
       collections: ['events', 'locations'],
-      // uploadsCollection: 'media',
-      generateTitle: ({ doc }) => `goazen.info — ${doc.title}`,
-      generateDescription: ({ doc }) => doc.description,
+      generateTitle: async ({ doc }) => {
+        //if the doc is an event, we use the buildEventSEOMetadata function
+        if ('price' in doc) {
+          return buildEventSEOTitle(doc, config)
+        }
+        //doc is a Location
+        if ('place_id' in doc) {
+          return `Concerts & soirées à ${doc.name} ${doc.city} - Programmation | Goazen`
+        }
+        return ''
+      },
+      generateDescription: async ({ doc }) => {
+        //if the doc is an event, we use the buildEventSEOMetadata function
+        if ('price' in doc) {
+          return buildEventSEODescription(doc, config)
+        }
+        //doc is a Location
+        if ('place_id' in doc) {
+          return `Découvrez tous les concerts et DJ sets à ${doc.name} à ${doc.city}. Programmation complète, billetterie et infos pratiques sur Goazen, votre guide des sorties musicales.`
+        }
+        return ''
+      },
       tabbedUI: true,
     }),
   ],
 })
+
+export default config
