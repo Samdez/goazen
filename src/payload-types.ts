@@ -164,19 +164,19 @@ export interface Location {
   place_id?: string | null;
   city?:
     | (
-        | 'Biarritz'
-        | 'Bayonne'
-        | 'Anglet'
-        | 'Capbreton'
-        | 'Hossegor'
-        | 'Seignosse'
-        | 'Saint Jean de Luz'
-        | 'Hendaye'
-        | 'Bidart'
-        | 'Guethary'
-        | 'Angresse'
-        | 'Labenn'
-        | 'Soustons'
+        | 'biarritz'
+        | 'bayonne'
+        | 'anglet'
+        | 'capbreton'
+        | 'hossegor'
+        | 'seignosse'
+        | 'saint-jean-de-luz'
+        | 'hendaye'
+        | 'bidart'
+        | 'guethary'
+        | 'angresse'
+        | 'labenne'
+        | 'soustons'
       )
     | null;
   image?: (string | null) | Media;

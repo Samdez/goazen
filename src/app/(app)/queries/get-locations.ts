@@ -1,4 +1,5 @@
 'use server'
+import { slugifyString } from '@/utils'
 import { payload } from '../client/payload-client'
 
 export async function getLocations({
@@ -15,7 +16,7 @@ export async function getLocations({
     sort: 'name',
     limit,
     where: {
-      ...(cityName ? { city: { equals: cityName } } : {}),
+      ...(cityName ? { city: { equals: slugifyString(cityName) } } : {}),
     },
     page,
   })
