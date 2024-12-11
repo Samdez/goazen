@@ -14,6 +14,8 @@ import Events from './collections/Events'
 import Categories from './collections/Categories'
 import Locations from './collections/Locations'
 import { seoPlugin } from '@payloadcms/plugin-seo'
+import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
+import { fields } from '@payloadcms/plugin-form-builder'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -70,6 +72,9 @@ export default buildConfig({
       generateTitle: ({ doc }) => `goazen.info — ${doc.title}`,
       generateDescription: ({ doc }) => doc.description,
       tabbedUI: true,
+    }),
+    formBuilderPlugin({
+      defaultToEmail: 'contact@goazen.info',
     }),
   ],
 })
