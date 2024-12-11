@@ -3,7 +3,7 @@ import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
-import { buildConfig, getPayload } from 'payload'
+import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import Users from './collections/Users'
@@ -14,7 +14,7 @@ import Events from './collections/Events'
 import Categories from './collections/Categories'
 import Locations from './collections/Locations'
 import { seoPlugin } from '@payloadcms/plugin-seo'
-import { buildEventSEODescription, buildEventSEOTitle } from './utils'
+import { buildEventSEODescription, buildEventSEOTitle } from './config-utils'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -69,8 +69,8 @@ const config = buildConfig({
       collections: ['events', 'locations'],
       generateTitle: async ({ doc }) => {
         //if the doc is an event, we use the buildEventSEOMetadata function
-        if ('price' in doc) {
-          return buildEventSEOTitle(doc, config)
+        if ('price' in doc || 'title' in doc) {
+          return buildEventSEOTitle(doc)
         }
         //doc is a Location
         if ('place_id' in doc) {
@@ -80,8 +80,8 @@ const config = buildConfig({
       },
       generateDescription: async ({ doc }) => {
         //if the doc is an event, we use the buildEventSEOMetadata function
-        if ('price' in doc) {
-          return buildEventSEODescription(doc, config)
+        if ('price' in doc || 'title' in doc) {
+          return buildEventSEODescription(doc)
         }
         //doc is a Location
         if ('place_id' in doc) {
