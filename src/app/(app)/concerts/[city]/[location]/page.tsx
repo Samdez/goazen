@@ -21,17 +21,56 @@ export async function generateMetadata({
         description: 'The page you are looking for does not exist',
       }
     }
+
+    const description = generateMetaDescription(location.description as unknown as Node[])
+    const title = `Concerts à ${location.name} | www.goazen.info`
+
+    const locationImage =
+      typeof location.image !== 'string' &&
+      typeof location.image?.url === 'string' &&
+      location.image?.url
+
     return {
-      title: location.name,
-      description: generateMetaDescription(location.description as unknown as Node[]),
+      title,
+      description,
       alternates: {
         canonical: `/concerts/${location.city}/${location.slug}`,
+      },
+      openGraph: {
+        title,
+        description,
+        url: `/concerts/${location.city}/${location.slug}`,
+        siteName: 'www.goazen.info',
+        images: [
+          {
+            url: locationImage || '',
+            width: 1200,
+            height: 630,
+            alt: `Concerts à ${location.name}`,
+          },
+        ],
+        locale: 'fr_FR',
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [locationImage || ''],
+      },
+      robots: {
+        index: true,
+        follow: true,
       },
     }
   } catch (error) {
     return {
       title: 'Not found',
       description: 'The page you are looking for does not exist',
+      robots: {
+        index: false,
+        follow: false,
+      },
     }
   }
 }

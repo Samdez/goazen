@@ -1,6 +1,13 @@
 import { GithubIcon, LinkedinIcon } from 'lucide-react'
 import Link from 'next/link'
 import ContactForm from '../components/ContactForm'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Goazen - Contact',
+  description:
+    'Découvrez Goazen, votre agenda culturel du Pays Basque et des Landes. Contactez-nous pour ajouter vos événements musicaux, concerts et DJ sets, ou pour toute suggestion concernant notre plateforme de référencement culturel.',
+}
 
 function ContactPage() {
   return (

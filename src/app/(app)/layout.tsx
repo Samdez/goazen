@@ -13,9 +13,9 @@ const bebas = Bebas_Neue({ weight: '400', subsets: ['latin'] })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://goazen.info'),
-  title: 'Goazen!',
+  title: 'Goazen! - Agenda Concerts Pays Basque & Landes',
   description:
-    'Tous les concerts du Pays Basque et des Landes: retrouvez tous les concerts et DJ sets rock, rap, electro, reggae, etc... sur Biarritz, Bayonne, Anglet, Capbreton, Hossegor et bien plus encore!',
+    'Découvrez tous les concerts au Pays Basque et dans les Landes ! Agenda complet des événements musicaux : rock, rap, électro, reggae, etc... à Biarritz, Bayonne, Anglet, Hossegor, Capbreton, etc... Trouvez votre prochain concert ou DJ set.',
   verification: {
     google: 'google-site-verification=6jGooaqWsLT2O6T3V0y_9X4eEoscVIdHlIGGj-7e6QM',
   },
