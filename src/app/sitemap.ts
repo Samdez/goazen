@@ -1,17 +1,14 @@
 import type { MetadataRoute } from 'next'
 import { getEvents } from './(app)/queries/get-events'
 import { getLocations } from './(app)/queries/get-locations'
+import { buildEventUrl } from '@/utils'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const events = await getEvents({ limit: 1000, startDate: new Date().toISOString() })
   const eventsUrls = events.docs.map((event) => {
-    if (!event.location) return
-    const eventCity =
-      typeof event.location !== 'string' && event.location?.city && event.location.city
-    const eventSlug =
-      typeof event.location !== 'string' && event.location?.slug && event.location.slug
+    const eventUrl = buildEventUrl(event)
     return {
-      url: `https://goazen.info/concerts/${eventCity}/${eventSlug}/${event.slug}`,
+      url: `https://goazen.info${eventUrl}`,
       lastModified: new Date(),
       changeFrequency: 'daily' as const,
       priority: 1,
@@ -41,7 +38,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'yearly',
       priority: 0.8,
     },
-    ...eventsUrls.filter((url) => url !== undefined),
+    ...eventsUrls,
     ...locationsUrls,
   ]
 }

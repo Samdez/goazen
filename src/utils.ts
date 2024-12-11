@@ -1,6 +1,7 @@
 import slugify from 'slugify'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { Event } from './payload-types'
 
 export function slugifyString(string: string) {
   const slug = string.replace('/', '-')
@@ -52,4 +53,16 @@ export function createHref({
     if (time === 'week') return url
   }
   return ''
+}
+
+export function buildEventUrl(event: Event) {
+  const locationName = event.location
+    ? !(typeof event.location === 'string') && event.location?.name
+    : slugify(event.location_alt?.split(/[-/,]/)?.at(0) || 'no-location')
+  const locationCity = event.location
+    ? !(typeof event.location === 'string') && event.location?.city
+    : slugify(event.location_alt?.split(/[-/,]/)?.at(1) || 'no-location')
+  const locationSlug = !(typeof event.location === 'string') && event.location?.slug
+
+  return `/concerts/${locationCity}/${locationSlug || locationName}/${event.slug}_${event.id}`
 }

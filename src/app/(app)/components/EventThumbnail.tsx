@@ -1,5 +1,5 @@
 import { Event } from '@/payload-types'
-import { formatDate } from '@/utils'
+import { buildEventUrl, formatDate } from '@/utils'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
@@ -29,20 +29,17 @@ function EventThumbnail({
         ? `${event.price} €`
         : 'N/A'
 
+  const eventUrl = buildEventUrl(event)
   const locationName = event.location
     ? !(typeof event.location === 'string') && event.location?.name
     : slugify(event.location_alt?.split(/[-/,]/)?.at(0) || 'no-location')
   const locationCity = event.location
     ? !(typeof event.location === 'string') && event.location?.city
     : slugify(event.location_alt?.split(/[-/,]/)?.at(1) || 'no-location')
-  const locationSlug = !(typeof event.location === 'string') && event.location?.slug
 
   return (
     <Card className="relative h-[360px] rounded-xl border-black shadow-[15px_15px_0px_0px_rgba(0,0,0)]">
-      <Link
-        href={`/concerts/${locationCity}/${locationSlug || locationName}/${event.slug}_${event.id}`}
-        className="rounded-xl"
-      >
+      <Link href={eventUrl} className="rounded-xl">
         <CardContent className="rounded-xl border-4 border-black px-0 py-0">
           <CardHeader className="h-44 px-2 py-4">
             <span className="text-xl text-[#ee2244bc]">{formatDate(event.date)}</span>
