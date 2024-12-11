@@ -18,7 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   })
 
-  const locations = await getLocations()
+  const locations = await getLocations({ limit: 1000 })
   const locationsUrls = locations.docs.map((location) => {
     return {
       url: `https://goazen.info/concerts/${location.city}/${location.slug}`,
