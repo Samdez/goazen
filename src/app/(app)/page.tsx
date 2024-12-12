@@ -33,7 +33,7 @@ export default async function Page({
     return
   }
   return (
-    <div className="flex flex-wrap justify-around gap-24 px-12 pb-32">
+    <>
       <FilterSection activeTime={activeTime} categories={categories} />
       <Suspense
         fallback={
@@ -52,6 +52,6 @@ export default async function Page({
           placeholderImageUrl={placeholderImage}
         />
       </Suspense>
-    </div>
+    </>
   )
 }

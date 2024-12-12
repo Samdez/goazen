@@ -134,7 +134,7 @@ function SideBar({
       <CityFilter href={'/concerts/biarritz'} text="Biarritz" onClick={onClick} />
       <CityFilter href={'/concerts/anglet'} text="Anglet" onClick={onClick} />
       <CityFilter href={'/concerts/bayonne'} text="Bayonne" onClick={onClick} />
-      <CityFilter href={'/lieux'} text="Les lieux" onClick={onClick} />
+      <CityFilter href={'/contact'} text="Contact" onClick={onClick} />
     </div>
   )
 }
