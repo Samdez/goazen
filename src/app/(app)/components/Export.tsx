@@ -1,6 +1,8 @@
+'use client'
 import { endOfWeek, startOfWeek } from 'date-fns'
 import type { Event } from '../../../payload-types'
 import * as React from 'react'
+import { getEvents } from '../queries/get-events'
 
 function getDay(date: Date) {
   switch (date.getDay()) {
@@ -21,7 +23,7 @@ function getDay(date: Date) {
   }
 }
 
-export const ExportComponent: React.FC = () => {
+const ExportComponent = () => {
   const convertToCSV = (objArray: Event[]) => {
     let str = ''
 
@@ -47,17 +49,14 @@ export const ExportComponent: React.FC = () => {
         weekStartsOn: 1,
       }).toISOString()
 
-      const query = `where[and][0][date][greater_than_equal]=${startDate}&where[and][1][date][less_than_equal]=${endDate}&sort=date&limit=100`
-      const res = await fetch(
-        `https://next-events-payload-production.up.railway.app/api/events?${query}`,
-      )
+      const events = await getEvents({
+        startDate,
+        endDate,
+        limit: 100,
+      })
 
-      if (!res.ok) throw new Error('Failed to fetch events')
-
-      const data = await res.json()
-
-      if (data?.docs) {
-        const csvData = new Blob([convertToCSV(data.docs)], {
+      if (events.docs) {
+        const csvData = new Blob([convertToCSV(events.docs)], {
           type: 'text/csv',
         })
         const csvURL = URL.createObjectURL(csvData)
@@ -82,3 +81,5 @@ export const ExportComponent: React.FC = () => {
     </div>
   )
 }
+
+export default ExportComponent

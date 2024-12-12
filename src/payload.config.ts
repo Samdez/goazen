@@ -26,7 +26,7 @@ const config = buildConfig({
       baseDir: path.resolve(dirname),
     },
     components: {
-      // afterDashboard: [ExportComponent],
+      afterDashboard: ['/app/(app)/components/Export'],
     },
   },
   collections: [Users, Medias, Events, Categories, Locations],
