@@ -22,7 +22,7 @@ export async function generateMetadata({
       }
     }
 
-    const description = generateMetaDescription(location.description as unknown as Node[])
+    const description = location.description
     const title = `Concerts à ${location.name} | www.goazen.info`
 
     const locationImage =
@@ -73,10 +73,6 @@ export async function generateMetadata({
       },
     }
   }
-}
-
-const generateMetaDescription = (nodes: Node[]) => {
-  return nodes.map((n) => Node.string(n)).join('\n')
 }
 
 async function LocationPage({ params }: { params: Promise<{ city: string; location: string }> }) {
