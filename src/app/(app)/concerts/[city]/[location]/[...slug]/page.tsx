@@ -23,6 +23,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       alternates: {
         canonical: `/concerts/${locationCity}/${event.slug}_${event.id}`,
       },
+      robots: {
+        index: true,
+        follow: true,
+      },
     }
   } catch (error) {
     return {
