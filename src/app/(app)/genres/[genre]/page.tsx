@@ -1,9 +1,9 @@
 import EventsGrid from '../../components/EventsGrid'
 import FilterSection from '../../components/FilterSection'
-import { getCategories } from '../../queries/get-categories'
-import { getEvents } from '../../queries/get-events'
-import { getPlaceholderImage } from '../../queries/get-placeholder-image'
 import { searchParamsSchema } from '../../schemas/searchParams'
+import { getCategories } from '../../api/queries/payload/get-categories'
+import { getEvents } from '../../api/queries/payload/get-events'
+import { getPlaceholderImage } from '../../api/queries/payload/get-placeholder-image'
 
 async function Genre({
   params,

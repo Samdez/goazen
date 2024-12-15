@@ -2,7 +2,7 @@
 import { endOfWeek, startOfWeek } from 'date-fns'
 import type { Event } from '../../../payload-types'
 import * as React from 'react'
-import { getEvents } from '../queries/get-events'
+import { getEvents } from '../api/queries/payload/get-events'
 
 function getDay(date: Date) {
   switch (date.getDay()) {

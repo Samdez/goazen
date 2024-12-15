@@ -1,6 +1,6 @@
 'use server'
 
-import { payload } from '../client/payload-client'
+import { payload } from '../../payload-client'
 
 function extendEndDateToEndOfDay(date: string) {
   return new Date(new Date(date).setUTCHours(24, 0, 0, 0))

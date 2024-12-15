@@ -1,10 +1,10 @@
 import { Suspense } from 'react'
-import { getEvents } from '../../queries/get-events'
-import { getLocations } from '../../queries/get-locations'
-import { getPlaceholderImage } from '../../queries/get-placeholder-image'
 import { PacmanLoader } from 'react-spinners'
 import { Event } from '@/payload-types'
 import EventThumbnail from '../../components/EventThumbnail'
+import { getPlaceholderImage } from '../../api/queries/payload/get-placeholder-image'
+import { getLocations } from '../../api/queries/payload/get-locations'
+import { getEvents } from '../../api/queries/payload/get-events'
 
 export async function generateMetadata({ params }: { params: Promise<{ city: string[] }> }) {
   const cityParam = (await params).city

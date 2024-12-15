@@ -1,11 +1,10 @@
 import Image from 'next/image'
-import { Node } from 'slate'
-import { getEvents } from '@/app/(app)/queries/get-events'
-import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
-import { getLocation } from '@/app/(app)/queries/get-location'
 import EventsCarousel from '@/app/(app)/components/EventsCarousel'
 import { serializeRichText } from '@/lib/serialize-rich-text'
 import { env } from 'env'
+import { getEvents } from '@/app/(app)/api/queries/payload/get-events'
+import { getLocation } from '@/app/(app)/api/queries/payload/get-location'
+import { getPlaceholderImage } from '@/app/(app)/api/queries/payload/get-placeholder-image'
 
 export async function generateMetadata({
   params,

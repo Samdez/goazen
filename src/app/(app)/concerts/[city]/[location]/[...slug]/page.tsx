@@ -2,8 +2,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { slugifyString } from '@/utils'
 import { Button } from '@/components/ui/button'
-import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
-import { getEvent } from '@/app/(app)/queries/get-event'
+import { getEvent } from '@/app/(app)/api/queries/payload/get-event'
+import { getPlaceholderImage } from '@/app/(app)/api/queries/payload/get-placeholder-image'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }) {
   const slugParam = (await params).slug
@@ -61,6 +61,11 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
           {locationName}
         </Link>
       </div>
+      <Link href={`/lagunekin/${event.id}`}>
+        <Button className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black hover:bg-[#FFDCA8] hover:text-[#ee2244bc]">
+          Trouver des amis avec qui y aller
+        </Button>
+      </Link>
       <Image className="mx-auto" src={imageUrl || ''} alt={imageTitle} width={640} height={640} />
       <p className="p-12 font-['Public_Sans'] text-lg text-black">{event.description}</p>
       {event.sold_out ? (

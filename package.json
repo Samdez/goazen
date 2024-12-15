@@ -17,6 +17,7 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.9.2",
     "@hookform/resolvers": "^3.9.1",
     "@payloadcms/db-mongodb": "latest",
     "@payloadcms/next": "latest",

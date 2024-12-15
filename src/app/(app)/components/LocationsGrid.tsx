@@ -5,8 +5,7 @@ import type { Location } from '@/payload-types'
 import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { PacmanLoader } from 'react-spinners'
-import { useCategory } from '../hooks/useGenre'
-import { getLocations } from '../queries/get-locations'
+import { getLocations } from '../api/queries/payload/get-locations'
 
 export default function LocationsGrid({
   initialLocations,

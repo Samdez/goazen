@@ -1,5 +1,6 @@
 'use server'
-import { payload } from '../(client)/payload-client'
+
+import { payload } from '../../payload-client'
 
 export async function getLocation(slug: string) {
   const location = await payload.find({

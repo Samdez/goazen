@@ -1,6 +1,6 @@
 'use server'
 
-import { payload } from '../client/payload-client'
+import { payload } from '../../payload-client'
 
 export async function getEvent(slug: string) {
   const event = await payload.findByID({ collection: 'events', id: slug })

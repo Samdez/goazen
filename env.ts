@@ -6,11 +6,13 @@ export const env = createEnv({
     RESEND_API_KEY: z.string(),
     GOAZEN_EMAIL_ADDRESS: z.string(),
     GOOGLE_MAPS_API_KEY: z.string(),
+    POSTGRES_DATABASE_URL: z.string(),
   },
   client: {},
   runtimeEnv: {
     GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     GOAZEN_EMAIL_ADDRESS: process.env.GOAZEN_EMAIL_ADDRESS,
+    POSTGRES_DATABASE_URL: process.env.POSTGRES_DATABASE_URL,
   },
 })

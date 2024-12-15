@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
-import { getEvents } from './(app)/queries/get-events'
-import { getLocations } from './(app)/queries/get-locations'
 import { buildEventUrl } from '@/utils'
+import { getEvents } from './(app)/api/queries/payload/get-events'
+import { getLocations } from './(app)/api/queries/payload/get-locations'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const events = await getEvents({ limit: 1000, startDate: new Date().toISOString() })

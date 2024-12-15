@@ -1,11 +1,11 @@
-import { getEvents } from './queries/get-events'
 import { z } from 'zod'
 import EventsGrid from './components/EventsGrid'
-import { getPlaceholderImage } from './queries/get-placeholder-image'
 import { Suspense } from 'react'
 import { PacmanLoader } from 'react-spinners'
 import FilterSection from './components/FilterSection'
-import { getCategories } from './queries/get-categories'
+import { getCategories } from './api/queries/payload/get-categories'
+import { getEvents } from './api/queries/payload/get-events'
+import { getPlaceholderImage } from './api/queries/payload/get-placeholder-image'
 
 const searchParamsSchema = z.object({
   startDate: z.string().optional(),

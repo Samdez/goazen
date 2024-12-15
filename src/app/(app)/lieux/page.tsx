@@ -1,6 +1,6 @@
+import { getLocations } from '../api/queries/payload/get-locations'
+import { getPlaceholderImage } from '../api/queries/payload/get-placeholder-image'
 import LocationsGrid from '../components/LocationsGrid'
-import { getLocations } from '../queries/get-locations'
-import { getPlaceholderImage } from '../queries/get-placeholder-image'
 
 async function LocationsPage() {
   const locations = await getLocations({})

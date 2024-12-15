@@ -4,11 +4,11 @@ import type { Event } from '@/payload-types'
 import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { PacmanLoader } from 'react-spinners'
-import { getEvents } from '../queries/get-events'
 import EventThumbnail from './EventThumbnail'
 import EmptyEventsSection from './EmptyEventsSection'
 import { useCategory } from '../hooks/useGenre'
 import { useSearchParams } from 'next/navigation'
+import { getEvents } from '../api/queries/payload/get-events'
 
 export default function EventsGrid({
   initialEvents,
