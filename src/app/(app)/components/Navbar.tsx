@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { MouseEventHandler, useState } from 'react'
 import { cn } from '@/lib/utils'
 import Burger from './icons/burger'
+import { SignedOut, SignInButton, SignedIn, UserButton } from '@clerk/nextjs'
 
 function Navbar() {
   const [activePage, setActivePage] = useState('/')
@@ -64,7 +65,6 @@ function Navbar() {
           className={activePage === 'bayonne' ? 'bg-black text-[#FFDCA8]' : ''}
           text="Bayonne"
         />
-        <span></span>
         <CityFilter
           href={'/lieux'}
           text="les salles de concert"
@@ -79,6 +79,14 @@ function Navbar() {
           onClick={() => setActivePage('contact')}
           className={activePage === 'contact' ? 'bg-black text-[#FFDCA8]' : ''}
         />
+        <div className="flex items-center justify-center">
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+        </div>
       </div>
     </>
   )
@@ -131,6 +139,14 @@ function SideBar({
         },
       )}
     >
+      <div className="flex items-center justify-center">
+        <SignedOut>
+          <SignInButton />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+      </div>
       <CityFilter href={'/concerts/biarritz'} text="Biarritz" onClick={onClick} />
       <CityFilter href={'/concerts/anglet'} text="Anglet" onClick={onClick} />
       <CityFilter href={'/concerts/bayonne'} text="Bayonne" onClick={onClick} />

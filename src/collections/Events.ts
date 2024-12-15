@@ -1,8 +1,12 @@
 import { CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
+import createEventHook from './hooks/create-event'
 
 const Events: CollectionConfig = {
   slug: 'events',
+  hooks: {
+    afterChange: [createEventHook],
+  },
   access: {
     read: () => true,
   },

@@ -1,11 +1,5 @@
-import { relations } from 'drizzle-orm';
-import {
-  boolean,
-  integer,
-  pgTable,
-  timestamp,
-  varchar,
-} from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm'
+import { boolean, integer, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 
 export const users = pgTable('users', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -22,11 +16,15 @@ export const users = pgTable('users', {
     mode: 'date',
     withTimezone: false,
   }).notNull(),
-});
+})
+export const userRelations = relations(users, ({ many }) => ({
+  userPenas: many(penas),
+}))
+export type User = typeof users.$inferSelect
 
 export const events = pgTable('events', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  payloadId: varchar('payloadId').notNull(),
+  payloadId: varchar('payloadId').notNull().unique(),
   createdAt: timestamp('createdAt', {
     mode: 'date',
     withTimezone: false,
@@ -35,7 +33,10 @@ export const events = pgTable('events', {
     mode: 'date',
     withTimezone: false,
   }).notNull(),
-});
+})
+export const eventRelations = relations(events, ({ many }) => ({
+  eventPenas: many(penas),
+}))
 
 export const penas = pgTable('penas', {
   id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
@@ -52,15 +53,7 @@ export const penas = pgTable('penas', {
     mode: 'date',
     withTimezone: false,
   }).notNull(),
-});
-
-export const userRelations = relations(users, ({ many }) => ({
-  userPenas: many(penas),
-}));
-
-export const eventRelations = relations(events, ({ many }) => ({
-  eventPenas: many(penas),
-}));
+})
 
 export const penaRelations = relations(penas, ({ one }) => ({
   penaMemberOne: one(users, {
@@ -80,4 +73,21 @@ export const penaRelations = relations(penas, ({ one }) => ({
     references: [users.id],
   }),
   penaEvent: one(events, { fields: [penas.eventId], references: [events.id] }),
-}));
+}))
+
+export const messages = pgTable('messages', {
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+  penaId: integer('penaId').references(() => penas.id),
+  userId: integer('userId').references(() => users.id),
+  message: text('message').notNull(),
+  createdAt: timestamp('createdAt', {
+    mode: 'date',
+    withTimezone: false,
+  }).notNull(),
+})
+
+export const messageRelations = relations(messages, ({ one }) => ({
+  messagePena: one(penas, { fields: [messages.penaId], references: [penas.id] }),
+  messageUser: one(users, { fields: [messages.userId], references: [users.id] }),
+}))
+export type Message = typeof messages.$inferSelect

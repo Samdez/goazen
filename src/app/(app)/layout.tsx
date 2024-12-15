@@ -5,6 +5,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Bebas_Neue } from 'next/font/google'
 import NextTopLoader from 'nextjs-toploader'
+import { ClerkProvider } from '@clerk/nextjs'
 
 import './globals.css'
 import Navbar from './components/Navbar'
@@ -23,16 +24,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr">
-      <body className={bebas.className}>
-        <Navbar />
-        <main className="mt-[14vh] min-h-screen bg-[#FFDCA8] pt-4">
-          <NextTopLoader color="#ee2244bc" showSpinner={false} />
-          {children}
-          <Analytics />
-          <SpeedInsights />
-        </main>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="fr">
+        <body className={bebas.className}>
+          <Navbar />
+          <main className="mt-[14vh] min-h-screen bg-[#FFDCA8] pt-4">
+            <NextTopLoader color="#ee2244bc" showSpinner={false} />
+            {children}
+            <Analytics />
+            <SpeedInsights />
+          </main>
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }

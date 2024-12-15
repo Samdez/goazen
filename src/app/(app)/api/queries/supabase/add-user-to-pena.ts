@@ -26,5 +26,5 @@ export async function addUserToPena(penaId: number, userId: number, eventId: str
       updatedAt: new Date(),
     })
     .where(eq(penas.id, penaId))
-  revalidatePath(`/lagunak/${eventId}`)
+  revalidatePath(`/lagunekin/${eventId}`)
 }

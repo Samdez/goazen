@@ -13,10 +13,11 @@
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
-    "db:migrate": "drizzle-kit generate:sqlite --schema=./src/db/schema.ts",
+    "db:migrate": "drizzle-kit generate:postgres --schema=./src/app/(app)/api/db/schema.ts",
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
+    "@clerk/clerk-sdk-node": "^5.0.54",
     "@clerk/nextjs": "^6.9.2",
     "@hookform/resolvers": "^3.9.1",
     "@payloadcms/db-mongodb": "latest",
@@ -27,6 +28,7 @@
     "@payloadcms/storage-s3": "latest",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.2",
+    "@supabase/supabase-js": "^2.47.7",
     "@t3-oss/env-nextjs": "^0.11.1",
     "@vercel/analytics": "^1.4.1",
     "@vercel/speed-insights": "^1.1.0",
