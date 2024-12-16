@@ -20,7 +20,7 @@
     "@payloadcms/next": "latest",
     "@payloadcms/payload-cloud": "latest",
     "@payloadcms/plugin-seo": "^3.5.0",
-    "@payloadcms/richtext-lexical": "latest",
+    "@payloadcms/richtext-lexical": "^3.5.0",
     "@payloadcms/storage-s3": "latest",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-toast": "^1.2.2",

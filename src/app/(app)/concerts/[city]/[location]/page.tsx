@@ -1,10 +1,9 @@
 import Image from 'next/image'
-import { Node } from 'slate'
+import { RichText } from '@payloadcms/richtext-lexical/react'
 import { getEvents } from '@/app/(app)/queries/get-events'
 import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
 import { getLocation } from '@/app/(app)/queries/get-location'
 import EventsCarousel from '@/app/(app)/components/EventsCarousel'
-import { serializeRichText } from '@/lib/serialize-rich-text'
 import { env } from 'env'
 
 export async function generateMetadata({
@@ -106,7 +105,8 @@ async function LocationPage({ params }: { params: Promise<{ city: string; locati
           height={640}
         />
       )}
-      <div>{location.description && serializeRichText(location.description)}</div>
+      {location.description && <RichText data={location.description} className="text-black" />}
+
       <div className="flex w-full justify-center py-8">
         <iframe
           width="600"
