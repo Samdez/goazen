@@ -18,8 +18,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       }
     }
     return {
-      title: event.title,
-      description: event.description,
+      title: event.meta?.title,
+      description: event.meta?.description,
       alternates: {
         canonical: `/concerts/${locationCity}/${event.slug}_${event.id}`,
       },

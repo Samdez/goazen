@@ -22,8 +22,8 @@ export async function generateMetadata({
       }
     }
 
-    const description = location.description
-    const title = `Concerts à ${location.name} | www.goazen.info`
+    const description = location.meta?.description
+    const title = location.meta?.title || `Concerts à ${location.name} | www.goazen.info`
 
     const locationImage =
       typeof location.image !== 'string' &&
