@@ -4,6 +4,7 @@ import { slugifyString } from '@/utils'
 import { Button } from '@/components/ui/button'
 import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
 import { getEvent } from '@/app/(app)/queries/get-event'
+import { payload } from '@/app/(app)/client/payload-client'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }) {
   const slugParam = (await params).slug
@@ -34,6 +35,27 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description: 'The page you are looking for does not exist',
     }
   }
+}
+export async function generateStaticParams() {
+  const events = await payload.find({
+    collection: 'events',
+    depth: 2, // Increase depth to get nested location data
+    limit: 100,
+  })
+
+  return events.docs
+    .map((event) => {
+      const locationCity =
+        !(typeof event.location === 'string') && event.location?.city?.toLowerCase()
+      const locationName = !(typeof event.location === 'string') && event.location?.name
+
+      return {
+        city: locationCity || '',
+        location: slugifyString(locationName || ''),
+        slug: [`${event.slug}_${event.id}`],
+      }
+    })
+    .filter((params) => params.city && params.location) // Filter out any invalid params
 }
 
 async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
