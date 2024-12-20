@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import { getEvents } from '@/app/(app)/queries/get-events'
+import { getCachedEvents } from '@/app/(app)/queries/get-events'
 import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
 import { getLocation } from '@/app/(app)/queries/get-location'
 import EventsCarousel from '@/app/(app)/components/EventsCarousel'
@@ -77,7 +77,7 @@ export async function generateMetadata({
 async function LocationPage({ params }: { params: Promise<{ city: string; location: string }> }) {
   const { location: locationParam } = await params
   const location = await getLocation(locationParam)
-  const { docs: events } = await getEvents({
+  const { docs: events } = await getCachedEvents({
     locationId: location.id,
     startDate: new Date().toISOString(),
   })

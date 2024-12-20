@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { getEvents } from '../../queries/get-events'
+import { getCachedEvents } from '../../queries/get-events'
 import { getLocations } from '../../queries/get-locations'
 import { getPlaceholderImage } from '../../queries/get-placeholder-image'
 import { PacmanLoader } from 'react-spinners'
@@ -42,7 +42,7 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
 
   let events: Event[] = []
   for (const location of locations.docs) {
-    const locationEvents = await getEvents({
+    const locationEvents = await getCachedEvents({
       locationId: location.id,
       startDate: new Date().toISOString(),
     })

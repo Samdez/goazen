@@ -1,4 +1,4 @@
-import { getEvents } from './queries/get-events'
+import { getCachedEvents } from './queries/get-events'
 import { z } from 'zod'
 import EventsGrid from './components/EventsGrid'
 import { getPlaceholderImage } from './queries/get-placeholder-image'
@@ -26,7 +26,7 @@ export default async function Page({
   } = searchParamsSchema.parse(currSearchParams)
 
   const categories = await getCategories()
-  const initialEvents = await getEvents({ startDate })
+  const initialEvents = await getCachedEvents({ startDate })
   const placeholderImage = await getPlaceholderImage()
   if (!placeholderImage) {
     console.error('No placeholder image found')

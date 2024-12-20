@@ -1,5 +1,6 @@
 'use server'
 
+import { unstable_cache } from 'next/cache'
 import { payload } from '../client/payload-client'
 
 function extendEndDateToEndOfDay(date: string) {
@@ -13,7 +14,7 @@ function extendEndDateToEndOfPreviousDay(date: string) {
   return new Date(new Date(yesterday).setUTCHours(24, 0, 0, 0))
 }
 
-export async function getEvents({
+export async function _getEvents({
   startDate,
   endDate,
   page,
@@ -47,4 +48,36 @@ export async function getEvents({
   })
 
   return events
+}
+
+export async function getCachedEvents({
+  startDate,
+  endDate,
+  page,
+  category,
+  locationId,
+  limit,
+}: {
+  startDate?: string
+  endDate?: string
+  page?: number
+  category?: string
+  locationId?: string
+  limit?: number
+}) {
+  return unstable_cache(
+    async () => await _getEvents({ startDate, endDate, page, category, locationId, limit }),
+    [
+      startDate || '',
+      endDate || '',
+      page?.toString() || '',
+      category || '',
+      locationId || '',
+      limit?.toString() || '',
+    ],
+    {
+      tags: ['events'],
+      revalidate: 60 * 60 * 24,
+    },
+  )()
 }

@@ -4,7 +4,7 @@ import type { Event } from '@/payload-types'
 import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { PacmanLoader } from 'react-spinners'
-import { getEvents } from '../queries/get-events'
+import { getCachedEvents } from '../queries/get-events'
 import EventThumbnail from './EventThumbnail'
 import EmptyEventsSection from './EmptyEventsSection'
 import { useCategory } from '../hooks/useGenre'
@@ -37,7 +37,7 @@ export default function EventsGrid({
   const searchParams = useSearchParams()
 
   const loadMoreEvents = async () => {
-    const newEvents = await getEvents({
+    const newEvents = await getCachedEvents({
       page: nextPage ? nextPage : undefined,
       startDate,
       endDate,
@@ -50,7 +50,7 @@ export default function EventsGrid({
 
   useEffect(() => {
     const loadInitialEvents = async () => {
-      const eventsData = await getEvents({ startDate, endDate, category })
+      const eventsData = await getCachedEvents({ startDate, endDate, category })
       setEvents(eventsData.docs)
     }
     loadInitialEvents()

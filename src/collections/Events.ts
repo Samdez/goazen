@@ -1,5 +1,6 @@
 import { CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
+import { revalidateTag } from 'next/cache'
 
 const Events: CollectionConfig = {
   slug: 'events',
@@ -68,6 +69,11 @@ const Events: CollectionConfig = {
             if (payload) {
               return slugifyString(data?.title)
             }
+          },
+        ],
+        afterChange: [
+          () => {
+            revalidateTag('events')
           },
         ],
       },
