@@ -46,7 +46,7 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
       locationId: location.id,
       startDate: new Date().toISOString(),
     })
-    events = [...events, ...locationEvents.docs]
+    events = [...events, ...locationEvents.docs].sort((a, b) => a.date.localeCompare(b.date))
   }
 
   return (
