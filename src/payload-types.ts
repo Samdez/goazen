@@ -16,6 +16,7 @@ export interface Config {
     events: Event;
     categories: Category;
     locations: Location;
+    cities: City;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -27,6 +28,7 @@ export interface Config {
     events: EventsSelect<false> | EventsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     locations: LocationsSelect<false> | LocationsSelect<true>;
+    cities: CitiesSelect<false> | CitiesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -162,6 +164,7 @@ export interface Location {
     [k: string]: unknown;
   } | null;
   place_id?: string | null;
+  'city V2'?: (string | null) | City;
   city?:
     | (
         | 'biarritz'
@@ -185,6 +188,17 @@ export interface Location {
     title?: string | null;
     description?: string | null;
   };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cities".
+ */
+export interface City {
+  id: string;
+  name: string;
+  slug?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -225,6 +239,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'locations';
         value: string | Location;
+      } | null)
+    | ({
+        relationTo: 'cities';
+        value: string | City;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -360,6 +378,7 @@ export interface LocationsSelect<T extends boolean = true> {
   name?: T;
   description?: T;
   place_id?: T;
+  'city V2'?: T;
   city?: T;
   image?: T;
   slug?: T;
@@ -369,6 +388,16 @@ export interface LocationsSelect<T extends boolean = true> {
         title?: T;
         description?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cities_select".
+ */
+export interface CitiesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }

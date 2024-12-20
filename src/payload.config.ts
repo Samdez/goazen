@@ -15,6 +15,7 @@ import Categories from './collections/Categories'
 import Locations from './collections/Locations'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { buildEventSEODescription, buildEventSEOTitle } from './config-utils'
+import Cities from './collections/Cities'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -29,7 +30,7 @@ const config = buildConfig({
       afterDashboard: ['/app/(app)/components/Export'],
     },
   },
-  collections: [Users, Medias, Events, Categories, Locations],
+  collections: [Users, Medias, Events, Categories, Locations, Cities],
   editor: lexicalEditor(),
   globals: [ImagePlaceholder],
   secret: process.env.PAYLOAD_SECRET || '',
