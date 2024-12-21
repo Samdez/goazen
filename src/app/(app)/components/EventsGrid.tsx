@@ -42,6 +42,7 @@ export default function EventsGrid({
       startDate,
       endDate,
       locationId,
+      category,
     })
     setEvents((events) => [...events, ...newEvents.docs])
     setNextPage((prevPage) => (newEvents.nextPage ? newEvents.nextPage : prevPage))
