@@ -4,6 +4,7 @@ import { revalidateTag } from 'next/cache'
 
 const Events: CollectionConfig = {
   slug: 'events',
+  versions: { drafts: true },
   access: {
     read: () => true,
   },
@@ -60,6 +61,7 @@ const Events: CollectionConfig = {
     { name: 'price', type: 'text' },
     { name: 'sold_out', type: 'checkbox', label: 'Sold out' },
     { name: 'ticketing_url', type: 'text' },
+    { name: 'contact_email', type: 'text' },
     {
       name: 'slug',
       type: 'text',

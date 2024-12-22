@@ -133,6 +133,7 @@ export interface Event {
   price?: string | null;
   sold_out?: boolean | null;
   ticketing_url?: string | null;
+  contact_email?: string | null;
   slug?: string | null;
   meta?: {
     title?: string | null;
@@ -140,6 +141,7 @@ export interface Event {
   };
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -350,6 +352,7 @@ export interface EventsSelect<T extends boolean = true> {
   price?: T;
   sold_out?: T;
   ticketing_url?: T;
+  contact_email?: T;
   slug?: T;
   meta?:
     | T
@@ -359,6 +362,7 @@ export interface EventsSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
