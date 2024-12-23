@@ -9,13 +9,36 @@ import { payload } from '../../client/payload-client'
 
 export async function generateMetadata({ params }: { params: Promise<{ city: string[] }> }) {
   const cityParam = (await params).city
+  const cityName = Array.isArray(cityParam) ? cityParam[0] : cityParam
+  const formattedCityName = cityName.charAt(0).toUpperCase() + cityName.slice(1)
   return {
-    title: `Goazen! - Agenda Concerts ${cityParam}`,
-    description: `Concerts et DJ sets à ${cityParam} : agenda et programmation complète. Tous les événements musicaux près de chez vous - rock, métal, jazz, rap, électro, reggae. Trouvez les meilleurs concerts au Pays Basque et dans les Landes. Découvrez les prochains concerts à ${cityParam} et dans les salles emblématiques de la région.`,
+    title: `Concerts et Soirées à ${formattedCityName} | Où Sortir ce Soir - Goazen!`,
+    description: `Agenda complet des concerts et soirées à ${formattedCityName}. Découvrez tous les événements musicaux : rock, électro, DJ sets. Programmation des salles de concert à ${formattedCityName}. Guide des meilleures sorties au Pays Basque ce soir et ce weekend.`,
+    alternates: {
+      canonical: `https://goazen.info/concerts/${cityName}`,
+    },
+    openGraph: {
+      title: `Concerts et Soirées à ${formattedCityName} | Agenda Complet - Goazen!`,
+      description: `Agenda des concerts et soirées à ${formattedCityName}. Découvrez tous les événements musicaux et trouvez votre prochaine sortie au Pays Basque ce soir !`,
+      url: `https://goazen.info/concerts/${cityName}`,
+      siteName: 'Goazen!',
+      locale: 'fr_FR',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Concerts à ${formattedCityName} | Agenda Complet`,
+      description: `Agenda des concerts et soirées à ${formattedCityName}. Trouvez votre prochaine sortie au Pays Basque !`,
+    },
     robots: {
       index: true,
+      follow: true,
       googleBot: {
         index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
       },
     },
   }

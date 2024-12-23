@@ -18,21 +18,74 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         description: 'The page you are looking for does not exist',
       }
     }
+
+    const date = new Date(event.date).toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+
+    const locationName = !(typeof event.location === 'string') ? event.location?.name || '' : ''
+    const title =
+      event.meta?.title ||
+      `${event.title} en Concert à ${locationName} ${locationCity} le ${date} | Goazen!`
+    const description =
+      event.meta?.description ||
+      `${event.title} en concert à ${locationName} ${locationCity} le ${date}. ${event.description || ''} Réservez vos places pour ce concert live au Pays Basque.`
+
+    const imageUrl =
+      !(typeof event.image === 'string') && event.image ? event.image?.url : undefined
+
     return {
-      title: event.meta?.title,
-      description: event.meta?.description,
+      title,
+      description,
       alternates: {
-        canonical: `/concerts/${locationCity}/${event.slug}_${event.id}`,
+        canonical: `https://goazen.info/concerts/${locationCity}/${event.slug}_${event.id}`,
+      },
+      openGraph: {
+        title,
+        description,
+        url: `https://goazen.info/concerts/${locationCity}/${event.slug}_${event.id}`,
+        siteName: 'Goazen!',
+        images: imageUrl
+          ? [
+              {
+                url: imageUrl,
+                width: 1200,
+                height: 630,
+                alt: `${event.title} en concert à ${locationName} ${locationCity}`,
+              },
+            ]
+          : undefined,
+        locale: 'fr_FR',
+        type: 'event',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: imageUrl ? [imageUrl] : undefined,
       },
       robots: {
         index: true,
         follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
       },
     }
   } catch (error) {
     return {
       title: 'Not found',
       description: 'The page you are looking for does not exist',
+      robots: {
+        index: false,
+        follow: false,
+      },
     }
   }
 }

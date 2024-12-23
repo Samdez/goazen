@@ -21,8 +21,12 @@ export async function generateMetadata({
       }
     }
 
-    const description = location.meta?.description
-    const title = location.meta?.title || `Concerts à ${location.name} | www.goazen.info`
+    const description =
+      location.meta?.description ||
+      `Découvrez la programmation complète des concerts et soirées à ${location.name}, ${location.city}. Agenda des événements, DJ sets, et infos pratiques. Le meilleur des concerts et soirées au Pays Basque. Réservez vos places dès maintenant !`
+    const title =
+      location.meta?.title ||
+      `Concerts à ${location.name} ${location.city} | Programme & Billetterie - Goazen!`
 
     const locationImage =
       typeof location.image !== 'string' &&
@@ -33,21 +37,23 @@ export async function generateMetadata({
       title,
       description,
       alternates: {
-        canonical: `/concerts/${location.city}/${location.slug}`,
+        canonical: `https://goazen.info/concerts/${location.city}/${location.slug}`,
       },
       openGraph: {
         title,
         description,
-        url: `/concerts/${location.city}/${location.slug}`,
-        siteName: 'www.goazen.info',
-        images: [
-          {
-            url: locationImage || '',
-            width: 1200,
-            height: 630,
-            alt: `Concerts à ${location.name}`,
-          },
-        ],
+        url: `https://goazen.info/concerts/${location.city}/${location.slug}`,
+        siteName: 'Goazen!',
+        images: locationImage
+          ? [
+              {
+                url: locationImage,
+                width: 1200,
+                height: 630,
+                alt: `Concerts à ${location.name} ${location.city}`,
+              },
+            ]
+          : undefined,
         locale: 'fr_FR',
         type: 'website',
       },
@@ -55,11 +61,18 @@ export async function generateMetadata({
         card: 'summary_large_image',
         title,
         description,
-        images: [locationImage || ''],
+        images: locationImage ? [locationImage] : undefined,
       },
       robots: {
         index: true,
         follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
       },
     }
   } catch (error) {
