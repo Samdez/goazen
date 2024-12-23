@@ -20,33 +20,36 @@ export function DatePicker() {
   } = useTsController<z.infer<typeof DateSchema>>()
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant={'outline'}
-          className={cn(
-            'w-[280px] justify-start text-left font-normal',
-            !value?.date && 'text-muted-foreground',
-          )}
-        >
-          <CalendarIcon />
-          {value?.date ? format(value.date, 'PPP') : <span>Date de l&apos;évènement</span>}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
-        <Calendar
-          mode="single"
-          selected={value?.date}
-          onSelect={(date) =>
-            onChange({
-              ...value,
-              date,
-            })
-          }
-          initialFocus
-          locale={fr}
-        />
-      </PopoverContent>
-    </Popover>
+    <>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant={'outline'}
+            className={cn(
+              'w-fit justify-start text-left font-normal',
+              !value?.date && 'text-muted-foreground',
+            )}
+          >
+            <CalendarIcon />
+            {value?.date ? format(value.date, 'PPP') : <span>Date de l&apos;évènement</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0">
+          <Calendar
+            mode="single"
+            selected={value?.date}
+            onSelect={(date) =>
+              onChange({
+                ...value,
+                date,
+              })
+            }
+            initialFocus
+            locale={fr}
+          />
+        </PopoverContent>
+      </Popover>
+      {error?.errorMessage && <span>{error?.errorMessage}</span>}
+    </>
   )
 }

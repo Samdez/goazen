@@ -15,10 +15,23 @@ export async function createEvent(formData: CreateEventSchemaType) {
     price,
     email,
     ticketingLink,
+    location_alt,
   } = formData
-  const eventDate = new Date(`${formData.date.date} UTC`).toISOString()
-  const image = await payload.create({ collection: 'medias', file: formData.image })
-  payload.create({
+  const eventDate = new Date(`${date.date} UTC`).toISOString()
+  const browserFile = formData.image as unknown as globalThis.File
+  const image = await payload.create({
+    collection: 'medias',
+    data: {
+      title: formData.title,
+    },
+    file: {
+      name: browserFile.name,
+      mimetype: browserFile.type,
+      size: browserFile.size,
+      data: Buffer.from(await browserFile.arrayBuffer()),
+    },
+  })
+  const res = await payload.create({
     collection: 'events',
     data: {
       date: eventDate,
@@ -32,7 +45,10 @@ export async function createEvent(formData: CreateEventSchemaType) {
       ticketing_url: ticketingLink,
       createdAt: new Date().toISOString(),
       contact_email: email,
+      location_alt,
       image: image.id,
+      _status: 'draft',
     },
   })
+  return res
 }

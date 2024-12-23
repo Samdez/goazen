@@ -13,6 +13,8 @@ import { LocationsCommand } from './form-components/LocationsCommand'
 import { DatePicker } from './form-components/DatePicker'
 import MultipleSelector from './form-components/MultipleSelector'
 import TextArea from './form-components/TextArea'
+import { InputFile } from './form-components/ImageInput'
+import { File } from 'payload'
 
 export const LocationSchema = z.object({
   name: z.string(),
@@ -25,12 +27,14 @@ export const GenresSchema = z.object({
   genres: z.string().array(),
 })
 const TextAreaSchema = createUniqueFieldSchema(z.string(), 'description')
+const ImageInputSchema = createUniqueFieldSchema(z.custom<File>().brand('image'), 'image')
 const mapping = [
   [z.string(), TextField],
   [LocationSchema, LocationsCommand],
   [DateSchema, DatePicker],
   [GenresSchema, MultipleSelector],
   [TextAreaSchema, TextArea],
+  [ImageInputSchema, InputFile],
 ] as const
 const MyForm = createTsForm(mapping, {
   FormComponent: FormContainer,
@@ -40,7 +44,12 @@ const createEventSchema = z.object({
   description: TextAreaSchema.optional().describe(
     "Description // Description de l'event ou line-up (optionnel)",
   ),
+  image: ImageInputSchema.optional().describe("Image (optionnel) // Image de l'event"),
   location: LocationSchema,
+  location_alt: z
+    .string()
+    .optional()
+    .describe('Lieu alternatif // Tu ne trouves pas ton lieu dans la list? Renseigne-le ici '),
   date: DateSchema,
   time: z.string().optional().describe("Heure // Heure de l'event"),
   genres: GenresSchema,
@@ -67,7 +76,7 @@ export default function FormClient({
   const [isLoading, setIsLoading] = useState(false)
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col items-center justify-center w-full">
       <div className="flex flex-col gap-4 w-1/2 mb-12">
         <h1 className="text-2xl font-bold text-center">Ton event sur Goazen!</h1>
         <p>
@@ -76,19 +85,20 @@ export default function FormClient({
           Instagram.
         </p>
       </div>
-      <div className="w-1/4 flex flex-col gap-6">
+      <div className="w-1/2 flex flex-col gap-6">
         <MyForm
           schema={createEventSchema}
-          onSubmit={createEvent}
+          onSubmit={async (formData) => {
+            setIsLoading(true)
+            await createEvent(formData)
+            setIsLoading(false)
+          }}
           props={{
             location: { locations },
-            // description: {
-            //   placeholder: "Description de l'event ou line-up (optionnel)",
-            // },
             genres: {
               defaultOptions: categories.map((category) => ({
                 label: category.name,
-                value: category.name,
+                value: category.id,
               })),
               placeholder: 'Genres musicaux',
             },

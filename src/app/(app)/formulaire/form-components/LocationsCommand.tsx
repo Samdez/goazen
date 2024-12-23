@@ -42,7 +42,7 @@ export function LocationsCommand({ locations }: { locations: Location[] }) {
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
           <Command>
-            <CommandInput placeholder="Search framework..." />
+            <CommandInput placeholder="Rechercher" />
             <CommandList>
               <CommandEmpty>No framework found.</CommandEmpty>
               <CommandGroup>
