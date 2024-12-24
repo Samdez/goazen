@@ -1,9 +1,9 @@
 import { CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
-import { revalidateTag } from 'next/cache'
 
 const Events: CollectionConfig = {
   slug: 'events',
+  versions: { drafts: true },
   access: {
     read: () => true,
   },
@@ -60,6 +60,7 @@ const Events: CollectionConfig = {
     { name: 'price', type: 'text' },
     { name: 'sold_out', type: 'checkbox', label: 'Sold out' },
     { name: 'ticketing_url', type: 'text' },
+    { name: 'contact_email', type: 'text' },
     {
       name: 'slug',
       type: 'text',
@@ -72,8 +73,14 @@ const Events: CollectionConfig = {
           },
         ],
         afterChange: [
-          () => {
-            revalidateTag('events')
+          async ({ req }) => {
+            try {
+              await fetch(`${process.env.NEXT_PUBLIC_URL}/api/revalidate?tag=events`, {
+                method: 'POST',
+              })
+            } catch (err) {
+              console.error('Error revalidating:', err)
+            }
           },
         ],
       },

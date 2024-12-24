@@ -45,6 +45,7 @@ export async function _getEvents({
     sort: 'date',
     page,
     limit,
+    draft: false,
   })
 
   return events
