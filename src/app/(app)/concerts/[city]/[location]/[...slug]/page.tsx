@@ -58,7 +58,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             ]
           : undefined,
         locale: 'fr_FR',
-        type: 'event',
+        type: 'website',
       },
       twitter: {
         card: 'summary_large_image',
