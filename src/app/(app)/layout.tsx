@@ -8,6 +8,7 @@ import NextTopLoader from 'nextjs-toploader'
 
 import './globals.css'
 import Navbar from './components/Navbar'
+import { Toaster } from '@/components/ui/toaster'
 
 const bebas = Bebas_Neue({ weight: '400', subsets: ['latin'] })
 
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Analytics />
           <SpeedInsights />
         </main>
+        <Toaster />
       </body>
     </html>
   )

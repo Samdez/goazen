@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { createEvent } from '../queries/create-event'
 import { Category, Location } from '@/payload-types'
 
 import React from 'react'
@@ -15,6 +14,9 @@ import MultipleSelector from './form-components/MultipleSelector'
 import TextArea from './form-components/TextArea'
 import { InputFile } from './form-components/ImageInput'
 import { File } from 'payload'
+import { redirect } from 'next/navigation'
+import { useToast } from '@/hooks/use-toast'
+import { createEvent } from '../queries/create-event'
 
 export const LocationSchema = z.object({
   name: z.string(),
@@ -39,31 +41,44 @@ const mapping = [
 const MyForm = createTsForm(mapping, {
   FormComponent: FormContainer,
 })
-const createEventSchema = z.object({
-  title: z.string().describe("Nom de l'event // Nom de l'event"),
-  description: TextAreaSchema.optional().describe(
-    "Description // Description de l'event ou line-up (optionnel)",
-  ),
-  image: ImageInputSchema.optional().describe("Image (optionnel) // Image de l'event"),
-  location: LocationSchema,
-  location_alt: z
-    .string()
-    .optional()
-    .describe('Lieu alternatif // Tu ne trouves pas ton lieu dans la liste? Renseigne-le ici '),
-  date: DateSchema,
-  time: z.string().optional().describe("Heure // Heure de l'event"),
-  genres: GenresSchema,
-  preciseGenre: z
-    .string()
-    .optional()
-    .describe('Genre musical précis // Genre musical précis (optionnel)'),
-  price: z.string().optional().describe('Prix // Prix (0 si gratuit, optionnel)'),
-  email: z.string().email().optional().describe('Email // Email (optionnel)'),
-  ticketingLink: z
-    .string()
-    .optional()
-    .describe('Lien de la billetterie // Lien de la billetterie (optionnel)'),
-})
+const createEventSchema = z
+  .object({
+    title: z.string().describe("Nom de l'event // Nom de l'event"),
+    description: TextAreaSchema.optional().describe(
+      "Description // Description de l'event ou line-up (optionnel)",
+    ),
+    image: ImageInputSchema.optional().describe("Image (optionnel) // Image de l'event"),
+    location: LocationSchema.optional(),
+    location_alt: z
+      .string()
+      .optional()
+      .describe('Lieu alternatif // Tu ne trouves pas ton lieu dans la liste? Renseigne-le ici '),
+    date: DateSchema,
+    time: z.string().optional().describe("Heure // Heure de l'event"),
+    genres: GenresSchema.optional(),
+    preciseGenre: z
+      .string()
+      .optional()
+      .describe('Genre musical précis // Genre musical précis (optionnel)'),
+    price: z.string().optional().describe('Prix // Prix (0 si gratuit, optionnel)'),
+    email: z.string().email().optional().describe('Email // Email (optionnel)'),
+    ticketingLink: z
+      .string()
+      .optional()
+      .describe('Lien de la billetterie // Lien de la billetterie (optionnel)'),
+  })
+  .refine(
+    (data) => {
+      return (
+        (data.location?.name && data.location.name !== '') ||
+        (data.location_alt && data.location_alt !== '')
+      )
+    },
+    {
+      message: 'Le lieu ou le lieu alternatif doit être renseigné',
+      path: ['location'],
+    },
+  )
 export type CreateEventSchemaType = z.infer<typeof createEventSchema>
 
 export default function FormClient({
@@ -74,6 +89,7 @@ export default function FormClient({
   categories: Category[]
 }) {
   const [isLoading, setIsLoading] = useState(false)
+  const { toast } = useToast()
 
   return (
     <div className="flex flex-col items-center justify-center w-full">
@@ -90,8 +106,19 @@ export default function FormClient({
           schema={createEventSchema}
           onSubmit={async (formData) => {
             setIsLoading(true)
-            await createEvent(formData)
+            const res = await createEvent(formData)
+            if (!res.ok) {
+              toast({
+                variant: 'destructive',
+                description: "Erreur lors de l'envoi de l'évènement",
+              })
+              return
+            }
+            toast({
+              description: 'Event bien envoyé!',
+            })
             setIsLoading(false)
+            redirect('/')
           }}
           props={{
             location: { locations },
