@@ -49,7 +49,7 @@ const createEventSchema = z.object({
   location_alt: z
     .string()
     .optional()
-    .describe('Lieu alternatif // Tu ne trouves pas ton lieu dans la list? Renseigne-le ici '),
+    .describe('Lieu alternatif // Tu ne trouves pas ton lieu dans la liste? Renseigne-le ici '),
   date: DateSchema,
   time: z.string().optional().describe("Heure // Heure de l'event"),
   genres: GenresSchema,
@@ -77,7 +77,7 @@ export default function FormClient({
 
   return (
     <div className="flex flex-col items-center justify-center w-full">
-      <div className="flex flex-col gap-4 w-1/2 mb-12">
+      <div className="flex flex-col gap-4 mb-12">
         <h1 className="text-2xl font-bold text-center">Ton event sur Goazen!</h1>
         <p>
           Si tu souhaites voir ton évènement sur Goazen!, il te suffit de remplir ce formulaire. Une
@@ -85,7 +85,7 @@ export default function FormClient({
           Instagram.
         </p>
       </div>
-      <div className="w-1/2 flex flex-col gap-6">
+      <div className="w-full lg:w-2/3 flex flex-col gap-6 px-6">
         <MyForm
           schema={createEventSchema}
           onSubmit={async (formData) => {
