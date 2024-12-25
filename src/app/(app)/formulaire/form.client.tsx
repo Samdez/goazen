@@ -17,6 +17,10 @@ import { File } from 'payload'
 import { redirect } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
 import { createEvent } from '../queries/create-event'
+import { Button } from '@/components/ui/button'
+import { PacmanLoader } from 'react-spinners'
+import { useRouter } from 'next/navigation'
+import { sendEmail } from '../queries/send-email'
 
 export const LocationSchema = z.object({
   name: z.string(),
@@ -90,6 +94,7 @@ export default function FormClient({
 }) {
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
+  const router = useRouter()
 
   return (
     <div className="flex flex-col items-center justify-center w-full">
@@ -102,35 +107,66 @@ export default function FormClient({
         </p>
       </div>
       <div className="w-full lg:w-2/3 flex flex-col gap-6 px-6">
-        <MyForm
-          schema={createEventSchema}
-          onSubmit={async (formData) => {
-            setIsLoading(true)
-            const res = await createEvent(formData)
-            if (!res.ok) {
-              toast({
-                variant: 'destructive',
-                description: "Erreur lors de l'envoi de l'évènement",
-              })
-              return
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+          }}
+        >
+          <MyForm
+            schema={createEventSchema}
+            onSubmit={async (formData) => {
+              try {
+                setIsLoading(true)
+                // const res = await createEvent(formData)
+                // if (!res.ok) {
+                //   toast({
+                //     variant: 'destructive',
+                //     description: "Erreur lors de l'envoi de l'évènement",
+                //   })
+                //   return
+                // }
+
+                sendEmail({
+                  email: formData.email || '',
+                  ...formData,
+                })
+                toast({
+                  description: 'Event bien envoyé!',
+                })
+                router.push('/')
+              } catch (error) {
+                console.error('Submit error:', error)
+                toast({
+                  variant: 'destructive',
+                  description: "Erreur lors de l'envoi de l'évènement",
+                })
+              } finally {
+                setIsLoading(false)
+              }
+            }}
+            props={{
+              location: { locations },
+              genres: {
+                defaultOptions: categories.map((category) => ({
+                  label: category.name,
+                  value: category.id,
+                })),
+                placeholder: 'Genres musicaux',
+              },
+            }}
+            renderAfter={({ submit }) =>
+              isLoading ? (
+                <div className="flex justify-center items-center w-full">
+                  <PacmanLoader color="#000" size={20} />
+                </div>
+              ) : (
+                <Button onClick={submit} type="button">
+                  Envoyer
+                </Button>
+              )
             }
-            toast({
-              description: 'Event bien envoyé!',
-            })
-            setIsLoading(false)
-            redirect('/')
-          }}
-          props={{
-            location: { locations },
-            genres: {
-              defaultOptions: categories.map((category) => ({
-                label: category.name,
-                value: category.id,
-              })),
-              placeholder: 'Genres musicaux',
-            },
-          }}
-        />
+          />
+        </form>
       </div>
     </div>
   )

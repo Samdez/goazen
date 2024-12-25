@@ -10,12 +10,5 @@ export default function FormContainer({
   children: ReactNode
   loading?: boolean
 }) {
-  return (
-    <form className="flex flex-col gap-4" onSubmit={onSubmit}>
-      {children}
-      <Button className="mt-4 w-full" type="submit" disabled={loading}>
-        Envoyer
-      </Button>
-    </form>
-  )
+  return <div className="flex flex-col gap-4">{children}</div>
 }
