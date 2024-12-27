@@ -8,7 +8,7 @@ import EventThumbnail from './EventThumbnail'
 import EmptyEventsSection from './EmptyEventsSection'
 import { useCategory } from '../hooks/useGenre'
 import { useSearchParams } from 'next/navigation'
-import { getEvents } from '../api/queries/payload/get-events'
+import { getCachedEvents } from '../api/queries/payload/get-events'
 
 export default function EventsGrid({
   initialEvents,
@@ -37,11 +37,12 @@ export default function EventsGrid({
   const searchParams = useSearchParams()
 
   const loadMoreEvents = async () => {
-    const newEvents = await getEvents({
+    const newEvents = await getCachedEvents({
       page: nextPage ? nextPage : undefined,
       startDate,
       endDate,
       locationId,
+      category,
     })
     setEvents((events) => [...events, ...newEvents.docs])
     setNextPage((prevPage) => (newEvents.nextPage ? newEvents.nextPage : prevPage))
@@ -50,7 +51,7 @@ export default function EventsGrid({
 
   useEffect(() => {
     const loadInitialEvents = async () => {
-      const eventsData = await getEvents({ startDate, endDate, category })
+      const eventsData = await getCachedEvents({ startDate, endDate, category })
       setEvents(eventsData.docs)
     }
     loadInitialEvents()

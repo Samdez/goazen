@@ -14,6 +14,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
     NEXT_PUBLIC_SUPABASE_URL: z.string(),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
+    NEXT_PUBLIC_URL: z.string(),
   },
   runtimeEnv: {
     GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
@@ -25,5 +26,6 @@ export const env = createEnv({
     POSTGRES_DATABASE_TOKEN: process.env.POSTGRES_DATABASE_TOKEN,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
   },
 })

@@ -2,8 +2,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { slugifyString } from '@/utils'
 import { Button } from '@/components/ui/button'
-import { getEvent } from '@/app/(app)/api/queries/payload/get-event'
 import { getPlaceholderImage } from '@/app/(app)/api/queries/payload/get-placeholder-image'
+import { getEvent } from '@/app/(app)/api/queries/payload/get-event'
+import { payload } from '@/app/(app)/api/payload-client'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }) {
   const slugParam = (await params).slug
@@ -17,23 +18,97 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         description: 'The page you are looking for does not exist',
       }
     }
+
+    const date = new Date(event.date).toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+
+    const locationName = !(typeof event.location === 'string') ? event.location?.name || '' : ''
+    const title =
+      event.meta?.title ||
+      `${event.title} en Concert à ${locationName} ${locationCity} le ${date} | Goazen!`
+    const description =
+      event.meta?.description ||
+      `${event.title} en concert à ${locationName} ${locationCity} le ${date}. ${event.description || ''} Réservez vos places pour ce concert live au Pays Basque.`
+
+    const imageUrl =
+      !(typeof event.image === 'string') && event.image ? event.image?.url : undefined
+
     return {
-      title: event.title,
-      description: event.description,
+      title,
+      description,
       alternates: {
-        canonical: `/concerts/${locationCity}/${event.slug}_${event.id}`,
+        canonical: `https://goazen.info/concerts/${locationCity}/${event.slug}_${event.id}`,
+      },
+      openGraph: {
+        title,
+        description,
+        url: `https://goazen.info/concerts/${locationCity}/${event.slug}_${event.id}`,
+        siteName: 'Goazen!',
+        images: imageUrl
+          ? [
+              {
+                url: imageUrl,
+                width: 1200,
+                height: 630,
+                alt: `${event.title} en concert à ${locationName} ${locationCity}`,
+              },
+            ]
+          : undefined,
+        locale: 'fr_FR',
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: imageUrl ? [imageUrl] : undefined,
       },
       robots: {
         index: true,
         follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
       },
     }
   } catch (error) {
     return {
       title: 'Not found',
       description: 'The page you are looking for does not exist',
+      robots: {
+        index: false,
+        follow: false,
+      },
     }
   }
+}
+export async function generateStaticParams() {
+  const events = await payload.find({
+    collection: 'events',
+    depth: 2, // Increase depth to get nested location data
+    limit: 100,
+  })
+
+  return events.docs
+    .map((event) => {
+      const locationCity =
+        !(typeof event.location === 'string') && event.location?.city?.toLowerCase()
+      const locationName = !(typeof event.location === 'string') && event.location?.name
+
+      return {
+        city: locationCity || '',
+        location: slugifyString(locationName || ''),
+        slug: [`${event.slug}_${event.id}`],
+      }
+    })
+    .filter((params) => params.city && params.location) // Filter out any invalid params
 }
 
 async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {

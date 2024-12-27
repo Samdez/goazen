@@ -21,6 +21,12 @@ const Locations: CollectionConfig = {
       type: 'text',
     },
     {
+      name: 'city V2',
+      type: 'relationship',
+      relationTo: 'cities',
+      hasMany: false,
+    },
+    {
       name: 'city',
       type: 'select',
       hasMany: false,

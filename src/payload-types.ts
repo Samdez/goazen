@@ -16,6 +16,7 @@ export interface Config {
     events: Event;
     categories: Category;
     locations: Location;
+    cities: City;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -27,6 +28,7 @@ export interface Config {
     events: EventsSelect<false> | EventsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     locations: LocationsSelect<false> | LocationsSelect<true>;
+    cities: CitiesSelect<false> | CitiesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -131,6 +133,7 @@ export interface Event {
   price?: string | null;
   sold_out?: boolean | null;
   ticketing_url?: string | null;
+  contact_email?: string | null;
   slug?: string | null;
   meta?: {
     title?: string | null;
@@ -138,6 +141,7 @@ export interface Event {
   };
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -162,6 +166,7 @@ export interface Location {
     [k: string]: unknown;
   } | null;
   place_id?: string | null;
+  'city V2'?: (string | null) | City;
   city?:
     | (
         | 'biarritz'
@@ -185,6 +190,17 @@ export interface Location {
     title?: string | null;
     description?: string | null;
   };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cities".
+ */
+export interface City {
+  id: string;
+  name: string;
+  slug?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -225,6 +241,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'locations';
         value: string | Location;
+      } | null)
+    | ({
+        relationTo: 'cities';
+        value: string | City;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -332,6 +352,7 @@ export interface EventsSelect<T extends boolean = true> {
   price?: T;
   sold_out?: T;
   ticketing_url?: T;
+  contact_email?: T;
   slug?: T;
   meta?:
     | T
@@ -341,6 +362,7 @@ export interface EventsSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -360,6 +382,7 @@ export interface LocationsSelect<T extends boolean = true> {
   name?: T;
   description?: T;
   place_id?: T;
+  'city V2'?: T;
   city?: T;
   image?: T;
   slug?: T;
@@ -369,6 +392,16 @@ export interface LocationsSelect<T extends boolean = true> {
         title?: T;
         description?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cities_select".
+ */
+export interface CitiesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }

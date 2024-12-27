@@ -63,6 +63,7 @@ const Events: CollectionConfig = {
     { name: 'price', type: 'text' },
     { name: 'sold_out', type: 'checkbox', label: 'Sold out' },
     { name: 'ticketing_url', type: 'text' },
+    { name: 'contact_email', type: 'text' },
     {
       name: 'slug',
       type: 'text',
@@ -71,6 +72,17 @@ const Events: CollectionConfig = {
           ({ req: { payload }, data }) => {
             if (payload) {
               return slugifyString(data?.title)
+            }
+          },
+        ],
+        afterChange: [
+          async ({ req }) => {
+            try {
+              await fetch(`${process.env.NEXT_PUBLIC_URL}/api/revalidate?tag=events`, {
+                method: 'POST',
+              })
+            } catch (err) {
+              console.error('Error revalidating:', err)
             }
           },
         ],

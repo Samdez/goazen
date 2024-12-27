@@ -4,8 +4,8 @@ import { Suspense } from 'react'
 import { PacmanLoader } from 'react-spinners'
 import FilterSection from './components/FilterSection'
 import { getCategories } from './api/queries/payload/get-categories'
-import { getEvents } from './api/queries/payload/get-events'
 import { getPlaceholderImage } from './api/queries/payload/get-placeholder-image'
+import { getCachedEvents } from './api/queries/payload/get-events'
 
 const searchParamsSchema = z.object({
   startDate: z.string().optional(),
@@ -26,7 +26,7 @@ export default async function Page({
   } = searchParamsSchema.parse(currSearchParams)
 
   const categories = await getCategories()
-  const initialEvents = await getEvents({ startDate })
+  const initialEvents = await getCachedEvents({ startDate })
   const placeholderImage = await getPlaceholderImage()
   if (!placeholderImage) {
     console.error('No placeholder image found')

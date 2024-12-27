@@ -2,7 +2,7 @@
 import { endOfWeek, startOfWeek } from 'date-fns'
 import type { Event } from '../../../payload-types'
 import * as React from 'react'
-import { getEvents } from '../api/queries/payload/get-events'
+import { _getEvents } from '../api/queries/payload/get-events'
 
 function getDay(date: Date) {
   switch (date.getDay()) {
@@ -49,7 +49,7 @@ const ExportComponent = () => {
         weekStartsOn: 1,
       }).toISOString()
 
-      const events = await getEvents({
+      const events = await _getEvents({
         startDate,
         endDate,
         limit: 100,

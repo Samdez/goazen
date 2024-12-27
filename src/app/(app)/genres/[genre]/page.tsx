@@ -2,7 +2,7 @@ import EventsGrid from '../../components/EventsGrid'
 import FilterSection from '../../components/FilterSection'
 import { searchParamsSchema } from '../../schemas/searchParams'
 import { getCategories } from '../../api/queries/payload/get-categories'
-import { getEvents } from '../../api/queries/payload/get-events'
+import { getCachedEvents } from '../../api/queries/payload/get-events'
 import { getPlaceholderImage } from '../../api/queries/payload/get-placeholder-image'
 
 async function Genre({
@@ -21,7 +21,7 @@ async function Genre({
 
   const categories = await getCategories()
   const placeholderImageUrl = await getPlaceholderImage()
-  const initialEvents = await getEvents({
+  const initialEvents = await getCachedEvents({
     category: genre,
     startDate,
     endDate,
