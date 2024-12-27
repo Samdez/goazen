@@ -1,8 +1,8 @@
 'use server'
 
+import { CreateEventSchemaType } from '@/app/(app)/formulaire/form.client'
 import { Media } from '@/payload-types'
-import { payload } from '../client/payload-client'
-import { CreateEventSchemaType } from '../formulaire/form.client'
+import { payload } from '../../payload-client'
 
 export async function createEvent(formData: CreateEventSchemaType) {
   const {

@@ -1,6 +1,6 @@
-import { getCategories } from '../queries/get-categories'
-import { getLocations } from '../queries/get-locations'
 import FormClient from './form.client'
+import { getCategories } from '../api/queries/payload/get-categories'
+import { getLocations } from '../api/queries/payload/get-locations'
 
 export default async function FormPage() {
   const locations = await getLocations({ limit: 1000 })

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '../../../components/ui/use-toast'
-import { sendEmail } from '../queries/send-email'
+import { sendEmail } from '../api/queries/payload/send-email'
 
 const formSchema = z.object({
   email: z

@@ -5,7 +5,7 @@ import { getPlaceholderImage } from '../../api/queries/payload/get-placeholder-i
 import { PacmanLoader } from 'react-spinners'
 import { Event } from '@/payload-types'
 import EventThumbnail from '../../components/EventThumbnail'
-import { payload } from '../../client/payload-client'
+import { payload } from '../../api/payload-client'
 
 export async function generateMetadata({ params }: { params: Promise<{ city: string[] }> }) {
   const cityParam = (await params).city

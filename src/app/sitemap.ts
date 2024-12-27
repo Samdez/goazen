@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { buildEventUrl } from '@/utils'
 import { getCachedEvents } from './(app)/api/queries/payload/get-events'
+import { getLocations } from './(app)/api/queries/payload/get-locations'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const events = await getCachedEvents({ limit: 1000, startDate: new Date().toISOString() })
@@ -14,7 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   })
 
-  const locations = await getCachedLocations({ limit: 1000 })
+  const locations = await getLocations({ limit: 1000 })
   const locationsUrls = locations.docs.map((location: any) => {
     return {
       url: `https://goazen.info/concerts/${location.city}/${location.slug}`,

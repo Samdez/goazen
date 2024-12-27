@@ -14,13 +14,11 @@ import MultipleSelector from './form-components/MultipleSelector'
 import TextArea from './form-components/TextArea'
 import { InputFile } from './form-components/ImageInput'
 import { File } from 'payload'
-import { redirect } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
-import { createEvent } from '../queries/create-event'
 import { Button } from '@/components/ui/button'
 import { PacmanLoader } from 'react-spinners'
 import { useRouter } from 'next/navigation'
-import { sendEmail } from '../queries/send-email'
+import { sendEmail } from '../api/queries/payload/send-email'
 
 export const LocationSchema = z.object({
   name: z.string(),
