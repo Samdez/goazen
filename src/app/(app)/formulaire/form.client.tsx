@@ -124,7 +124,7 @@ export default function FormClient({
                   return
                 }
 
-                sendEmail({
+                await sendEmail({
                   email: formData.email || '',
                   ...formData,
                 })
