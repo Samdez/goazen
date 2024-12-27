@@ -16,11 +16,18 @@ export function UserHasNoPena({
 }) {
   return (
     <>
-      <div>
-        Il existe déjà {existingPenasNumber > 1 ? `${existingPenasNumber} penas` : '1 pena'} pour ce
-        concert!
+      <div className="flex flex-col items-center justify-center gap-6">
+        <p className="text-2xl font-bold">
+          Il existe déjà {existingPenasNumber > 1 ? `${existingPenasNumber} penas` : '1 pena'} pour
+          ce concert!
+        </p>
+        <Button
+          className="w-64 h-16 text-2xl"
+          onClick={() => addUserToPena(penaId, userId, eventId)}
+        >
+          Rejoindre une pena
+        </Button>
       </div>
-      <Button onClick={() => addUserToPena(penaId, userId, eventId)}>Rejoindre une pena</Button>
     </>
   )
 }

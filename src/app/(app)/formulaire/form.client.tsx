@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button'
 import { PacmanLoader } from 'react-spinners'
 import { useRouter } from 'next/navigation'
 import { sendEmail } from '../api/queries/payload/send-email'
+import { createEvent } from '../api/queries/payload/create-event'
 
 export const LocationSchema = z.object({
   name: z.string(),

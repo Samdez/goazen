@@ -44,8 +44,8 @@ async function LagunekinPage({ params }: { params: Promise<{ id: string }> }) {
 
 function NoExistingPenas({ userId, eventId }: { userId: number; eventId: number }) {
   return (
-    <div>
-      Il n&apos;y a pas encore de pena pour cet évènement
+    <div className="flex flex-col items-center justify-center gap-6">
+      <p className="text-2xl font-bold">Il n&apos;y a pas encore de pena pour cet évènement</p>
       <CreatePena userId={userId} eventId={eventId} />
     </div>
   )

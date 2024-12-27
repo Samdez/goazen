@@ -4,6 +4,7 @@ import createEventHook from './hooks/create-event'
 
 const Events: CollectionConfig = {
   slug: 'events',
+  versions: { drafts: true },
   hooks: {
     afterChange: [createEventHook],
   },
