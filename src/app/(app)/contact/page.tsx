@@ -55,8 +55,7 @@ function ContactPage() {
       </div>
       <div className="pt-8">
         <h1 className="text-[#ee2244bc]">
-          Si vous souhaitez voir vos concerts apparaître dans Goazen, faire une suggestion ou une
-          remarque, c&apos;est ici :
+          Si tu souhaites nous faire une suggestion ou une remarque, c&apos;est ici :
         </h1>
         <div className="w-full pb-8 text-center text-4xl">👇</div>
         <ContactForm />

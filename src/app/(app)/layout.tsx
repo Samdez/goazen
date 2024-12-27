@@ -10,6 +10,8 @@ import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 import Navbar from './components/Navbar'
 import { Toaster } from '@/components/ui/toaster'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 const bebas = Bebas_Neue({ weight: '400', subsets: ['latin'] })
 
@@ -50,19 +52,24 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider>
-      <html lang="fr">
-        <body className={bebas.className}>
-          <Navbar />
-          <main className="mt-[14vh] min-h-screen bg-[#FFDCA8] pt-4">
-            <NextTopLoader color="#ee2244bc" showSpinner={false} />
-            {children}
-            <Analytics />
-            <SpeedInsights />
-          </main>
-          <Toaster />
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="fr">
+      <body className={bebas.className}>
+        <Navbar />
+        <main className="mt-[14vh] min-h-screen bg-[#FFDCA8] pt-4">
+          <div className="flex justify-center mb-4">
+            <Link href={'/formulaire'}>
+              <Button className="bg-[#ee2244bc] text-white h-16 w-64 text-3xl">
+                Partage-nous ton event!
+              </Button>
+            </Link>
+          </div>
+          <NextTopLoader color="#ee2244bc" showSpinner={false} />
+          {children}
+          <Analytics />
+          <SpeedInsights />
+        </main>
+        <Toaster />
+      </body>
+    </html>
   )
 }

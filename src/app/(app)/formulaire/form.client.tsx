@@ -95,8 +95,8 @@ export default function FormClient({
   const router = useRouter()
 
   return (
-    <div className="flex flex-col items-center justify-center w-full">
-      <div className="flex flex-col gap-4 mb-12">
+    <div className="flex flex-col items-center justify-center w-full pb-8">
+      <div className="flex flex-col gap-4 mb-12 p-2">
         <h1 className="text-2xl font-bold text-center">Ton event sur Goazen!</h1>
         <p>
           Si tu souhaites voir ton évènement sur Goazen!, il te suffit de remplir ce formulaire. Une
@@ -115,14 +115,14 @@ export default function FormClient({
             onSubmit={async (formData) => {
               try {
                 setIsLoading(true)
-                // const res = await createEvent(formData)
-                // if (!res.ok) {
-                //   toast({
-                //     variant: 'destructive',
-                //     description: "Erreur lors de l'envoi de l'évènement",
-                //   })
-                //   return
-                // }
+                const res = await createEvent(formData)
+                if (!res.ok) {
+                  toast({
+                    variant: 'destructive',
+                    description: "Erreur lors de l'envoi de l'évènement",
+                  })
+                  return
+                }
 
                 sendEmail({
                   email: formData.email || '',
