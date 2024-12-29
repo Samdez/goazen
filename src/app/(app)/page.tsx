@@ -6,6 +6,7 @@ import FilterSection from './components/FilterSection'
 import { getCategories } from './api/queries/payload/get-categories'
 import { getPlaceholderImage } from './api/queries/payload/get-placeholder-image'
 import { getCachedEvents } from './api/queries/payload/get-events'
+import FormButton from './components/FormButton'
 
 const searchParamsSchema = z.object({
   startDate: z.string().optional(),
@@ -34,6 +35,7 @@ export default async function Page({
   }
   return (
     <>
+      <FormButton />
       <FilterSection activeTime={activeTime} categories={categories} />
       <Suspense
         fallback={

@@ -89,7 +89,7 @@ export default function MessageComponent({
   }
 
   return (
-    <div className="flex h-[calc(100vh-theme(spacing.20))] flex-col">
+    <div className="flex h-[80vh] flex-col">
       <div className="flex-1 min-h-0 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
         <div className="flex flex-col space-y-4">
           {messages.map((msg, i) => {
@@ -101,9 +101,11 @@ export default function MessageComponent({
                     isCurrentUser ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'
                   }`}
                 >
-                  <div className="flex">
+                  <div className="">
                     {!isCurrentUser && (
-                      <div className="mb-1 text-sm font-medium">{msg.users?.firstName} : </div>
+                      <div className="mb-1 text-sm font-medium w-full text-[#ee2244bc]">
+                        {msg.users?.firstName}
+                      </div>
                     )}
                     <div className="text-sm w-full break-words">{msg.messages.message}</div>
                   </div>
@@ -122,7 +124,7 @@ export default function MessageComponent({
           <div ref={messagesEndRef} />
         </div>
       </div>
-      <div className="border-t bg-white p-4 sticky bottom-0">
+      <div className="border-t p-4 sticky bottom-0">
         <div className="flex items-center gap-2">
           <Input
             type="text"
