@@ -4,9 +4,9 @@ import UserHasPena from '../../components/UserHasPena'
 import CreatePena from '../../components/CreatePenaButton'
 import { getEventFromDB } from '../../api/queries/supabase/get-event'
 import { findPenaWithMissingMembers } from '../../api/queries/supabase/get-pena-with-missing-members'
-import { getPenas } from '../../api/queries/supabase/get-penas'
 import { getUserWithClerkId } from '../../api/queries/supabase/get-user'
 import { findUserPena } from '../../api/queries/supabase/get-user-pena'
+import { getPenasFromEventId } from '../../api/queries/supabase/get-penas'
 
 async function LagunekinPage({ params }: { params: Promise<{ id: string }> }) {
   const { userId } = await auth()
@@ -18,10 +18,10 @@ async function LagunekinPage({ params }: { params: Promise<{ id: string }> }) {
 
   const [user, eventFromDB] = await Promise.all([
     getUserWithClerkId(userId),
-    getEventFromDB(idParams),
+    getEventFromDB({ eventId: parseInt(idParams) }),
   ])
 
-  const existingPenas = await getPenas(eventFromDB.id)
+  const existingPenas = await getPenasFromEventId(eventFromDB.id)
   if (!existingPenas.length) {
     return <NoExistingPenas userId={user.id} eventId={eventFromDB.id} />
   }

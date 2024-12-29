@@ -4,7 +4,7 @@ import { auth } from '@clerk/nextjs/server'
 import { getUserWithClerkId, getUserWithId } from '@/app/(app)/api/queries/supabase/get-user'
 import { getEvent } from '@/app/(app)/api/queries/payload/get-event'
 import { getEventFromDB } from '@/app/(app)/api/queries/supabase/get-event'
-import { getPena } from '@/app/(app)/api/queries/supabase/get-penas'
+import { getPena } from '@/app/(app)/api/queries/supabase/get-pena'
 
 export default async function PenaPage({
   params,
