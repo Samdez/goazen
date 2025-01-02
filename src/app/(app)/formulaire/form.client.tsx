@@ -62,9 +62,11 @@ const createEventSchema = z
     preciseGenre: z
       .string()
       .optional()
-      .describe('Genre musical précis // Genre musical précis (optionnel)'),
+      .describe(
+        'Genre musical précis // Genre musical précis (deep house, afro house, hardcore, etc... - optionnel)',
+      ),
     price: z.string().optional().describe('Prix // Prix (0 si gratuit, optionnel)'),
-    email: z.string().email().optional().describe('Email // Email (optionnel)'),
+    email: z.string().email().describe('Email // Email'),
     ticketingLink: z
       .string()
       .optional()
@@ -78,7 +80,7 @@ const createEventSchema = z
       )
     },
     {
-      message: 'Le lieu ou le lieu alternatif doit être renseigné',
+      message: 'Le lieu doit être renseigné',
       path: ['location'],
     },
   )
@@ -126,7 +128,6 @@ export default function FormClient({
                 }
 
                 await sendEmail({
-                  email: formData.email || '',
                   ...formData,
                 })
                 toast({

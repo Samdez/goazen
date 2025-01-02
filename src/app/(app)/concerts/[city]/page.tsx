@@ -6,6 +6,7 @@ import { PacmanLoader } from 'react-spinners'
 import { Event } from '@/payload-types'
 import EventThumbnail from '../../components/EventThumbnail'
 import { payload } from '../../api/payload-client'
+import FormButton from '../../components/FormButton'
 
 export async function generateMetadata({ params }: { params: Promise<{ city: string[] }> }) {
   const cityParam = (await params).city
@@ -73,18 +74,21 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
   }
 
   return (
-    <Suspense
-      fallback={
-        <div className="mx-auto mt-[14vh] flex min-h-screen w-full justify-center">
-          <PacmanLoader />
+    <>
+      <FormButton />
+      <Suspense
+        fallback={
+          <div className="mx-auto mt-[14vh] flex min-h-screen w-full justify-center">
+            <PacmanLoader />
+          </div>
+        }
+      >
+        <div className="flex flex-wrap justify-around gap-24 px-12 pb-32">
+          {events.map((event) => (
+            <EventThumbnail event={event} key={event.id} placeholderImageUrl={placeholderImage} />
+          ))}
         </div>
-      }
-    >
-      <div className="flex flex-wrap justify-around gap-24 px-12 pb-32">
-        {events.map((event) => (
-          <EventThumbnail event={event} key={event.id} placeholderImageUrl={placeholderImage} />
-        ))}
-      </div>
-    </Suspense>
+      </Suspense>
+    </>
   )
 }

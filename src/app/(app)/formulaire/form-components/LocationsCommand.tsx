@@ -24,6 +24,7 @@ export function LocationsCommand({ locations }: { locations: Location[] }) {
 
   const [open, setOpen] = useState(false)
 
+  console.log('Error value:', error)
   return (
     <>
       <Popover open={open} onOpenChange={setOpen}>
@@ -32,7 +33,7 @@ export function LocationsCommand({ locations }: { locations: Location[] }) {
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-[200px] justify-between"
+            className={cn('w-[200px] justify-between', error?.errorMessage && 'border-red-500')}
           >
             {value
               ? locations.find((location) => location.id === value.id)?.name
@@ -73,7 +74,7 @@ export function LocationsCommand({ locations }: { locations: Location[] }) {
           </Command>
         </PopoverContent>
       </Popover>
-      {error?.errorMessage && <span>{error?.errorMessage}</span>}
+      {error?.errorMessage && <span className="text-red-500">{error?.errorMessage}</span>}
     </>
   )
 }
