@@ -1,4 +1,5 @@
 import { Input } from '@/components/ui/input'
+import { cn } from '@/utils'
 import { useDescription, useTsController } from '@ts-react/form'
 
 export default function TextField() {
@@ -13,9 +14,9 @@ export default function TextField() {
         }}
         name={label}
         placeholder={placeholder}
-        className="p-2"
+        className={cn('p-2', error?.errorMessage && 'border-red-500')}
       />
-      {error?.errorMessage && <span>{error?.errorMessage}</span>}
+      {error?.errorMessage && <span className="text-red-500">{error?.errorMessage}</span>}
     </>
   )
 }

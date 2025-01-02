@@ -6,6 +6,8 @@ import { PacmanLoader } from 'react-spinners'
 import { Event } from '@/payload-types'
 import EventThumbnail from '../../components/EventThumbnail'
 import { payload } from '../../client/payload-client'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 export async function generateMetadata({ params }: { params: Promise<{ city: string[] }> }) {
   const cityParam = (await params).city
@@ -73,18 +75,27 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
   }
 
   return (
-    <Suspense
-      fallback={
-        <div className="mx-auto mt-[14vh] flex min-h-screen w-full justify-center">
-          <PacmanLoader />
-        </div>
-      }
-    >
-      <div className="flex flex-wrap justify-around gap-24 px-12 pb-32">
-        {events.map((event) => (
-          <EventThumbnail event={event} key={event.id} placeholderImageUrl={placeholderImage} />
-        ))}
+    <>
+      <div className="flex justify-center mb-4">
+        <Link href={'/formulaire'}>
+          <Button className="bg-[#ee2244bc] text-white h-16 w-64 text-3xl">
+            Partage-nous ton event!
+          </Button>
+        </Link>
       </div>
-    </Suspense>
+      <Suspense
+        fallback={
+          <div className="mx-auto mt-[14vh] flex min-h-screen w-full justify-center">
+            <PacmanLoader />
+          </div>
+        }
+      >
+        <div className="flex flex-wrap justify-around gap-24 px-12 pb-32">
+          {events.map((event) => (
+            <EventThumbnail event={event} key={event.id} placeholderImageUrl={placeholderImage} />
+          ))}
+        </div>
+      </Suspense>
+    </>
   )
 }

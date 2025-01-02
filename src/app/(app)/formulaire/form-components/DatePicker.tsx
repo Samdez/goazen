@@ -28,6 +28,7 @@ export function DatePicker() {
             className={cn(
               'w-fit justify-start text-left font-normal',
               !value?.date && 'text-muted-foreground',
+              error?.errorMessage && 'border-red-500',
             )}
           >
             <CalendarIcon />
@@ -49,7 +50,7 @@ export function DatePicker() {
           />
         </PopoverContent>
       </Popover>
-      {error?.errorMessage && <span>{error?.errorMessage}</span>}
+      {error?.errorMessage && <span className="text-red-500">{error?.errorMessage}</span>}
     </>
   )
 }
