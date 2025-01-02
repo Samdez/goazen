@@ -6,6 +6,9 @@ const nextConfig = {
     staticGenerationRetryCount: 1,
     staticGenerationMaxConcurrency: 2,
     staticGenerationMinPagesPerWorker: 25,
+    serverActions: {
+      bodySizeLimit: 10 * 1024 * 1024,
+    },
   },
 }
 
