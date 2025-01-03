@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { db } from '../../db/client'
 import { penas } from '../../db/schema'
 
-export async function addUserToPena(penaId: number, userId: number, eventId: string) {
+export async function addUserToPena(penaId: number, userId: number, eventPayloadId: string) {
   const [currentPena] = await db.select().from(penas).where(eq(penas.id, penaId))
 
   let updateData = {}
@@ -26,5 +26,5 @@ export async function addUserToPena(penaId: number, userId: number, eventId: str
       updatedAt: new Date(),
     })
     .where(eq(penas.id, penaId))
-  revalidatePath(`/lagunekin/${eventId}`)
+  revalidatePath(`/lagunekin/${eventPayloadId}`)
 }

@@ -10,7 +10,7 @@ import { getPenasFromEventId } from '../../api/queries/supabase/get-penas'
 
 async function LagunekinPage({ params }: { params: Promise<{ id: string }> }) {
   const { userId } = await auth()
-  const idParams = (await params).id
+  const payloadId = (await params).id
 
   if (!userId) {
     return <p>Vous devez être connecté pour accéder à cette page</p>
@@ -18,8 +18,11 @@ async function LagunekinPage({ params }: { params: Promise<{ id: string }> }) {
 
   const [user, eventFromDB] = await Promise.all([
     getUserWithClerkId(userId),
-    getEventFromDB({ eventId: parseInt(idParams) }),
+    getEventFromDB({ eventPayloadId: payloadId }),
   ])
+  if (!eventFromDB) {
+    return <p>Cet évènement n&apos;existe pas</p>
+  }
 
   const existingPenas = await getPenasFromEventId(eventFromDB.id)
   if (!existingPenas.length) {
@@ -37,7 +40,7 @@ async function LagunekinPage({ params }: { params: Promise<{ id: string }> }) {
       existingPenasNumber={existingPenas.length}
       penaId={missingMembersPenas[0].id}
       userId={user.id}
-      eventId={idParams}
+      eventId={payloadId}
     />
   )
 }
