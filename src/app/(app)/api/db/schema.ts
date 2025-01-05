@@ -53,6 +53,7 @@ export const penas = pgTable('penas', {
     mode: 'date',
     withTimezone: false,
   }).notNull(),
+  isGirls: boolean('isGirls').default(false),
 })
 
 export const penaRelations = relations(penas, ({ one }) => ({

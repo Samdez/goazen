@@ -27,20 +27,25 @@ export default async function PenaPage({
     getMessages(parseInt(penaId)),
     getEventFromDB({ eventId: parseInt(eventId) }),
   ])
+  if (!event) {
+    return <div>Event not found</div>
+  }
 
   const payloadEvent = await getEvent(event.payloadId)
   return (
     <>
       <div className="flex flex-col gap-4 p-4 justify-center">
         <p className="text-center text-2xl font-bold">
-          Bienvenue dans votre pena pour : <br />
+          Bienvenue dans votre peña {pena.isGirls ? 'féminine' : ''} pour : <br />
           {payloadEvent.title}
         </p>
         {!memberTwo ? (
-          <p>Il n&apos;y a pas d&apos;autre membre dans cette pena pour l&apos;instant</p>
+          <p className="text-center">
+            Il n&apos;y a pas d&apos;autre membre dans cette peña pour l&apos;instant
+          </p>
         ) : (
           <div className="flex justify-start gap-2">
-            Les membres de cette pena sont :
+            Les membres de cette peña sont :
             <div>
               {memberOne?.firstName} {memberOne?.lastName?.slice(0, 1)}
             </div>{' '}
@@ -62,7 +67,12 @@ export default async function PenaPage({
           </div>
         )}
       </div>
-      <MessageComponent initialMessages={messages} penaId={parseInt(penaId)} userId={userId} />
+      <MessageComponent
+        initialMessages={messages}
+        penaId={parseInt(penaId)}
+        userId={userId}
+        isActive={!!pena.memberTwoId}
+      />
     </>
   )
 }

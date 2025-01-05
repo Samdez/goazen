@@ -16,10 +16,12 @@ export default function MessageComponent({
   initialMessages,
   penaId,
   userId,
+  isActive,
 }: {
   initialMessages: Awaited<ReturnType<typeof getMessages>>
   penaId: number
   userId: number
+  isActive: boolean
 }) {
   const user = useAuth()
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -137,13 +139,14 @@ export default function MessageComponent({
               }
             }}
             className="flex-1 rounded-full border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:ring-blue-500"
+            disabled={!isActive}
           />
-          <button
-            onClick={onSend}
-            className="rounded-full bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            <Send size={20} />
-          </button>
+          {isActive && (
+            <button
+              onClick={onSend}
+              className="rounded-full bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            ></button>
+          )}
         </div>
       </div>
     </div>

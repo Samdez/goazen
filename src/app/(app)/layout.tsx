@@ -12,6 +12,7 @@ import Navbar from './components/Navbar'
 import { Toaster } from '@/components/ui/toaster'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import ScrollToTop from './components/ScrollToTop'
 
 const bebas = Bebas_Neue({ weight: '400', subsets: ['latin'] })
 
@@ -53,10 +54,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
-      <html lang="fr">
+      <html lang="fr" className="scroll-smooth">
         <body className={bebas.className}>
+          <ScrollToTop />
           <Navbar />
-          <main className="mt-[14vh] min-h-[86vh] bg-[#FFDCA8] pt-4">
+          <main className="mt-[14vh] min-h-[86vh] bg-[#FFDCA8] pt-8 scroll-mt-[14vh]">
             <NextTopLoader color="#ee2244bc" showSpinner={false} />
             {children}
             <Analytics />
