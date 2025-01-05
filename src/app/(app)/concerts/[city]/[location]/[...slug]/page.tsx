@@ -1,10 +1,11 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { slugifyString } from '@/utils'
+import { cn, slugifyString } from '@/utils'
 import { Button } from '@/components/ui/button'
 import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
 import { getEvent } from '@/app/(app)/queries/get-event'
 import { payload } from '@/app/(app)/client/payload-client'
+import { darkerGrotesque } from '@/app/(app)/fonts'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }) {
   const slugParam = (await params).slug
@@ -137,7 +138,11 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
         </Link>
       </div>
       <Image className="mx-auto" src={imageUrl || ''} alt={imageTitle} width={640} height={640} />
-      <p className="p-12 font-['Public_Sans'] text-lg text-black">{event.description}</p>
+      <div className="rounded-lg border-4 border-black bg-white p-2 text-2xl text-black lg:w-2/3 mx-6 mb-6">
+        <p className={cn(darkerGrotesque.className, 'p-12 text-lg text-black')}>
+          {event.description}
+        </p>
+      </div>
       {event.sold_out ? (
         <Button className="pointer-events-none rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
           Complet 😢

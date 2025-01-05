@@ -5,6 +5,8 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '../../../components/ui/use-toast'
 import { sendEmail } from '../queries/send-email'
+import { darkerGrotesque } from '../fonts'
+import { cn } from '@/utils'
 
 const formSchema = z.object({
   email: z
@@ -29,13 +31,6 @@ function ContactForm() {
 
   async function onSubmit(data: any) {
     const res = await sendEmail(data)
-    // const res = await fetch(`../api/send`, {
-    //   method: 'POST',
-    //   body: JSON.stringify(data),
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    // })
     if (!res.ok) {
       toast({
         variant: 'destructive',
@@ -52,7 +47,7 @@ function ContactForm() {
   return (
     <form
       onSubmit={handleSubmit((data) => onSubmit(data))}
-      className='m-auto flex w-96 max-w-full flex-col font-["Public-Sans"]'
+      className={cn(darkerGrotesque.className, 'm-auto flex w-96 max-w-full flex-col')}
     >
       <input
         placeholder="Votre adresse mail"

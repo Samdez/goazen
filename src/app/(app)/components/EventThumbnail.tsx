@@ -1,5 +1,5 @@
 import { Event } from '@/payload-types'
-import { buildEventUrl, formatDate } from '@/utils'
+import { buildEventUrl, cn, formatDate } from '@/utils'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
@@ -10,6 +10,7 @@ import {
   CardDescription,
 } from '../../../components/ui/card'
 import slugify from 'slugify'
+import { darkerGrotesque } from '../fonts'
 
 function EventThumbnail({
   event,
@@ -45,17 +46,20 @@ function EventThumbnail({
             <span className="text-xl text-[#ee2244bc]">{formatDate(event.date)}</span>
             <span className="pl-2">{event.time}</span>
             <CardTitle className="text-md text-balance text-2xl">{event.title}</CardTitle>
-            <CardDescription className="text-md items-center justify-center rounded-md border-black font-['Public_Sans'] ">
+            <CardDescription className="text-md items-center justify-center rounded-md border-black">
               {locationCity ? (
-                <>
-                  <span className="text-[#ee2244bc]">{locationName}</span> / {locationCity}
-                </>
+                <span className={cn(darkerGrotesque.className, 'text-[#ee2244bc]')}>
+                  <span className="text-[#ee2244bc]">{locationName}</span> /{' '}
+                  <span className="text-[#ee2244bc]">
+                    {[locationCity.split('')[0].toUpperCase(), locationCity.slice(1)].join('')}
+                  </span>
+                </span>
               ) : (
                 event.location_alt
               )}
             </CardDescription>
             {event.genres && (
-              <CardDescription className="text-md items-center justify-center rounded-md border-black font-['Public_Sans'] text-black">
+              <CardDescription className="text-md items-center justify-center rounded-md border-black text-black">
                 {event.genres}
               </CardDescription>
             )}

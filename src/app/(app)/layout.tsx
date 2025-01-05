@@ -9,10 +9,7 @@ import NextTopLoader from 'nextjs-toploader'
 import './globals.css'
 import Navbar from './components/Navbar'
 import { Toaster } from '@/components/ui/toaster'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-
-const bebas = Bebas_Neue({ weight: '400', subsets: ['latin'] })
+import { bebas } from './fonts'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://goazen.info'),

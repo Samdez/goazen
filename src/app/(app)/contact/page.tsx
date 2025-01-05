@@ -3,6 +3,8 @@ import Link from 'next/link'
 import ContactForm from '../components/ContactForm'
 import { Metadata } from 'next'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/utils'
+import { darkerGrotesque } from '../fonts'
 
 export const metadata: Metadata = {
   title: 'Goazen - Contact',
@@ -20,9 +22,9 @@ function ContactPage() {
           </Button>
         </Link>
       </div>
-      <article className="prose max-w-none p-4">
+      <article className="prose max-w-none p-4 flex flex-col gap-4">
         <h1 className="text-[#ee2244bc]">Pourquoi Goazen ?</h1>
-        <p>
+        <p className={cn(darkerGrotesque.className, 'text-lg')}>
           « - Cest sympa le pays basque et les landes, mais c’est un peu mort, il se passe pas grand
           chose au niveau culturel… <br /> - Mais si, y’a plein de concerts et de DJ sets, mais
           c’est vrai que c’est pas évident de se tenir au courant… ». <br />
@@ -45,7 +47,7 @@ function ContactPage() {
           entendre dire « C’est beau le Pays Basque, mais il se passe rien » …
         </p>
         <h1 className="text-[#ee2244bc]">Qui suis-je ?</h1>
-        <p>
+        <p className={cn(darkerGrotesque.className, 'text-lg')}>
           Musicien et développeur web, je suis toujours à l&apos;affut des concerts et bons plans au
           Pays Basque, il m&apos;est donc tout naturellement venu à l&apos;esprit ce créer Goazen,
           afin de faire partager à un maximum de personnes les évènements que je repérais.
