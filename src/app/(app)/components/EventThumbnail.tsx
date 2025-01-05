@@ -48,11 +48,11 @@ function EventThumbnail({
             <CardTitle className="text-md text-balance text-2xl">{event.title}</CardTitle>
             <CardDescription className="text-md items-center justify-center rounded-md border-black">
               {locationCity ? (
-                <span className={cn(darkerGrotesque.className, 'text-[#ee2244bc]')}>
-                  <span className="text-[#ee2244bc]">{locationName}</span> /{' '}
-                  <span className="text-[#ee2244bc]">
-                    {[locationCity.split('')[0].toUpperCase(), locationCity.slice(1)].join('')}
-                  </span>
+                <span
+                  className={cn(darkerGrotesque.className, 'text-[#ee2244bc] text-xl font-bold')}
+                >
+                  {locationName} /{' '}
+                  {[locationCity.split('')[0].toUpperCase(), locationCity.slice(1)].join('')}
                 </span>
               ) : (
                 event.location_alt
