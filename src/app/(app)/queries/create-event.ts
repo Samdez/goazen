@@ -24,9 +24,7 @@ export async function createEvent(formData: CreateEventSchemaType) {
     const browserFile = formData.image as unknown as globalThis.File
     imageRes = await payload.create({
       collection: 'medias',
-      data: {
-        title: formData.title,
-      },
+      data: {},
       file: {
         name: browserFile.name,
         mimetype: browserFile.type,
