@@ -21,7 +21,6 @@ function EventThumbnail({
 }) {
   const imageUrl =
     !(typeof event.image === 'string') && event.image ? event.image?.url : placeholderImageUrl
-  const imageTitle = !(typeof event.image === 'string') && event.image ? event.image?.title : ''
   const eventPrice = event.sold_out
     ? 'Complet'
     : event.price === '0'
@@ -66,7 +65,7 @@ function EventThumbnail({
           </CardHeader>
           <div className="relative flex h-[176px] w-full justify-center">
             <Image
-              alt={imageTitle}
+              alt={event.title}
               src={imageUrl || ''}
               fill
               sizes="176px"

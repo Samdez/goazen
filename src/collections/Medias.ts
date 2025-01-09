@@ -21,13 +21,7 @@ const Medias: CollectionConfig = {
       },
     ],
   },
-  fields: [
-    {
-      name: 'title',
-      type: 'text',
-      required: true,
-    },
-  ],
+  fields: [],
 }
 
 export default Medias

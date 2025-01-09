@@ -119,7 +119,6 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
 
   const imageUrl =
     !(typeof event.image === 'string') && event.image ? event.image?.url : placeholderImage
-  const imageTitle = !(typeof event.image === 'string') && event.image ? event.image?.title : ''
   const locationName = !(typeof event.location === 'string') ? event.location?.name || '' : ''
   const locationCity = !(typeof event.location === 'string') ? event.location?.city : ''
 
@@ -137,7 +136,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
           {locationName}
         </Link>
       </div>
-      <Image className="mx-auto" src={imageUrl || ''} alt={imageTitle} width={640} height={640} />
+      <Image className="mx-auto" src={imageUrl || ''} alt={event.title} width={640} height={640} />
       <div className="rounded-lg border-4 border-black bg-white px-6 py-4 text-2xl text-black lg:w-1/2 mx-6 mb-6">
         <p className={cn(darkerGrotesque.className, 'text-lg text-black')}>{event.description}</p>
       </div>
