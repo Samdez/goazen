@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { cn, slugifyString } from '@/utils'
+import { cn, formatDate, slugifyString } from '@/utils'
 import { Button } from '@/components/ui/button'
 import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
 import { getEvent } from '@/app/(app)/queries/get-event'
@@ -126,7 +126,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
     <div className="flex flex-col items-center  gap-4 text-white">
       <h1 className="text-center text-6xl font-bold text-black">{event.title}</h1>
       <div className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
-        <p className="font-semibold">{new Date(event.date).toLocaleDateString('fr-FR')}</p>
+        <p className="font-semibold">{formatDate(event.date)}</p>
       </div>
       <div>
         <Link
