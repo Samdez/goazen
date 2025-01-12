@@ -75,7 +75,10 @@ const config = buildConfig({
         }
         //doc is a Location
         if ('place_id' in doc) {
-          return `Concerts & soirées à ${doc.name} ${doc.city} - Programmation | Goazen`
+          const city = await fetch(`https://goazen.info/api/cities/${doc['city V2']}`).then((res) =>
+            res.json(),
+          )
+          return `Concerts & soirées à ${doc.name} ${city.name} - Programmation | Goazen`
         }
         return ''
       },
@@ -86,7 +89,10 @@ const config = buildConfig({
         }
         //doc is a Location
         if ('place_id' in doc) {
-          return `Découvrez tous les concerts et DJ sets à ${doc.name} à ${doc.city}. Programmation complète, billetterie et infos pratiques sur Goazen, votre guide des sorties musicales.`
+          const city = await fetch(`https://goazen.info/api/cities/${doc['city V2']}`).then((res) =>
+            res.json(),
+          )
+          return `Découvrez tous les concerts et DJ sets à ${doc.name} à ${city.name}. Programmation complète, billetterie et infos pratiques sur Goazen, votre guide des sorties musicales.`
         }
         return ''
       },
