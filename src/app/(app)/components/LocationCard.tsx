@@ -14,6 +14,7 @@ function LocationCard({
   placeholderImageUrl: string
 }) {
   if (!location) return
+  const locationCity = typeof location['city V2'] !== 'string' && location['city V2']?.name
 
   const imageUrl =
     !(typeof location.image === 'string') && location.image
@@ -28,7 +29,10 @@ function LocationCard({
           { 'mt-12': !isEven },
         )}
       >
-        <Link href={`/concerts/${location.city}/${location?.slug}`} className="w-full rounded-xl">
+        <Link
+          href={`/concerts/${locationCity || location.city}/${location?.slug}`}
+          className="w-full rounded-xl"
+        >
           <CardHeader className="flex h-28 items-center justify-center border-b-4 border-black bg-[#ee2244bc] p-2">
             <CardTitle className="text-balance text-center text-2xl md:text-4xl">
               {location.name}
