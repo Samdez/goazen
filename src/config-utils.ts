@@ -17,8 +17,9 @@ export async function buildEventSEOTitle(doc: any) {
     year: 'numeric',
   })
 
-  const locationName = location?.name || doc.location_alt.split(/[-/,]/)?.at(0) || ''
-  const cityName = location?.city || doc.location_alt.split(/[-/,]/)?.at(1) || ''
+  console.log(location)
+  const locationName = location?.name || doc.location_alt?.split(/[-/,]/)?.at(0) || ''
+  const cityName = location?.city || doc.location_alt?.split(/[-/,]/)?.at(1) || ''
   const title = `${doc.title} - ${locationName.trim()}, ${cityName.trim()} ${date}`
 
   const maxLength = 45
@@ -43,8 +44,8 @@ export async function buildEventSEODescription(doc: any) {
     month: 'long',
     year: 'numeric',
   })
-  const locationName = location?.name || doc.location_alt.split(/[-/,]/)?.at(0) || ''
-  const cityName = location?.city || doc.location_alt.split(/[-/,]/)?.at(1) || ''
+  const locationName = location?.name || doc.location_alt?.split(/[-/,]/)?.at(0) || ''
+  const cityName = location?.city || doc.location_alt?.split(/[-/,]/)?.at(1) || ''
 
   const baseDesc = `Découvrez ${doc.title} en concert à ${locationName.trim()} ${cityName.trim()} le ${date}.`
   const description = doc.description
