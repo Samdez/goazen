@@ -34,7 +34,11 @@ const ExportComponent = () => {
           : event.location.name
         : event.location_alt
 
-      str += `${event.title},${getDay(new Date(event.date))},${location} - ${event.time},${event.genres},${event.price === '0' ? 'Gratuit' : `${event.price}€`}\r\n`
+      const categories = event.category
+        ?.map((cat) => typeof cat !== 'string' && cat.name)
+        .join(' / ')
+
+      str += `${event.title},${getDay(new Date(event.date))},${location} - ${event.time},${event.genres || categories},${event.price === '0' ? 'Gratuit' : `${event.price}€`}\r\n`
     }
 
     return str
