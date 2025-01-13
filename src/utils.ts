@@ -16,6 +16,7 @@ export function formatDate(date: string) {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
+    timeZone: 'Europe/Paris',
   }
   return new Date(date).toLocaleDateString('fr-FR', options)
 }
