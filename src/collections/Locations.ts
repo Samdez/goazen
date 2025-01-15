@@ -1,9 +1,14 @@
 import { CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
+import { isAdmin } from '@/app/(payload)/access/isAdmin'
+import { isAdminOrHasLocationAccess } from '@/app/(payload)/access/isAdminOrHasLocationAccess'
 
 const Locations: CollectionConfig = {
   slug: 'locations',
-  access: { read: () => true },
+  access: {
+    read: isAdminOrHasLocationAccess('id'),
+    update: isAdminOrHasLocationAccess('id'),
+  },
   admin: { useAsTitle: 'name' },
   fields: [
     {

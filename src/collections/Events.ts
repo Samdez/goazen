@@ -1,11 +1,12 @@
 import { CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
+import { isAdminOrHasLocationAccess } from '@/app/(payload)/access/isAdminOrHasLocationAccess'
 
 const Events: CollectionConfig = {
   slug: 'events',
   versions: { drafts: true },
   access: {
-    read: () => true,
+    read: isAdminOrHasLocationAccess('location.id'),
   },
   admin: {
     useAsTitle: 'title',
@@ -37,6 +38,13 @@ const Events: CollectionConfig = {
       relationTo: 'locations',
       admin: {
         condition: (data) => !data.location_alt,
+      },
+      filterOptions: ({ user }) => {
+        return {
+          id: {
+            in: user?.locations?.map((loc) => (typeof loc === 'string' ? loc : loc.id)),
+          },
+        }
       },
     },
     {

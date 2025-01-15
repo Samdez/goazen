@@ -1,9 +1,10 @@
+import { isAdmin } from '@/app/(payload)/access/isAdmin'
 import { CollectionConfig } from 'payload'
 
 const Medias: CollectionConfig = {
   slug: 'medias',
   access: {
-    read: () => true,
+    read: isAdmin,
   },
   upload: {
     staticDir: 'media',

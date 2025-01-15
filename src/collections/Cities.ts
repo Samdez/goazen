@@ -1,9 +1,12 @@
 import { CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
+import { isAdmin } from '@/app/(payload)/access/isAdmin'
 
 const Cities: CollectionConfig = {
   slug: 'cities',
-  access: { read: () => true },
+  access: {
+    read: isAdmin,
+  },
   admin: { useAsTitle: 'name' },
   fields: [
     {

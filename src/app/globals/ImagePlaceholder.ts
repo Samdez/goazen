@@ -1,8 +1,9 @@
 import { GlobalConfig } from 'payload'
+import { isAdmin } from '../(payload)/access/isAdmin'
 
 export const ImagePlaceholder: GlobalConfig = {
   access: {
-    read: () => true,
+    read: isAdmin,
   },
   fields: [
     {
