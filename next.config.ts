@@ -7,7 +7,7 @@ const nextConfig = {
     staticGenerationMaxConcurrency: 2,
     staticGenerationMinPagesPerWorker: 25,
     serverActions: {
-      bodySizeLimit: 10 * 1024 * 1024,
+      bodySizeLimit: 25 * 1024 * 1024,
     },
   },
 }
