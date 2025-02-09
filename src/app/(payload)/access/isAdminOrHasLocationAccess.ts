@@ -10,7 +10,7 @@ export const isAdminOrHasLocationAccess =
           or: [
             {
               [path]: {
-                in: user.locations.map((loc) => typeof loc !== 'string' && loc.id),
+                in: user.locations.map((loc) => (typeof loc !== 'string' ? loc.id : loc)),
               },
             },
           ],

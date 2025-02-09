@@ -21,14 +21,16 @@ export default async function Page({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const currSearchParams = await searchParams
-  const {
-    activeTime,
-    startDate = new Date().toISOString(),
-    endDate,
-  } = searchParamsSchema.parse(currSearchParams)
+  const { activeTime, startDate, endDate } = searchParamsSchema.parse(currSearchParams)
 
+  let date: string
+  if (!startDate) {
+    date = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString()
+  } else {
+    date = startDate
+  }
   const categories = await getCategories()
-  const initialEvents = await getCachedEvents({ startDate })
+  const initialEvents = await getCachedEvents({ startDate: date })
   const placeholderImage = await getPlaceholderImage()
   if (!placeholderImage) {
     console.error('No placeholder image found')

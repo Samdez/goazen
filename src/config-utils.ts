@@ -17,7 +17,6 @@ export async function buildEventSEOTitle(doc: any) {
     year: 'numeric',
   })
 
-  console.log(location)
   const locationName = location?.name || doc.location_alt?.split(/[-/,]/)?.at(0) || ''
   const cityName = location?.city || doc.location_alt?.split(/[-/,]/)?.at(1) || ''
   const title = `${doc.title} - ${locationName.trim()}, ${cityName.trim()} ${date}`
