@@ -1,25 +1,25 @@
 'use client'
 
+import type { Category, Location } from '@/payload-types'
 import { useState } from 'react'
-import { Category, Location } from '@/payload-types'
 
-import React from 'react'
-import { z } from 'zod'
-import TextField from './form-components/TextField'
+import { Button } from '@/components/ui/button'
+import { useToast } from '@/hooks/use-toast'
 import { createTsForm, createUniqueFieldSchema } from '@ts-react/form'
+import { useRouter } from 'next/navigation'
+import type { File } from 'payload'
+import React from 'react'
+import { PacmanLoader } from 'react-spinners'
+import { z } from 'zod'
+import { createEvent } from '../queries/create-event'
+import { sendEmail } from '../queries/send-email'
 import FormContainer from './FormContainer'
-import { LocationsCommand } from './form-components/LocationsCommand'
 import { DatePicker } from './form-components/DatePicker'
+import { InputFile } from './form-components/ImageInput'
+import { LocationsCommand } from './form-components/LocationsCommand'
 import MultipleSelector from './form-components/MultipleSelector'
 import TextArea from './form-components/TextArea'
-import { InputFile } from './form-components/ImageInput'
-import { File } from 'payload'
-import { useToast } from '@/hooks/use-toast'
-import { createEvent } from '../queries/create-event'
-import { Button } from '@/components/ui/button'
-import { PacmanLoader } from 'react-spinners'
-import { useRouter } from 'next/navigation'
-import { sendEmail } from '../queries/send-email'
+import TextField from './form-components/TextField'
 
 export const LocationSchema = z.object({
   name: z.string(),
@@ -50,7 +50,7 @@ const createEventSchema = z
     description: TextAreaSchema.optional().describe(
       "Description // Description de l'event ou line-up (optionnel)",
     ),
-    image: ImageInputSchema.optional().describe("Image (optionnel) // Image de l'event"),
+    image: ImageInputSchema.optional().describe("Image (optionnel - 20mb max) // Image de l'event"),
     location: LocationSchema.optional(),
     location_alt: z
       .string()
