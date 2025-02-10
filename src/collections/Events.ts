@@ -1,6 +1,6 @@
+import { isAdminOrHasLocationAccess } from '@/app/(payload)/access/isAdminOrHasLocationAccess'
 import type { CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
-import { isAdminOrHasLocationAccess } from '@/app/(payload)/access/isAdminOrHasLocationAccess'
 
 const Events: CollectionConfig = {
   slug: 'events',

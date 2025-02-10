@@ -1,7 +1,6 @@
-import { CollectionConfig } from 'payload'
-import { slugifyString } from '../utils'
-import { isAdmin } from '@/app/(payload)/access/isAdmin'
 import { isAdminOrHasLocationAccess } from '@/app/(payload)/access/isAdminOrHasLocationAccess'
+import type { CollectionConfig } from 'payload'
+import { slugifyString } from '../utils'
 
 const Locations: CollectionConfig = {
   slug: 'locations',
@@ -43,7 +42,10 @@ const Locations: CollectionConfig = {
         { label: 'Capbreton', value: slugifyString('capbreton') },
         { label: 'Hossegor', value: slugifyString('hossegor') },
         { label: 'Seignosse', value: slugifyString('seignosse') },
-        { label: 'Saint Jean de Luz', value: slugifyString('Saint Jean de Luz') },
+        {
+          label: 'Saint Jean de Luz',
+          value: slugifyString('Saint Jean de Luz'),
+        },
         { label: 'Hendaye', value: slugifyString('hendaye') },
         { label: 'Bidart', value: slugifyString('bidart') },
         { label: 'Guethary', value: slugifyString('guethary') },

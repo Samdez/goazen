@@ -52,9 +52,13 @@ export async function createEvent(formData: CreateEventSchemaType) {
         ...(imageRes && { image: imageRes.id }),
         _status: 'draft',
       },
+      draft: true,
     })
     return { ok: true, res }
   } catch (error) {
-    throw new Error("Erreur lors de la création de l'évènement")
+    if (error instanceof Error) {
+      console.log(error)
+      throw new Error(`Erreur lors de la création de l'évènement: ${error}`)
+    }
   }
 }
