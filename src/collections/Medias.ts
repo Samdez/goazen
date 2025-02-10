@@ -4,7 +4,7 @@ import { CollectionConfig } from 'payload'
 const Medias: CollectionConfig = {
   slug: 'medias',
   access: {
-    read: isAdmin,
+    read: () => true,
   },
   upload: {
     staticDir: 'media',
