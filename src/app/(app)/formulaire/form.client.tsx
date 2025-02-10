@@ -119,7 +119,7 @@ export default function FormClient({
               try {
                 setIsLoading(true)
                 const res = await createEvent(formData)
-                if (!res.ok) {
+                if (!res?.ok) {
                   toast({
                     variant: 'destructive',
                     description: "Erreur lors de l'envoi de l'évènement",
