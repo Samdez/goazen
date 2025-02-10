@@ -58,7 +58,7 @@ export default async function Page({
           initialEvents={initialEvents.docs}
           initialNextPage={initialEvents.nextPage}
           hasNextPageProps={initialEvents.hasNextPage}
-          startDate={startDate}
+          startDate={date}
           endDate={endDate}
           placeholderImageUrl={placeholderImage}
         />

@@ -23,7 +23,7 @@ export default function EventsGrid({
   initialEvents: Event[]
   initialNextPage?: number | null
   hasNextPageProps: boolean
-  startDate?: string
+  startDate: string
   endDate?: string
   activeTime?: string
   placeholderImageUrl: string
