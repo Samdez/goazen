@@ -25,7 +25,7 @@ export default async function Page({
 
   let date: string
   if (!startDate) {
-    date = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString()
+    date = new Date(new Date().setDate(new Date().getDate())).toISOString()
   } else {
     date = startDate
   }
