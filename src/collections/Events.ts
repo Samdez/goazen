@@ -40,6 +40,7 @@ const Events: CollectionConfig = {
         condition: (data) => !data.location_alt,
       },
       filterOptions: ({ user }) => {
+        if (user?.roles?.includes('admin')) return true
         return {
           id: {
             in: user?.locations?.map((loc) => (typeof loc === 'string' ? loc : loc.id)),
