@@ -33,9 +33,22 @@ function EventThumbnail({
   const locationName = event.location
     ? !(typeof event.location === 'string') && event.location?.name
     : slugify(event.location_alt?.split(/[-/,]/)?.at(0) || 'no-location')
-  const locationCity = event.location
-    ? !(typeof event.location === 'string') && event.location?.city
-    : slugify(event.location_alt?.split(/[-/,]/)?.at(1) || 'no-location')
+  const getLocationCity = () => {
+    if (!event.location) {
+      return slugify(event.location_alt?.split(/[-/,]/)?.at(1) || 'no-location')
+    }
+
+    if (typeof event.location === 'string') {
+      return null
+    }
+
+    if (typeof event.location['city V2'] === 'object' && event.location['city V2']?.name) {
+      return event.location['city V2'].name
+    }
+
+    return event.location.city
+  }
+  const locationCity = getLocationCity()
 
   return (
     <Card className="relative h-[360px] rounded-xl border-black shadow-[15px_15px_0px_0px_rgba(0,0,0)]">
