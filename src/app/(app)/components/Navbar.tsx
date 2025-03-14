@@ -16,7 +16,7 @@ function Navbar() {
   return (
     <>
       {<SideBar onClick={() => setIsOpen(false)} isOpen={isOpen} />}
-      <div className="fixed top-0 z-50 grid h-[14vh] w-full grid-cols-4 border-b-8 border-black bg-black text-[#FFDCA8] md:hidden">
+      <div className="fixed top-0 z-50 grid h-32 w-full grid-cols-4 border-b-8 border-black bg-black text-[#FFDCA8] md:hidden">
         <Link
           href={'/'}
           onClick={handleClickHome}
@@ -33,7 +33,7 @@ function Navbar() {
           {isOpen ? <div className="text-4xl">X</div> : <Burger />}
         </div>
       </div>
-      <div className="fixed top-0 z-50 hidden h-[14vh] w-full grid-cols-7 items-center  justify-end border-b-8 border-black bg-[#FFDCA8] text-black md:grid">
+      <div className="fixed top-0 z-50 hidden h-32 w-full grid-cols-7 items-center  justify-end border-b-8 border-black bg-[#FFDCA8] text-black md:grid">
         <Link
           href={'/'}
           onClick={() => setActivePage('/')}
