@@ -40,6 +40,7 @@ export async function _getEvents({
         ...(extendedStartDate ? [{ date: { greater_than: extendedStartDate } }] : []),
         ...(extendedEndDate ? [{ date: { less_than: extendedEndDate } }] : []),
         ...(category ? [{ 'category.slug': { equals: category } }] : []),
+        { _status: { equals: 'published' } },
       ],
     },
     sort: 'date',
