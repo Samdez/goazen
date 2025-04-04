@@ -27,6 +27,16 @@ const Cities: CollectionConfig = {
         ],
       },
     },
+    {
+      name: 'description',
+      type: 'text',
+    },
+    {
+      name: 'cities_related',
+      type: 'relationship',
+      relationTo: 'cities',
+      hasMany: true,
+    },
   ],
 }
 

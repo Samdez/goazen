@@ -146,6 +146,8 @@ export interface City {
   id: string;
   name: string;
   slug?: string | null;
+  description?: string | null;
+  cities_related?: (string | City)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -404,6 +406,8 @@ export interface LocationsSelect<T extends boolean = true> {
 export interface CitiesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
+  description?: T;
+  cities_related?: T;
   updatedAt?: T;
   createdAt?: T;
 }

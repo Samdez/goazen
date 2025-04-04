@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://goazen.info'),
   title: 'Goazen! - Agenda Concerts & Soirées Biarritz, Pays Basque, Landes',
   description:
-    'Trouvez tous les concerts et soirées à Biarritz, Bayonne et dans le Pays Basque ! Agenda complet des événements musicaux : rock, électro, DJ sets. Programmation des meilleures salles de concert de la région. Découvrez où sortir ce soir !',
+    'Tous les concerts et soirées à Biarritz, Bayonne et Pays Basque. Agenda des événements musicaux : rock, électro, DJ sets. Où sortir ce soir ?',
   keywords: [
     'concerts biarritz',
     'concerts pays basque',
@@ -36,13 +36,13 @@ export const metadata: Metadata = {
     siteName: 'Goazen!',
     title: 'Goazen! - Agenda Concerts & Soirées Biarritz, Pays Basque',
     description:
-      'Trouvez tous les concerts et soirées à Biarritz et dans le Pays Basque ! Agenda complet des événements musicaux et DJ sets. Découvrez où sortir ce soir !',
+      'Tous les concerts et soirées à Biarritz et dans le Pays Basque. Agenda des événements musicaux : rock, électro, DJ sets. Où sortir ce soir ?',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Goazen! - Agenda Concerts Biarritz & Pays Basque',
     description:
-      'Trouvez tous les concerts et soirées à Biarritz et dans le Pays Basque ! Agenda complet des événements musicaux et DJ sets.',
+      'Tous les concerts et soirées à Biarritz et dans le Pays Basque. Agenda des événements musicaux : rock, électro, DJ sets. Où sortir ce soir ?',
   },
 }
 
