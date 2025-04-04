@@ -6,6 +6,10 @@ import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
 import { getEvent } from '@/app/(app)/queries/get-event'
 import { payload } from '@/app/(app)/client/payload-client'
 import { darkerGrotesque } from '@/app/(app)/fonts'
+import { getCachedEvents } from '@/app/(app)/queries/get-events'
+import EventsCarousel from '@/app/(app)/components/EventsCarousel'
+import Listing from '@/app/(app)/components/Listing'
+import { getCategories } from '@/app/(app)/queries/get-categories'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }) {
   const slugParam = (await params).slug
@@ -115,6 +119,14 @@ export async function generateStaticParams() {
 async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
   const slugParam = await params
   const event = await getEvent(slugParam.slug[0].split('_').reverse()[0])
+  const locationEvents = await getCachedEvents({
+    locationId: typeof event.location === 'string' ? event.location : event.location?.id,
+    startDate: new Date().toISOString(),
+  })
+  const categoryEvents = await getCachedEvents({
+    category: typeof event.category?.[0] === 'string' ? event.category[0] : event.category?.[0].id,
+    startDate: new Date().toISOString(),
+  })
   const placeholderImage = await getPlaceholderImage()
 
   const imageUrl =
@@ -126,7 +138,9 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
     <div className="flex flex-col items-center  gap-4 text-white">
       <h1 className="text-center text-6xl font-bold text-black">{event.title}</h1>
       <div className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
-        <p className="font-semibold">{formatDate(event.date)}</p>
+        <p className="font-semibold">
+          {formatDate(event.date)} - {event.time}
+        </p>
       </div>
       <div>
         <Link
@@ -137,9 +151,11 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
         </Link>
       </div>
       <Image className="mx-auto" src={imageUrl || ''} alt={event.title} width={640} height={640} />
-      <div className="rounded-lg border-4 border-black bg-white px-6 py-4 text-2xl text-black lg:w-1/2 mx-6 mb-6">
-        <p className={cn(darkerGrotesque.className, 'text-lg text-black')}>{event.description}</p>
-      </div>
+      {event.description && (
+        <div className="rounded-lg border-4 border-black bg-white px-6 py-4 text-2xl text-black lg:w-1/2 mx-6 mb-6">
+          <p className={cn(darkerGrotesque.className, 'text-lg text-black')}>{event.description}</p>
+        </div>
+      )}
       {event.sold_out ? (
         <Button className="pointer-events-none rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
           Complet 😢
@@ -153,6 +169,35 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
           </a>
         )
       )}
+      {locationEvents.docs.length > 0 && (
+        <div className="flex flex-col items-center gap-4 px-4 py-8 text-white">
+          <h1 className="text-center text-6xl font-bold text-black">{locationName}</h1>
+          <h2 className="text-4xl text-black">Prochains concerts: </h2>
+          <EventsCarousel
+            events={locationEvents.docs}
+            placeholderImageUrl={placeholderImage || ''}
+          />
+        </div>
+      )}
+
+      <div className="flex items-center gap-4 px-4 py-8 text-white">
+        <Button className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
+          <Link
+            href={`/genres/${typeof event.category?.[0] === 'string' ? event.category[0] : event.category?.[0].slug}`}
+            className="text-2xl text-black"
+          >
+            Tous les concerts{' '}
+            {typeof event.category?.[0] === 'string' ? event.category[0] : event.category?.[0].name}
+          </Link>
+        </Button>
+        {locationCity && (
+          <Button className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
+            <Link href={`/concerts/${locationCity}`} className="text-2xl text-black">
+              Tous les concerts à {locationCity}
+            </Link>
+          </Button>
+        )}
+      </div>
     </div>
   )
 }
