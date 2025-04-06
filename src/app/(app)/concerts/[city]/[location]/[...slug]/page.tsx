@@ -181,11 +181,13 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
       <div className="flex items-center gap-4 px-4 py-8 text-white">
         <Button className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
           <Link
-            href={`/genres/${typeof event.category?.[0] === 'string' ? event.category[0] : event.category?.[0].slug}`}
+            href={`/genres/${typeof event.category?.[0] === 'string' ? event.category?.[0] : event.category?.[0]?.slug}`}
             className="text-2xl text-black"
           >
             Tous les concerts{' '}
-            {typeof event.category?.[0] === 'string' ? event.category[0] : event.category?.[0].name}
+            {typeof event.category?.[0] === 'string'
+              ? event.category?.[0]
+              : event.category?.[0]?.name}
           </Link>
         </Button>
         {locationCity && (
