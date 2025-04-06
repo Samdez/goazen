@@ -30,12 +30,10 @@ function EventThumbnail({
         : 'N/A'
 
   const eventUrl = buildEventUrl(event)
-  const locationName = event.location
-    ? !(typeof event.location === 'string') && event.location?.name
-    : slugify(event.location_alt?.split(/[-/,]/)?.at(0) || 'no-location')
+  const locationName = !(typeof event.location === 'string') ? event.location?.name : ''
   const getLocationCity = () => {
     if (!event.location) {
-      return slugify(event.location_alt?.split(/[-/,]/)?.at(1) || 'no-location')
+      return
     }
 
     if (typeof event.location === 'string') {
@@ -59,16 +57,9 @@ function EventThumbnail({
             <span className="pl-2">{event.time}</span>
             <CardTitle className="text-md text-balance text-2xl">{event.title}</CardTitle>
             <CardDescription className="text-md items-center justify-center rounded-md border-black">
-              {locationCity ? (
-                <span
-                  className={cn(darkerGrotesque.className, 'text-[#ee2244bc] text-xl font-bold')}
-                >
-                  {locationName} /{' '}
-                  {[locationCity.split('')[0].toUpperCase(), locationCity.slice(1)].join('')}
-                </span>
-              ) : (
-                event.location_alt
-              )}
+              <span className={cn(darkerGrotesque.className, 'text-[#ee2244bc] text-xl font-bold')}>
+                {event.location ? `${locationName} / ${locationCity}` : event.location_alt}
+              </span>
             </CardDescription>
             {event.genres && (
               <CardDescription className="text-md items-center justify-center rounded-md border-black text-black">

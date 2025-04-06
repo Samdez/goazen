@@ -119,10 +119,12 @@ export async function generateStaticParams() {
 async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
   const slugParam = await params
   const event = await getEvent(slugParam.slug[0].split('_').reverse()[0])
-  const locationEvents = await getCachedEvents({
-    locationId: typeof event.location === 'string' ? event.location : event.location?.id,
-    startDate: new Date().toISOString(),
-  })
+  const locationEvents =
+    event.location &&
+    (await getCachedEvents({
+      locationId: typeof event.location === 'string' ? event.location : event.location?.id,
+      startDate: new Date().toISOString(),
+    }))
   const categoryEvents = await getCachedEvents({
     category: typeof event.category?.[0] === 'string' ? event.category[0] : event.category?.[0].id,
     startDate: new Date().toISOString(),
@@ -169,7 +171,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
           </a>
         )
       )}
-      {locationEvents.docs.length > 0 && (
+      {locationEvents && locationEvents.docs.length > 0 && (
         <div className="flex flex-col items-center gap-4 px-4 py-8 text-white">
           <h1 className="text-center text-6xl font-bold text-black">{locationName}</h1>
           <h2 className="text-4xl text-black">Prochains concerts: </h2>
