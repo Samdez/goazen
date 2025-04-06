@@ -26,7 +26,9 @@ function EventThumbnail({
     : event.price === '0'
       ? 'Gratuit'
       : event.price
-        ? `${event.price} €`
+        ? event.price.split('').includes('€')
+          ? `${event.price}`
+          : `${event.price} €`
         : 'N/A'
 
   const eventUrl = buildEventUrl(event)
