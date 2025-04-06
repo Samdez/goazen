@@ -125,10 +125,6 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
       locationId: typeof event.location === 'string' ? event.location : event.location?.id,
       startDate: new Date().toISOString(),
     }))
-  const categoryEvents = await getCachedEvents({
-    category: typeof event.category?.[0] === 'string' ? event.category[0] : event.category?.[0].id,
-    startDate: new Date().toISOString(),
-  })
   const placeholderImage = await getPlaceholderImage()
 
   const imageUrl =
