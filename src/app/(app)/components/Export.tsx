@@ -33,12 +33,18 @@ const ExportComponent = () => {
           ? event.location
           : event.location.name
         : event.location_alt
+      const locationCity =
+        typeof event.location !== 'string' &&
+        event.location?.['city V2'] &&
+        typeof event.location?.['city V2'] === 'object'
+          ? event.location?.['city V2'].name
+          : ''
 
       const categories = event.category
         ?.map((cat) => typeof cat !== 'string' && cat.name)
         .join(' / ')
 
-      str += `${event.title},${getDay(new Date(event.date))},${location} - ${event.time},${event.genres || categories},${event.price === '0' ? 'Gratuit' : `${event.price}€`}\r\n`
+      str += `${event.title},${getDay(new Date(event.date))},${location} / ${locationCity} - ${event.time},${event.genres || categories},${event.price === '0' ? 'Gratuit' : `${event.price}€`}\r\n`
     }
 
     return str
@@ -58,7 +64,9 @@ const ExportComponent = () => {
         endDate,
         limit: 100,
       })
-
+      const res = convertToCSV(events.docs)
+      console.log('🚀 ~ fetchOptions ~ res:', res)
+      return
       if (events.docs) {
         const csvData = new Blob([convertToCSV(events.docs)], {
           type: 'text/csv',
