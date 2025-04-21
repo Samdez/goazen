@@ -101,7 +101,7 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
         <h2 className="text-2xl font-bold mb-4">Concerts, DJ sets et soirées à {city.name}</h2>
         <p className="mb-4">{city.description}</p>
         <h2 className="text-2xl font-bold mb-4">Où écouter de la musique à {city.name} :</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-4 px-12 pb-">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-4 pb-4">
           {locations.docs
             .reduce((acc, location, index) => {
               if (index % 5 === 0) {
@@ -126,7 +126,7 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
         </div>
         <div>
           <h2 className="text-2xl font-bold mb-4">Concerts et soirées près de {city.name}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-2 px-12 pb-32">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-2 pb-4">
             {city.cities_related?.map((city) => {
               if (typeof city === 'string') {
                 return null
