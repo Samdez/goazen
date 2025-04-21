@@ -169,7 +169,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
         )
       )}
       {locationEvents && locationEvents.docs.length > 0 && (
-        <div className="flex flex-col items-center gap-4 py-8 text-white max-w-full">
+        <div className="flex flex-col items-center gap-4 px-4 py-8 text-white max-w-full">
           <h2 className="text-center text-6xl font-bold text-black">{locationName}</h2>
           <h2 className="text-4xl text-black">Prochains concerts: </h2>
           <EventsCarousel
@@ -179,7 +179,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
         </div>
       )}
 
-      <div className="flex items-center gap-4 px-4 py-8 text-white">
+      <div className="flex flex-wrap items-center justify-center gap-4 px-4 py-8 text-white">
         {event.category && (
           <Button className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
             <Link
