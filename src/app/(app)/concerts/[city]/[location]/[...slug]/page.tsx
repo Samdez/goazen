@@ -169,8 +169,8 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
         )
       )}
       {locationEvents && locationEvents.docs.length > 0 && (
-        <div className="flex flex-col items-center gap-4 px-4 py-8 text-white">
-          <h1 className="text-center text-6xl font-bold text-black">{locationName}</h1>
+        <div className="flex flex-col items-center gap-4 py-8 text-white max-w-full">
+          <h2 className="text-center text-6xl font-bold text-black">{locationName}</h2>
           <h2 className="text-4xl text-black">Prochains concerts: </h2>
           <EventsCarousel
             events={locationEvents.docs}

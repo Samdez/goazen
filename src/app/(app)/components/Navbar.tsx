@@ -27,7 +27,7 @@ function Navbar() {
             },
           )}
         >
-          <p className="w-10/12 text-center text-8xl font-bold">Goazen!</p>
+          <p className="w-10/12 text-center text-6xl font-bold">Goazen!</p>
         </Link>
         <div className="flex w-full items-center justify-center" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <div className="text-4xl">X</div> : <Burger />}
@@ -124,7 +124,7 @@ function SideBar({
   return (
     <div
       className={cn(
-        'fixed right-0 z-50 flex min-h-[86vh] w-screen flex-col items-center justify-evenly bg-[#FFDCA8] py-2 text-black duration-300 ease-in-out sm:hidden',
+        'fixed right-0 z-50 flex min-h-[86vh] w-3/4 flex-col items-center justify-evenly bg-[#FFDCA8] py-2 text-black duration-300 ease-in-out sm:hidden',
         {
           'translate-x-0 ': isOpen,
           'translate-x-full': !isOpen,

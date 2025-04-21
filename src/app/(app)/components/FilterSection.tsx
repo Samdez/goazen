@@ -35,7 +35,7 @@ function FilterSection({
             return <GenreButton genre={genre} key={genre.id} />
           })}
         </div>
-        <div className="flex w-full flex-wrap justify-center py-4 md:w-1/2  md:justify-end md:pr-40 ">
+        <div className="flex w-full justify-center py-4 md:w-1/2  md:justify-end md:pr-40 ">
           <div className="[&>*:nth-child(even)]:rounded-r-md [&>*:nth-child(even)]:border-l-0 [&>*:nth-child(odd)]:rounded-l-md">
             <FilterButton path={dayHRef} text="ce soir" activeTime={activeTime} period="day" />
             <FilterButton
@@ -65,7 +65,7 @@ function FilterButton({
   const router = useRouter()
   return (
     <Button
-      className={`hover:bg-black[#E2B748] h-14 w-44  rounded-none border-2 border-black bg-[#FFDCA8] text-black hover:border-none hover:bg-[#ee2244bc] hover:text-white 
+      className={`hover:bg-black[#E2B748] h-14 w-36  rounded-none border-2 border-black bg-[#FFDCA8] text-black hover:border-none hover:bg-[#ee2244bc] hover:text-white 
        ${activeTime === period && 'bg-[#ee2244bc] text-white'}
        `}
       onClick={() => router.push(path)}
