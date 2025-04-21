@@ -131,6 +131,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
     !(typeof event.image === 'string') && event.image ? event.image?.url : placeholderImage
   const locationName = !(typeof event.location === 'string') ? event.location?.name || '' : ''
   const locationCity = !(typeof event.location === 'string') ? event.location?.city : ''
+  console.log(event)
 
   return (
     <div className="flex flex-col items-center  gap-4 text-white">
@@ -179,17 +180,19 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
       )}
 
       <div className="flex items-center gap-4 px-4 py-8 text-white">
-        <Button className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
-          <Link
-            href={`/genres/${typeof event.category?.[0] === 'string' ? event.category?.[0] : event.category?.[0]?.slug}`}
-            className="text-2xl text-black"
-          >
-            Tous les concerts{' '}
-            {typeof event.category?.[0] === 'string'
-              ? event.category?.[0]
-              : event.category?.[0]?.name}
-          </Link>
-        </Button>
+        {event.category && (
+          <Button className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
+            <Link
+              href={`/genres/${typeof event.category?.[0] === 'string' ? event.category?.[0] : event.category?.[0]?.slug}`}
+              className="text-2xl text-black"
+            >
+              Tous les concerts{' '}
+              {typeof event.category?.[0] === 'string'
+                ? event.category?.[0]
+                : event.category?.[0]?.name}
+            </Link>
+          </Button>
+        )}
         {locationCity && (
           <Button className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
             <Link href={`/concerts/${locationCity}`} className="text-2xl text-black">
