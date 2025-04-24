@@ -8,8 +8,6 @@ import { payload } from '@/app/(app)/client/payload-client'
 import { darkerGrotesque } from '@/app/(app)/fonts'
 import { getCachedEvents } from '@/app/(app)/queries/get-events'
 import EventsCarousel from '@/app/(app)/components/EventsCarousel'
-import Listing from '@/app/(app)/components/Listing'
-import { getCategories } from '@/app/(app)/queries/get-categories'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }) {
   const slugParam = (await params).slug
@@ -28,6 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       day: 'numeric',
       month: 'long',
       year: 'numeric',
+      timeZone: 'Europe/Paris',
     })
 
     const locationName = !(typeof event.location === 'string') ? event.location?.name || '' : ''
@@ -131,7 +130,6 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
     !(typeof event.image === 'string') && event.image ? event.image?.url : placeholderImage
   const locationName = !(typeof event.location === 'string') ? event.location?.name || '' : ''
   const locationCity = !(typeof event.location === 'string') ? event.location?.city : ''
-  console.log(event)
 
   return (
     <div className="flex flex-col items-center  gap-4 text-white">

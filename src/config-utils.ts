@@ -15,6 +15,7 @@ export async function buildEventSEOTitle(doc: any) {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
+    timeZone: 'Europe/Paris',
   })
 
   const locationName = location?.name || doc.location_alt?.split(/[-/,]/)?.at(0) || ''
@@ -42,7 +43,9 @@ export async function buildEventSEODescription(doc: any) {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
+    timeZone: 'Europe/Paris',
   })
+
   const locationName = location?.name || doc.location_alt?.split(/[-/,]/)?.at(0) || ''
   const cityName = location?.city || doc.location_alt?.split(/[-/,]/)?.at(1) || ''
 
