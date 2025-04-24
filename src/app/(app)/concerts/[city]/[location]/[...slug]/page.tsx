@@ -178,7 +178,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
       )}
 
       <div className="flex flex-wrap items-center justify-center gap-4 px-4 py-8 text-white">
-        {event.category && (
+        {event.category && event.category.length > 0 && (
           <Button className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
             <Link
               href={`/genres/${typeof event.category?.[0] === 'string' ? event.category?.[0] : event.category?.[0]?.slug}`}
