@@ -64,9 +64,6 @@ const ExportComponent = () => {
         endDate,
         limit: 100,
       })
-      const res = convertToCSV(events.docs)
-      console.log('🚀 ~ fetchOptions ~ res:', res)
-      return
       if (events.docs) {
         const csvData = new Blob([convertToCSV(events.docs)], {
           type: 'text/csv',
