@@ -57,13 +57,31 @@ export function createHref({
 }
 
 export function buildEventUrl(event: Event) {
-  const locationName = event.location
-    ? !(typeof event.location === 'string') && event.location?.name
-    : slugify(event.location_alt?.split(/[-/,]/)?.at(0) || 'no-location')
-  const locationCity = event.location
-    ? !(typeof event.location === 'string') && event.location?.city
-    : slugify(event.location_alt?.split(/[-/,]/)?.at(1) || 'no-location')
-  const locationSlug = !(typeof event.location === 'string') && event.location?.slug
+  const locationInfo = getLocationInfo(event)
+  return `/concerts/${locationInfo?.citySlug}/${locationInfo?.locationSlug}/${event.slug}_${event.id}`
+}
 
-  return `/concerts/${locationCity}/${locationSlug || locationName}/${event.slug}_${event.id}`
+export function getLocationInfo(event: Event) {
+  if (typeof event.location === 'string' || !event.location) {
+    return {
+      citySlug: slugify(event.location_alt?.split(/[-/,]/)?.at(1) || 'no-location'),
+      cityName: slugify(event.location_alt?.split(/[-/,]/)?.at(1) || 'no-location'),
+      locationSlug: slugify(event.location_alt?.split(/[-/,]/)?.at(0) || 'no-location'),
+      locationName: event.location_alt?.split(/[-/,]/)?.at(0) || 'no-location',
+    }
+  }
+  if (event.location['city V2'] && typeof event.location['city V2'] !== 'string') {
+    return {
+      citySlug: event.location['city V2'].slug,
+      cityName: event.location['city V2'].name,
+      locationSlug: event.location.slug,
+      locationName: event.location.name,
+    }
+  }
+  return {
+    citySlug: event.location.city,
+    cityName: event.location.city,
+    locationSlug: event.location.slug,
+    locationName: event.location.name,
+  }
 }

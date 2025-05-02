@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { cn, formatDate, slugifyString } from '@/utils'
+import { cn, formatDate, getLocationInfo, slugifyString } from '@/utils'
 import { Button } from '@/components/ui/button'
 import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
 import { getEvent } from '@/app/(app)/queries/get-event'
@@ -13,8 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const slugParam = (await params).slug
   try {
     const event = await getEvent(slugParam[0].split('_').reverse()[0])
-    const locationCity =
-      !(typeof event.location === 'string') && event.location?.city?.toLowerCase()
+    const locationInfo = getLocationInfo(event)
     if (!event) {
       return {
         title: 'Not found',
@@ -29,13 +28,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       timeZone: 'Europe/Paris',
     })
 
-    const locationName = !(typeof event.location === 'string') ? event.location?.name || '' : ''
     const title =
       event.meta?.title ||
-      `${event.title} en Concert à ${locationName} ${locationCity} le ${date} | Goazen!`
+      `${event.title} en Concert à ${locationInfo?.cityName && locationInfo?.cityName} le ${date} | Goazen!`
     const description =
       event.meta?.description ||
-      `${event.title} en concert à ${locationName} ${locationCity} le ${date}. ${event.description || ''} Réservez vos places pour ce concert live au Pays Basque.`
+      `${event.title} en concert à ${locationInfo?.cityName && locationInfo?.cityName} le ${date}. ${event.description || ''} Réservez vos places pour ce concert live au Pays Basque.`
 
     const imageUrl =
       !(typeof event.image === 'string') && event.image ? event.image?.url : undefined
@@ -44,12 +42,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title,
       description,
       alternates: {
-        canonical: `https://goazen.info/concerts/${locationCity}/${event.slug}_${event.id}`,
+        canonical: `https://goazen.info/concerts/${locationInfo?.cityName && locationInfo?.cityName}/${event.slug}_${event.id}`,
       },
       openGraph: {
         title,
         description,
-        url: `https://goazen.info/concerts/${locationCity}/${event.slug}_${event.id}`,
+        url: `https://goazen.info/concerts/${locationInfo?.cityName && locationInfo?.cityName}/${event.slug}_${event.id}`,
         siteName: 'Goazen!',
         images: imageUrl
           ? [
@@ -57,7 +55,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
                 url: imageUrl,
                 width: 1200,
                 height: 630,
-                alt: `${event.title} en concert à ${locationName} ${locationCity}`,
+                alt: `${event.title} en concert à ${locationInfo?.cityName && locationInfo?.cityName} ${locationInfo?.locationName && locationInfo?.locationName}`,
               },
             ]
           : undefined,
@@ -102,13 +100,11 @@ export async function generateStaticParams() {
 
   return events.docs
     .map((event) => {
-      const locationCity =
-        !(typeof event.location === 'string') && event.location?.city?.toLowerCase()
-      const locationName = !(typeof event.location === 'string') && event.location?.name
+      const locationInfo = getLocationInfo(event)
 
       return {
-        city: locationCity || '',
-        location: slugifyString(locationName || ''),
+        city: locationInfo?.citySlug || '',
+        location: locationInfo?.locationSlug || '',
         slug: [`${event.slug}_${event.id}`],
       }
     })
@@ -128,8 +124,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
 
   const imageUrl =
     !(typeof event.image === 'string') && event.image ? event.image?.url : placeholderImage
-  const locationName = !(typeof event.location === 'string') ? event.location?.name || '' : ''
-  const locationCity = !(typeof event.location === 'string') ? event.location?.city : ''
+  const locationInfo = getLocationInfo(event)
 
   return (
     <div className="flex flex-col items-center  gap-4 text-white">
@@ -141,10 +136,10 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
       </div>
       <div>
         <Link
-          href={`/concerts/${locationCity}/${slugifyString(locationName)}`}
+          href={`/concerts/${locationInfo?.citySlug}/${locationInfo?.locationSlug}`}
           className="rounded-md p-2 text-center text-4xl font-bold text-black hover:bg-black hover:text-[#FFDCA8]"
         >
-          {locationName}
+          {locationInfo?.locationName}
         </Link>
       </div>
       <Image className="mx-auto" src={imageUrl || ''} alt={event.title} width={640} height={640} />
@@ -168,7 +163,9 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
       )}
       {locationEvents && locationEvents.docs.length > 0 && (
         <div className="flex flex-col items-center gap-4 px-4 py-8 text-white max-w-full">
-          <h2 className="text-center text-6xl font-bold text-black">{locationName}</h2>
+          <h2 className="text-center text-6xl font-bold text-black">
+            {locationInfo?.locationName}
+          </h2>
           <h2 className="text-4xl text-black">Prochains concerts: </h2>
           <EventsCarousel
             events={locationEvents.docs}
@@ -191,13 +188,11 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
             </Link>
           </Button>
         )}
-        {locationCity && (
-          <Button className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
-            <Link href={`/concerts/${locationCity}`} className="text-2xl text-black">
-              Tous les concerts à {locationCity}
-            </Link>
-          </Button>
-        )}
+        <Button className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
+          <Link href={`/concerts/${locationInfo?.citySlug}`} className="text-2xl text-black">
+            Tous les concerts à {locationInfo?.cityName}
+          </Link>
+        </Button>
       </div>
     </div>
   )

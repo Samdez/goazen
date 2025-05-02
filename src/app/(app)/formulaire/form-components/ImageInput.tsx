@@ -1,9 +1,8 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useTsController, useDescription } from '@ts-react/form'
-import { File } from 'payload'
 import { useState, useEffect } from 'react'
-import { Buffer } from 'buffer'
+import Image from 'next/image'
 
 export function InputFile() {
   const { field, error } = useTsController()
@@ -42,7 +41,7 @@ export function InputFile() {
       />
       {preview && (
         <div className="mt-2">
-          <img src={preview} alt="Preview" className="max-w-[200px] rounded-md" />
+          <Image src={preview} alt="Preview" className="max-w-[200px] rounded-md" unoptimized />
         </div>
       )}
       {error?.errorMessage && <span className="text-sm text-red-500">{error?.errorMessage}</span>}
