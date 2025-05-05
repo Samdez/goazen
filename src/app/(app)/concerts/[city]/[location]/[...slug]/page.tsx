@@ -128,7 +128,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
 
   return (
     <div className="flex flex-col items-center  gap-4 text-white">
-      <h1 className="text-center text-6xl font-bold text-black">{event.title}</h1>
+      <h1 className="text-center text-6xl font-bold text-black px-4">{event.title}</h1>
       <div className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
         <p className="font-semibold">
           {formatDate(event.date)} - {event.time}
@@ -168,13 +168,13 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
           </h2>
           <h2 className="text-4xl text-black">Prochains concerts: </h2>
           <EventsCarousel
-            events={locationEvents.docs}
+            events={locationEvents.docs.filter((e) => e.id !== event.id)}
             placeholderImageUrl={placeholderImage || ''}
           />
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-center gap-4 px-4 py-8 text-white">
+      <div className="flex flex-wrap items-center justify-center gap-4 px-4 pb-8 text-white">
         {event.category && event.category.length > 0 && (
           <Button className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
             <Link

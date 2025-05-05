@@ -18,7 +18,7 @@ function EventsCarousel({
   placeholderImageUrl: string
 }) {
   return (
-    <Carousel className="w-[min(100%,1280px)] py-16">
+    <Carousel className="py-8 max-w-full">
       <CarouselContent>
         {events.map((event) => {
           return (
@@ -28,8 +28,8 @@ function EventsCarousel({
           )
         })}
       </CarouselContent>
-      <CarouselPrevious className="hidden md:flex" />
-      <CarouselNext className="hidden md:flex" />
+      <CarouselPrevious />
+      <CarouselNext />
     </Carousel>
   )
 }
