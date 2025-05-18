@@ -29,7 +29,9 @@ export async function _getEvents({
   locationId?: string
   limit?: number
 }) {
-  const extendedStartDate = startDate && extendEndDateToEndOfPreviousDay(startDate)
+  const adjustedStartDate = startDate ? new Date(startDate) : new Date()
+  adjustedStartDate.setDate(adjustedStartDate.getDate() - 1)
+  adjustedStartDate.setUTCHours(22, 0, 0, 0)
   const extendedEndDate = endDate && extendEndDateToEndOfDay(endDate)
 
   const events = await payload.find({
@@ -37,8 +39,8 @@ export async function _getEvents({
     where: {
       and: [
         ...(locationId ? [{ location: { equals: locationId } }] : []),
-        ...(extendedStartDate ? [{ date: { greater_than: extendedStartDate } }] : []),
-        ...(extendedEndDate ? [{ date: { less_than: extendedEndDate } }] : []),
+        ...(adjustedStartDate ? [{ date: { greater_than_equal: adjustedStartDate } }] : []),
+        ...(extendedEndDate ? [{ date: { less_than_equal: extendedEndDate } }] : []),
         ...(category ? [{ 'category.slug': { equals: category } }] : []),
         { _status: { equals: 'published' } },
       ],
@@ -67,6 +69,7 @@ export async function getCachedEvents({
   locationId?: string
   limit?: number
 }) {
+  return _getEvents({ startDate, endDate, page, category, locationId, limit })
   return unstable_cache(
     async () => await _getEvents({ startDate, endDate, page, category, locationId, limit }),
     [

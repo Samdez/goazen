@@ -18,7 +18,9 @@ export async function createEvent(formData: CreateEventSchemaType) {
     ticketingLink,
     location_alt,
   } = formData
-  const eventDate = new Date(`${date.date} UTC`).toISOString()
+  //Store date in same format as payload dashboard
+  const dateStr = date.date.toLocaleDateString('en-CA')
+  const eventDate = new Date(`${dateStr}T12:00:00.000Z`).toISOString()
   let imageRes: Media | undefined
   if (formData.image) {
     const browserFile = formData.image as unknown as globalThis.File
