@@ -18,8 +18,12 @@ export async function createEvent(formData: CreateEventSchemaType) {
     ticketingLink,
     location_alt,
   } = formData
-  //Store date in same format as payload dashboard
-  const dateStr = date.date.toLocaleDateString('en-CA')
+  // Get the date components in local timezone
+  const year = date.date.getFullYear()
+  const month = String(date.date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.date.getDate()).padStart(2, '0')
+  const dateStr = `${year}-${month}-${day}`
+  // Create date at noon UTC to ensure the date is preserved
   const eventDate = new Date(`${dateStr}T12:00:00.000Z`).toISOString()
   let imageRes: Media | undefined
   if (formData.image) {
