@@ -3,7 +3,6 @@
 import type { Media } from '@/payload-types'
 import { payload } from '../client/payload-client'
 import type { CreateEventSchemaType } from '../formulaire/form.client'
-import { setHours } from 'date-fns'
 
 export async function createEvent(formData: CreateEventSchemaType) {
   const {
@@ -19,10 +18,13 @@ export async function createEvent(formData: CreateEventSchemaType) {
     ticketingLink,
     location_alt,
   } = formData
-
-  //since we receive the date in UTC, we set the date to the next day at 12:00 to match with events created from the admin dashboard.
-  const eventDate = setHours(date.date, 14).toISOString()
-
+  // Get the date components in local timezone
+  const year = date.date.getFullYear()
+  const month = String(date.date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.date.getDate()).padStart(2, '0')
+  const dateStr = `${year}-${month}-${day}`
+  // Create date at noon UTC to ensure the date is preserved
+  const eventDate = new Date(`${dateStr}T12:00:00.000Z`).toISOString()
   let imageRes: Media | undefined
   if (formData.image) {
     const browserFile = formData.image as unknown as globalThis.File
