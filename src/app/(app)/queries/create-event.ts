@@ -18,8 +18,13 @@ export async function createEvent(formData: CreateEventSchemaType) {
     ticketingLink,
     location_alt,
   } = formData
+  console.log('🚀 ~ createEvent ~ original date:', date.date)
   //Store date in same format as payload dashboard
-  const eventDate = date.date.toISOString()
+  const eventDate = new Date(date.date)
+  eventDate.setDate(eventDate.getDate() + 1) // Add one day
+  eventDate.setUTCHours(14, 0, 0, 0) // Set to 2 PM (14:00) UTC
+  const formattedEventDate = eventDate.toISOString().replace('Z', '') // Remove the Z suffix
+  console.log('🚀 ~ createEvent ~ formatted date:', formattedEventDate)
 
   let imageRes: Media | undefined
   if (formData.image) {
@@ -39,7 +44,7 @@ export async function createEvent(formData: CreateEventSchemaType) {
     const res = await payload.create({
       collection: 'events',
       data: {
-        date: eventDate,
+        date: formattedEventDate,
         title,
         description,
         location: location?.id,
