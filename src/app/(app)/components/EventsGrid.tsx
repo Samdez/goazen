@@ -67,7 +67,7 @@ export default function EventsGrid({
   }
 
   return (
-    <div className="flex flex-wrap justify-around gap-24 px-12 pb-32">
+    <div className="flex flex-wrap justify-around md:justify-between px-12 md:px-32 gap-24 md:gap-14 pb-32">
       {events.map((event) => (
         <EventThumbnail event={event} key={event.id} placeholderImageUrl={placeholderImageUrl} />
       ))}

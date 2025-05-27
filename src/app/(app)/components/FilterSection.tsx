@@ -27,7 +27,7 @@ function FilterSection({
     category,
   })
   return (
-    <div className="pb-8">
+    <div className="pb-8 md:px-32">
       <FilterSectionText activeTime={activeTime} activeCategory={category} />
       <div className="md:flex">
         <div className="flex w-full flex-wrap justify-evenly gap-1 py-4 md:w-1/2">
@@ -35,7 +35,7 @@ function FilterSection({
             return <GenreButton genre={genre} key={genre.id} />
           })}
         </div>
-        <div className="flex w-full justify-center py-4 md:w-1/2  md:justify-end md:pr-40 ">
+        <div className="flex w-full justify-center py-4 md:w-1/2  md:justify-end">
           <div className="[&>*:nth-child(even)]:rounded-r-md [&>*:nth-child(even)]:border-l-0 [&>*:nth-child(odd)]:rounded-l-md">
             <FilterButton path={dayHRef} text="ce soir" activeTime={activeTime} period="day" />
             <FilterButton
