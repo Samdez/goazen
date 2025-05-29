@@ -66,7 +66,7 @@ function Navbar() {
         />
         <span></span>
         <CityFilter
-          href={'/lieux'}
+          href={'/salles-de-concert'}
           text="les salles de concert"
           secondaryText="du pays basque et des landes"
           className="bg-[#ee2244bc] text-white"
