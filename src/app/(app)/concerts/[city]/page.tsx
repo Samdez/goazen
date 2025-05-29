@@ -5,7 +5,6 @@ import { getPlaceholderImage } from '../../queries/get-placeholder-image'
 import { PacmanLoader } from 'react-spinners'
 import { Event } from '@/payload-types'
 import EventThumbnail from '../../components/EventThumbnail'
-import { payload } from '../../client/payload-client'
 import { cn } from '@/lib/utils'
 import { darkerGrotesque } from '../../fonts'
 import { getCity } from '../../queries/get-city'
@@ -47,16 +46,17 @@ export async function generateMetadata({ params }: { params: Promise<{ city: str
     },
   }
 }
-export async function generateStaticParams() {
-  const events = await payload.find({
-    collection: 'cities',
-    limit: 100,
-  })
 
-  return events.docs.map((city) => ({
-    city: city.slug,
-  }))
-}
+// export async function generateStaticParams() {
+//   const events = await payload.find({
+//     collection: 'cities',
+//     limit: 100,
+//   })
+
+//   return events.docs.map((city) => ({
+//     city: city.slug,
+//   }))
+// }
 
 export default async function CityPage({ params }: { params: Promise<{ city: string }> }) {
   const cityParam = (await params).city
