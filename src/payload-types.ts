@@ -147,6 +147,21 @@ export interface City {
   name: string;
   slug?: string | null;
   description?: string | null;
+  'rich text description'?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   cities_related?: (string | City)[] | null;
   updatedAt: string;
   createdAt: string;
@@ -407,6 +422,7 @@ export interface CitiesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   description?: T;
+  'rich text description'?: T;
   cities_related?: T;
   updatedAt?: T;
   createdAt?: T;

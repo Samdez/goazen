@@ -9,6 +9,15 @@ import { cn } from '@/lib/utils'
 import { darkerGrotesque } from '../../fonts'
 import { getCity } from '../../queries/get-city'
 import Link from 'next/link'
+import { RichText } from '@payloadcms/richtext-lexical/react'
+
+function RichTextWrapper({ data }: { data: any }) {
+  return (
+    <div className={darkerGrotesque.className}>
+      <RichText data={data} />
+    </div>
+  )
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ city: string[] }> }) {
   const cityParam = (await params).city
@@ -46,17 +55,6 @@ export async function generateMetadata({ params }: { params: Promise<{ city: str
     },
   }
 }
-
-// export async function generateStaticParams() {
-//   const events = await payload.find({
-//     collection: 'cities',
-//     limit: 100,
-//   })
-
-//   return events.docs.map((city) => ({
-//     city: city.slug,
-//   }))
-// }
 
 export default async function CityPage({ params }: { params: Promise<{ city: string }> }) {
   const cityParam = (await params).city
@@ -97,9 +95,12 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
         </div>
       </Suspense>
 
+      <div className="max-w-full mx-auto px-6 py-8 text-gray-800">
+        {city['rich text description'] && <RichTextWrapper data={city['rich text description']} />}
+      </div>
       <div className={cn(darkerGrotesque.className, 'max-w-full mx-auto px-6 py-8 text-gray-800')}>
-        <h2 className="text-2xl font-bold mb-4">Concerts, DJ sets et soirées à {city.name}</h2>
-        <p className="mb-4">{city.description}</p>
+        {/* <h2 className="text-2xl font-bold mb-4">Concerts, DJ sets et soirées à {city.name}</h2>
+        <p className="mb-4">{city.description}</p> */}
         <h2 className="text-2xl font-bold mb-4">Où écouter de la musique à {city.name} :</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-4 pb-4">
           {locations.docs

@@ -1,13 +1,13 @@
 import { Button } from '@/components/ui/button'
-import GenreButton from '../components/GenreButton'
-import LocationsGrid from '../components/LocationsGrid'
-import { getCities } from '../queries/get-cities'
-import { getLocations } from '../queries/get-locations'
-import { getPlaceholderImage } from '../queries/get-placeholder-image'
+import LocationsGrid from '../../components/LocationsGrid'
+import { getCities } from '../../queries/get-cities'
+import { getLocations } from '../../queries/get-locations'
+import { getPlaceholderImage } from '../../queries/get-placeholder-image'
 import Link from 'next/link'
 
-async function LocationsPage() {
-  const locations = await getLocations({ cityName: 'biarritz' })
+async function LocationsPage({ params }: { params: Promise<{ city: string }> }) {
+  const cityParam = (await params).city
+  const locations = await getLocations({ cityName: cityParam })
   const placeholderImageUrl = await getPlaceholderImage()
   const cities = await getCities()
 
@@ -18,7 +18,9 @@ async function LocationsPage() {
           return (
             <Link href={`/concerts/${city.slug}`} key={city.id}>
               <Button
-                className={`hover:bg-black[#E2B748]  h-10 w-20 text-pretty border-2 border-black bg-white text-black hover:border-none hover:text-[#ee2244bc]`}
+                className={`hover:bg-black[#E2B748]  h-10 w-20 text-pretty border-2 border-black bg-white text-black hover:border-none hover:text-[#ee2244bc] ${
+                  city.slug === cityParam && 'border-none text-[#ee2244bc]'
+                }`}
               >
                 {city.name}
               </Button>

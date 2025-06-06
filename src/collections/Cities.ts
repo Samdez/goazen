@@ -1,6 +1,7 @@
 import { CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
 import { isAdmin } from '@/app/(payload)/access/isAdmin'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
 const Cities: CollectionConfig = {
   slug: 'cities',
@@ -30,6 +31,12 @@ const Cities: CollectionConfig = {
     {
       name: 'description',
       type: 'text',
+    },
+    {
+      name: 'rich text description',
+      type: 'richText',
+
+      // editor: lexicalEditor({}),
     },
     {
       name: 'cities_related',
