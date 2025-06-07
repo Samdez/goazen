@@ -1,5 +1,4 @@
 import defaultTheme from 'tailwindcss/defaultTheme'
-import typography from '@tailwindcss/typography'
 // Import any other plugins you're using
 
 /** @type {import('tailwindcss').Config} */
@@ -57,7 +56,7 @@ const config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate'), typography],
+  plugins: [require('tailwindcss-animate')],
 }
 
 export default config
