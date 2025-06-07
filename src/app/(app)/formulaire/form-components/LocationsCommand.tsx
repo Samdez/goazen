@@ -24,7 +24,6 @@ export function LocationsCommand({ locations }: { locations: Location[] }) {
 
   const [open, setOpen] = useState(false)
 
-  console.log('Error value:', error)
   return (
     <>
       <Popover open={open} onOpenChange={setOpen}>

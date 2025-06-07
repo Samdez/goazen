@@ -66,7 +66,7 @@ function Navbar() {
         />
         <span></span>
         <CityFilter
-          href={'/salles-de-concert'}
+          href={'/salles-de-concert?city=biarritz'}
           text="les salles de concert"
           secondaryText="du pays basque et des landes"
           className="bg-[#ee2244bc] text-white"
