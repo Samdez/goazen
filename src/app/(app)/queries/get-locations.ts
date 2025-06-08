@@ -7,7 +7,7 @@ export async function getLocations({
   page = 1,
   limit = 100,
 }: {
-  cityName: string
+  cityName?: string
   page?: number
   limit?: number
 }) {
@@ -15,7 +15,7 @@ export async function getLocations({
     collection: 'locations',
     sort: 'name',
     limit,
-    where: { 'city V2.slug': { equals: slugifyString(cityName) } },
+    where: cityName ? { 'city V2.slug': { equals: slugifyString(cityName) } } : {},
     page,
   })
   return locations

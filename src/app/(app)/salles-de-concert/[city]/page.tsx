@@ -33,6 +33,7 @@ async function LocationsPage({ params }: { params: Promise<{ city: string }> }) 
         initialNextPage={locations.nextPage}
         hasNextPageProps={locations.hasNextPage}
         placeholderImageUrl={placeholderImageUrl || ''}
+        cityName={cityParam}
       />
     </>
   )
