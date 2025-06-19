@@ -53,10 +53,10 @@ const ExportComponent = () => {
   const fetchOptions = async () => {
     try {
       const startDate = startOfWeek(new Date(), {
-        weekStartsOn: 1,
+        weekStartsOn: 2,
       }).toISOString()
       const endDate = endOfWeek(new Date(), {
-        weekStartsOn: 1,
+        weekStartsOn: 2,
       }).toISOString()
 
       const events = await _getEvents({
