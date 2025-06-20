@@ -21,16 +21,9 @@ function Navbar() {
       <div className="fixed top-0 z-50 grid h-32 w-full grid-cols-4 text-[#E45110] md:hidden">
         <Link
           href={'/'}
-          className="bg-[#FFF2DD] border-b-2 border-black flex flex-col justify-center items-center text-2xl pl-4"
-        >
-          <CalendarDays className="w-10 h-10" />
-          <p className="text-sm text-center">Partage ton event</p>
-        </Link>
-        <Link
-          href={'/'}
           onClick={handleClickHome}
           className={cn(
-            'col-span-2 flex h-32 items-center justify-center text-4xl bg-[#FFF2DD] border-b-2 border-black',
+            'col-span-1 flex h-32 items-center justify-center text-4xl bg-[#FFF2DD] border-b-2 border-black',
           )}
         >
           <Image
@@ -41,6 +34,13 @@ function Navbar() {
             // className="group-hover:opacity-0 transition-all duration-300 ease-in-outleft-4"
           />
           {/* <p className="text-3xl font-bold">Goazen!</p> */}
+        </Link>
+        <Link
+          href={'/'}
+          className="col-span-2 bg-[#FFF2DD] border-b-2 border-black flex flex-col justify-center items-center text-2xl pl-4"
+        >
+          <CalendarDays className="w-10 h-10" />
+          <p className="text-xl text-center">Partage ton event</p>
         </Link>
         <div
           className="flex w-full items-center justify-center bg-[#FFF2DD] border-b-2 border-black text-black"
@@ -108,11 +108,10 @@ function Navbar() {
         <NavBlock
           href={'/salles-de-concert?city=biarritz'}
           text="Partage nous ton event!"
-          // secondaryText="du pays basque et des landes"
-          className="bg-[#E45110] text-white h-2/3 w-1/2 rounded-lg justify-self-center px-2 font-text border-none"
+          className="bg-[#E45110] text-white h-16 w-36 rounded-lg justify-self-center px-2 gap-2 font-text border-none"
           onClick={() => setActivePage('/')}
-          icon={<CalendarDays className="w-20 h-20" />}
-          textSize="text-xl"
+          icon={<CalendarDays className="w-10 h-10" />}
+          textSize="text-lg text-left leading-none"
         />
         {/* <CityFilter
           href={'/contact'}
