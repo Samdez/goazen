@@ -65,7 +65,7 @@ function FilterButton({
   const router = useRouter()
   return (
     <Button
-      className={`hover:bg-black[#E2B748] h-14 w-36  rounded-none border-2 border-black bg-[#FFDCA8] text-black hover:border-none hover:bg-[#ee2244bc] hover:text-white 
+      className={`hover:bg-black[#E2B748] h-14 w-36  rounded-none border-2 border-black bg-[#FFF2DD] text-black hover:border-none hover:bg-[#ee2244bc] hover:text-white 
        ${activeTime === period && 'bg-[#ee2244bc] text-white'}
        `}
       onClick={() => router.push(path)}

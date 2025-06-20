@@ -137,7 +137,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
       <div>
         <Link
           href={`/concerts/${locationInfo?.citySlug}/${locationInfo?.locationSlug}`}
-          className="rounded-md p-2 text-center text-4xl font-bold text-black hover:bg-black hover:text-[#FFDCA8]"
+          className="rounded-md p-2 text-center text-4xl font-bold text-black hover:bg-black hover:text-[#FFF2DD]"
         >
           {locationInfo?.locationName}
         </Link>

@@ -38,13 +38,13 @@ export default async function Page({
   }
   return (
     <>
-      <div className="flex justify-center mb-4">
+      {/* <div className="flex justify-center mb-4">
         <Link href={'/formulaire'}>
           <Button className="bg-[#ee2244bc] text-white h-16 w-64 text-3xl">
             Partage-nous ton event!
           </Button>
         </Link>
-      </div>
+      </div> */}
       <FilterSection activeTime={activeTime} categories={categories} />
       <Suspense
         fallback={

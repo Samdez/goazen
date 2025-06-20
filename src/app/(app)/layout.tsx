@@ -51,7 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fr">
       <body className={bebas.className}>
         <Navbar />
-        <main className="mt-32 min-h-screen bg-[#FFDCA8] py-4">
+        <main className="mt-32 min-h-screen bg-[#FFF2DD] py-4">
           <NextTopLoader color="#ee2244bc" showSpinner={false} />
           {children}
           <Analytics />

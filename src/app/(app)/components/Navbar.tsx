@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { MouseEventHandler, useState } from 'react'
 import { cn } from '@/lib/utils'
 import Burger from './icons/burger'
+import Image from 'next/image'
+import { CalendarDays } from 'lucide-react'
 
 function Navbar() {
   const [activePage, setActivePage] = useState('/')
@@ -16,98 +18,143 @@ function Navbar() {
   return (
     <>
       {<SideBar onClick={() => setIsOpen(false)} isOpen={isOpen} />}
-      <div className="fixed top-0 z-50 grid h-32 w-full grid-cols-4 border-b-8 border-black bg-black text-[#FFDCA8] md:hidden">
+      <div className="fixed top-0 z-50 grid h-32 w-full grid-cols-4 text-[#E45110] md:hidden">
+        <Link
+          href={'/'}
+          className="bg-[#FFF2DD] border-b-2 border-black flex flex-col justify-center items-center text-2xl pl-4"
+        >
+          <CalendarDays className="w-10 h-10" />
+          <p className="text-sm text-center">Partage ton event</p>
+        </Link>
         <Link
           href={'/'}
           onClick={handleClickHome}
           className={cn(
-            'col-span-3 flex h-full items-center justify-center text-4xl transition-colors hover:bg-black hover:text-[#FFDCA8]',
-            {
-              'bg-black text-[#FFDCA8]': activePage === '/',
-            },
+            'col-span-2 flex h-32 items-center justify-center text-4xl bg-[#FFF2DD] border-b-2 border-black',
           )}
         >
-          <p className="w-10/12 text-center text-6xl font-bold">Goazen!</p>
+          <Image
+            src="/GOAZEN_MASCOTTES.png"
+            alt="Goazen!"
+            width={100}
+            height={100}
+            // className="group-hover:opacity-0 transition-all duration-300 ease-in-outleft-4"
+          />
+          {/* <p className="text-3xl font-bold">Goazen!</p> */}
         </Link>
-        <div className="flex w-full items-center justify-center" onClick={() => setIsOpen(!isOpen)}>
+        <div
+          className="flex w-full items-center justify-center bg-[#FFF2DD] border-b-2 border-black text-black"
+          onClick={() => setIsOpen(!isOpen)}
+        >
           {isOpen ? <div className="text-4xl">X</div> : <Burger />}
         </div>
       </div>
-      <div className="fixed top-0 z-50 hidden h-32 w-full grid-cols-7 items-center  justify-end border-b-8 border-black bg-[#FFDCA8] text-black md:grid">
+      <div className="fixed top-0 z-50 hidden h-32 w-full grid-cols-5 items-center justify-end bg-[#FFF2DD] text-black md:grid border-b-2 border-black">
         <Link
           href={'/'}
           onClick={() => setActivePage('/')}
           className={cn(
-            'col-span-1 flex h-full items-center justify-center  text-2xl transition-colors hover:bg-black hover:text-[#FFDCA8]',
-            {
-              'bg-black text-[#FFDCA8]': activePage === '/',
-            },
+            'group col-span-1 flex items-center text-2xl transition-all duration-300 ease-in-out hover:bg-[#E45110] hover:text-[#FFF2DD] text-[#E45110] h-32 relative overflow-hidden',
           )}
         >
-          <p className="text-center text-6xl font-bold">Goazen!</p>
+          <Image
+            src="/GOAZEN_MASCOTTES.png"
+            alt="Goazen!"
+            width={100}
+            height={100}
+            className="group-hover:opacity-0 transition-all duration-300 ease-in-out absolute left-4"
+          />
+          <p className="text-6xl font-bold transition-all duration-300 ease-in-out absolute w-full text-center translate-x-16 group-hover:translate-x-0">
+            Goazen!
+          </p>
         </Link>
-        <CityFilter
-          href={'/concerts/biarritz'}
-          text="Biarritz"
-          onClick={() => setActivePage('biarritz')}
-          className={activePage === 'biarritz' ? 'bg-black text-[#FFDCA8]' : ''}
+        {/* <Link
+          href={'/concerts/pays-basque'}
+          onClick={() => setActivePage('pays-basque')}
+          className={cn(
+            'col-span-1 flex items-center justify-center  text-2xl transition-colors hover:bg-black hover:text-[#FFF2DD] max-h-full min-h-full',
+          )}
+        >
+          <p className="text-center text-6xl font-bold">Pays Basque</p>
+        </Link> */}
+        <NavBlock
+          href={'/concerts/pays-basque'}
+          text="Pays Basque"
+          onClick={() => setActivePage('pays-basque')}
+          className={activePage === 'pays-basque' ? 'bg-black text-[#FFF2DD]' : ''}
         />
-        <CityFilter
-          href={'/concerts/anglet'}
-          onClick={() => setActivePage('anglet')}
-          text="Anglet"
-          className={activePage === 'anglet' ? 'bg-black text-[#FFDCA8]' : ''}
+        <NavBlock
+          href={'/concerts/landes'}
+          onClick={() => setActivePage('landes')}
+          text="Landes"
+          className={activePage === 'landes' ? 'bg-black text-[#FFF2DD]' : ''}
         />
-        <CityFilter
+        {/* <CityFilter
           href={'/concerts/bayonne'}
           onClick={() => setActivePage('bayonne')}
-          className={activePage === 'bayonne' ? 'bg-black text-[#FFDCA8]' : ''}
+          className={activePage === 'bayonne' ? 'bg-black text-[#FFF2DD]' : ''}
           text="Bayonne"
-        />
-        <span></span>
-        <CityFilter
+        /> */}
+        {/* <span></span> */}
+        <NavBlock
           href={'/salles-de-concert?city=biarritz'}
-          text="les salles de concert"
-          secondaryText="du pays basque et des landes"
-          className="bg-[#ee2244bc] text-white"
+          text="Les salles de concert"
+          // secondaryText="du Pays Basque et des Landes"
+          className={
+            activePage === 'salles-de-concert' ? 'bg-black text-[#FFF2DD] font-text' : 'font-text'
+          }
           onClick={() => setActivePage('/')}
         />
-        <CityFilter
+        <NavBlock
+          href={'/salles-de-concert?city=biarritz'}
+          text="Partage nous ton event!"
+          // secondaryText="du pays basque et des landes"
+          className="bg-[#E45110] text-white h-2/3 w-1/2 rounded-lg justify-self-center px-2 font-text border-none"
+          onClick={() => setActivePage('/')}
+          icon={<CalendarDays className="w-20 h-20" />}
+          textSize="text-xl"
+        />
+        {/* <CityFilter
           href={'/contact'}
           text="Contact"
           secondaryText="parle-nous de ta soirée"
           onClick={() => setActivePage('contact')}
-          className={activePage === 'contact' ? 'bg-black text-[#FFDCA8]' : ''}
-        />
+          className={activePage === 'contact' ? 'bg-black text-[#FFF2DD]' : ''}
+        /> */}
       </div>
     </>
   )
 }
 
-function CityFilter({
+function NavBlock({
   href,
   onClick,
   text,
   className,
   secondaryText,
+  icon,
+  textSize,
 }: {
   href: string
   text: string
   className?: string
   secondaryText?: string
   onClick?: MouseEventHandler<HTMLAnchorElement>
+  icon?: any
+  textSize?: string
 }) {
   return (
     <Link
       onClick={onClick}
       href={href}
       className={cn(
-        'flex h-full items-center justify-center rounded-none bg-[#FFDCA8] px-0 text-black transition-colors hover:bg-black hover:text-[#FFDCA8]',
+        'flex h-32 items-center justify-center rounded-none bg-[#FFF2DD] px-0 text-black transition-colors hover:bg-black hover:text-[#FFF2DD] border-b-2 border-black',
         className,
       )}
     >
+      {icon}
       <div className="flex flex-col text-center">
-        <p className="text-3xl">{text}</p>
+        <p className={cn('text-3xl', textSize)}>{text}</p>
         <p className="text-md">{secondaryText}</p>
       </div>
     </Link>
@@ -124,17 +171,27 @@ function SideBar({
   return (
     <div
       className={cn(
-        'fixed right-0 z-50 flex min-h-[86vh] w-3/4 flex-col items-center justify-evenly bg-[#FFDCA8] py-2 text-black duration-300 ease-in-out sm:hidden',
+        'fixed right-0 z-50 flex min-h-[86vh] w-full flex-col items-center justify-evenly bg-[#FFF2DD] py-2 text-black duration-300 ease-in-out sm:hidden',
         {
           'translate-x-0 ': isOpen,
           'translate-x-full': !isOpen,
         },
       )}
     >
-      <CityFilter href={'/concerts/biarritz'} text="Biarritz" onClick={onClick} />
-      <CityFilter href={'/concerts/anglet'} text="Anglet" onClick={onClick} />
-      <CityFilter href={'/concerts/bayonne'} text="Bayonne" onClick={onClick} />
-      <CityFilter href={'/contact'} text="Contact" onClick={onClick} />
+      <NavBlock
+        href={'/concerts/pays-basque'}
+        text="Pays Basque"
+        onClick={onClick}
+        className="border-none"
+      />
+      <NavBlock href={'/concerts/landes'} text="Landes" onClick={onClick} className="border-none" />
+      <NavBlock
+        href={'/salles-de-concert?city=biarritz'}
+        text="Les salles de concert"
+        onClick={onClick}
+        className="border-none"
+      />
+      {/* <NavBlock href={'/contact'} text="Contact" onClick={onClick} /> */}
     </div>
   )
 }

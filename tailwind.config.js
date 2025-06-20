@@ -6,6 +6,10 @@ const config = {
   darkMode: ['class'],
   content: ['./src/**/*.{jsx,tsx}'], // tell tailwind where to look
   theme: {
+    fontFamily: {
+      title: ['Bebas Neue', 'sans-serif'],
+      text: ['Darker Grotesque', 'sans-serif'],
+    },
     extend: {
       borderRadius: {
         lg: 'var(--radius)',
