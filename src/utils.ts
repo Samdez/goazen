@@ -39,7 +39,7 @@ export function createHref({
   const dayLimit = `startDate=${today}&endDate=${today}&activeTime=day`
   const weekLimit = `startDate=${today}&endDate=${getEndOfWeek(new Date())}&activeTime=week`
   let url = ''
-  url += category ? `/genres/${category}` : '/'
+  url += category ? (category === 'all' ? '/' : `/genres/${category}`) : '/'
 
   if (!activeTime) {
     if (time === 'day') return `${url}?${dayLimit}`
@@ -53,7 +53,7 @@ export function createHref({
     if (time === 'day') return `${url}?${dayLimit}`
     if (time === 'week') return url
   }
-  return ''
+  return url
 }
 
 export function buildEventUrl(event: Event) {

@@ -106,7 +106,7 @@ function Navbar() {
           onClick={() => setActivePage('/')}
         />
         <NavBlock
-          href={'/salles-de-concert?city=biarritz'}
+          href={'/formulaire'}
           text="Partage nous ton event!"
           className="bg-[#E45110] text-white h-16 w-36 rounded-lg justify-self-center px-2 gap-2 font-text border-none"
           onClick={() => setActivePage('/')}
