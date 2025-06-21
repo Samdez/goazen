@@ -10,7 +10,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer'
+import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle } from '@/components/ui/drawer'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { useRouter } from 'next/navigation'
@@ -44,10 +44,11 @@ export function GenreFilterComboBox({ categories }: { categories: Category[] }) 
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <Button variant="outline" className="w-[150px] justify-start">
-          {category ? <>{category}</> : <>+ Set status</>}
+          {category ? <>{category}</> : <>Tous les genres</>}
         </Button>
       </DrawerTrigger>
       <DrawerContent>
+        <DrawerTitle className="sr-only">Sélectionne un genre</DrawerTitle>
         <div className="mt-4 border-t">
           <StatusList setOpen={setOpen} categories={categories} />
         </div>

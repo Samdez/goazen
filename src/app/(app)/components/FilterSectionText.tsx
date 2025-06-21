@@ -75,7 +75,7 @@ function FilterSectionText({ activeTime, activeCategory }: FilterSectionTextProp
   }, [activeCategory])
 
   return (
-    <h1 className="text-balance text-2xl md:pl-8">
+    <h1 className="text-balance text-2xl md:pl-8 text-center md:text-left">
       Tous les concerts
       {` ${category?.replace('_', '/')} ${name} ` || ' '}
       au Pays basque et dans les Landes

@@ -10,7 +10,7 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer'
+import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { useParams, useRouter } from 'next/navigation'
@@ -44,10 +44,11 @@ export function DateFilterComboBox({ days }: { days: ['day', 'week'] }) {
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <Button variant="outline" className="w-[150px] justify-start">
-          {day ? <>{day}</> : <>+ Set status</>}
+          {day ? <>{day}</> : <>Quand ?</>}
         </Button>
       </DrawerTrigger>
       <DrawerContent>
+        <DrawerTitle className="sr-only">Sélectionne une date</DrawerTitle>
         <div className="mt-4 border-t">
           <StatusList setOpen={setOpen} days={days} />
         </div>

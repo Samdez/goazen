@@ -29,14 +29,14 @@ function FilterSection({
     category,
   })
   return (
-    <div className="pb-8 md:px-32 flex w-full justify-evenly">
-      <div className="flex flex-col justify-center">
+    <div className="pb-8 md:px-32 md:flex w-full justify-evenly">
+      <div className="flex flex-col justify-center px-2">
         <FilterSectionText activeTime={activeTime} activeCategory={category} />
-        <p className="font-text md:pl-8 text-lg leading-none">
+        <p className="font-text md:pl-8 text-lg leading-none text-center md:text-left">
           Retrouve tous les concerts, DJ sets, festivals et soirées près de chez toi
         </p>
       </div>
-      <div>
+      <div className="flex gap-2 justify-center pt-4">
         <GenreFilterComboBox
           categories={[
             { id: 'all', name: 'Tous les genres', slug: 'all', updatedAt: '', createdAt: '' },
