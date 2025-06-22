@@ -115,7 +115,7 @@ export default function FormClient({
           Instagram.
         </p>
         <p className="font-text md:text-center">
-          Pour nous envoyer un mail c'est{' '}
+          Pour nous envoyer un mail c&apos;est{' '}
           <a href="mailto:goazen.info@gmail.com" className="underline">
             ici
           </a>
