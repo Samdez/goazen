@@ -58,7 +58,7 @@ export function createHref({
 
 export function buildEventUrl(event: Event) {
   const locationInfo = getLocationInfo(event)
-  return `/concerts/${locationInfo?.citySlug}/${locationInfo?.locationSlug}/${event.slug}_${event.id}`
+  return `/concerts/${locationInfo?.region || event.region}/${locationInfo?.citySlug}/${locationInfo?.locationSlug}/${event.slug}_${event.id}`
 }
 
 export function getLocationInfo(event: Event) {
@@ -76,6 +76,7 @@ export function getLocationInfo(event: Event) {
       cityName: event.location['city V2'].name,
       locationSlug: event.location.slug,
       locationName: event.location.name,
+      region: event.location['city V2'].region,
     }
   }
   return {

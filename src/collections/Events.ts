@@ -56,6 +56,14 @@ const Events: CollectionConfig = {
       },
     },
     {
+      name: 'region',
+      type: 'select',
+      options: ['pays-basque', 'landes'],
+      admin: {
+        condition: (data) => !data.location,
+      },
+    },
+    {
       name: 'category',
       type: 'relationship',
       relationTo: 'categories',

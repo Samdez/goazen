@@ -9,7 +9,6 @@ import {
   CardTitle,
   CardDescription,
 } from '../../../components/ui/card'
-import slugify from 'slugify'
 import { darkerGrotesque } from '../fonts'
 
 function EventThumbnail({

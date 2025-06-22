@@ -21,6 +21,7 @@ export async function _getEvents({
   category,
   locationId,
   limit,
+  region,
 }: {
   startDate?: string
   endDate?: string
@@ -28,6 +29,7 @@ export async function _getEvents({
   category?: string
   locationId?: string
   limit?: number
+  region?: string
 }) {
   const adjustedStartDate = startDate ? new Date(startDate) : new Date()
   adjustedStartDate.setDate(adjustedStartDate.getDate() - 1)
@@ -42,6 +44,7 @@ export async function _getEvents({
         ...(adjustedStartDate ? [{ date: { greater_than_equal: adjustedStartDate } }] : []),
         ...(extendedEndDate ? [{ date: { less_than_equal: extendedEndDate } }] : []),
         ...(category ? [{ 'category.slug': { equals: category } }] : []),
+        ...(region ? [{ 'location.city V2.region': { equals: region } }] : []),
         { _status: { equals: 'published' } },
       ],
     },
@@ -61,6 +64,7 @@ export async function getCachedEvents({
   category,
   locationId,
   limit,
+  region,
 }: {
   startDate?: string
   endDate?: string
@@ -68,10 +72,10 @@ export async function getCachedEvents({
   category?: string
   locationId?: string
   limit?: number
+  region?: string
 }) {
-  return _getEvents({ startDate, endDate, page, category, locationId, limit })
   return unstable_cache(
-    async () => await _getEvents({ startDate, endDate, page, category, locationId, limit }),
+    async () => await _getEvents({ startDate, endDate, page, category, locationId, limit, region }),
     [
       startDate || '',
       endDate || '',
@@ -79,6 +83,7 @@ export async function getCachedEvents({
       category || '',
       locationId || '',
       limit?.toString() || '',
+      region || '',
     ],
     {
       tags: ['events'],

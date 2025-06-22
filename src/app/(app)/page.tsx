@@ -6,8 +6,6 @@ import { Suspense } from 'react'
 import { PacmanLoader } from 'react-spinners'
 import FilterSection from './components/FilterSection'
 import { getCategories } from './queries/get-categories'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
 
 const searchParamsSchema = z.object({
   startDate: z.string().optional(),
@@ -38,13 +36,6 @@ export default async function Page({
   }
   return (
     <>
-      {/* <div className="flex justify-center mb-4">
-        <Link href={'/formulaire'}>
-          <Button className="bg-[#ee2244bc] text-white h-16 w-64 text-3xl">
-            Partage-nous ton event!
-          </Button>
-        </Link>
-      </div> */}
       <FilterSection activeTime={activeTime} categories={categories} />
       <Suspense
         fallback={

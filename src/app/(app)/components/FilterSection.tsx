@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button'
 import { Category } from '@/payload-types'
 import FilterSectionText from './FilterSectionText'
-import GenreButton from './GenreButton'
 import { useRouter } from 'next/navigation'
 import { createHref } from '@/utils'
 import { useCategory } from '../hooks/useGenre'
@@ -32,9 +31,9 @@ function FilterSection({
     <div className="pb-8 md:px-32 md:flex w-full justify-evenly">
       <div className="flex flex-col justify-center px-2">
         <FilterSectionText activeTime={activeTime} activeCategory={category} />
-        <p className="font-text md:pl-8 text-lg leading-none text-center md:text-left">
+        <h2 className="font-text md:pl-8 text-lg leading-none text-center md:text-left">
           Retrouve tous les concerts, DJ sets, festivals et soirées près de chez toi
-        </p>
+        </h2>
       </div>
       <div className="flex gap-2 justify-center pt-4">
         <GenreFilterComboBox

@@ -45,7 +45,7 @@ export default function LocationsGrid({
 
   if (!locations.length) {
     return (
-      <div className="flex flex-col items-center justify-center text-center gap-">
+      <div className="flex flex-col items-center justify-center text-center gap-4">
         <p>
           Goazen! n&apos;a pas encore répertorié de salles de concert dans cette ville. Si tu
           voudrais voir la tienne y figurer, envoie nous un mail via le formulaire de contact!

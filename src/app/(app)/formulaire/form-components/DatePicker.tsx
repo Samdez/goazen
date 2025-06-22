@@ -32,7 +32,11 @@ export function DatePicker() {
             )}
           >
             <CalendarIcon />
-            {value?.date ? format(value.date, 'PPP') : <span>Date de l&apos;évènement</span>}
+            {value?.date ? (
+              format(value.date, 'PPP', { locale: fr })
+            ) : (
+              <span>Date de l&apos;évènement</span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">

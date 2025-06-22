@@ -20,6 +20,7 @@ import { LocationsCommand } from './form-components/LocationsCommand'
 import MultipleSelector from './form-components/MultipleSelector'
 import TextArea from './form-components/TextArea'
 import TextField from './form-components/TextField'
+import Radio from './form-components/Radio'
 
 export const LocationSchema = z.object({
   name: z.string(),
@@ -31,6 +32,9 @@ export const DateSchema = z.object({
 export const GenresSchema = z.object({
   genres: z.string().array(),
 })
+export const RegionSchema = z.object({
+  region: z.enum(['pays basque', 'landes']).optional(),
+})
 const TextAreaSchema = createUniqueFieldSchema(z.string(), 'description')
 const ImageInputSchema = createUniqueFieldSchema(z.custom<File>().brand('image'), 'image')
 const mapping = [
@@ -40,6 +44,7 @@ const mapping = [
   [GenresSchema, MultipleSelector],
   [TextAreaSchema, TextArea],
   [ImageInputSchema, InputFile],
+  [RegionSchema, Radio],
 ] as const
 const MyForm = createTsForm(mapping, {
   FormComponent: FormContainer,
@@ -56,6 +61,7 @@ const createEventSchema = z
       .string()
       .optional()
       .describe('Lieu alternatif // Tu ne trouves pas ton lieu dans la liste? Renseigne-le ici '),
+    region: RegionSchema.optional(),
     date: DateSchema,
     time: z.string().optional().describe("Heure // Heure de l'event"),
     genres: GenresSchema.optional(),
@@ -76,12 +82,13 @@ const createEventSchema = z
     (data) => {
       return (
         (data.location?.name && data.location.name !== '') ||
-        (data.location_alt && data.location_alt !== '')
+        (data.location_alt && data.location_alt !== '' && data.region !== undefined)
       )
     },
     {
-      message: 'Le lieu doit être renseigné',
-      path: ['location'],
+      message:
+        'Merci de choisir un lieu dans notre liste OU de renseigner le nom du lieu et sa région',
+      path: ['region'],
     },
   )
 export type CreateEventSchemaType = z.infer<typeof createEventSchema>
@@ -99,12 +106,20 @@ export default function FormClient({
 
   return (
     <div className="flex flex-col items-center justify-center w-full pb-8">
-      <div className="flex flex-col gap-4 mb-12 p-2">
+      <div className="flex flex-col gap-4 mb-6 p-2 px-6">
+        <div className="flex flex-col gap-2"></div>
         <h1 className="text-2xl font-bold text-center">Ton event sur Goazen!</h1>
-        <p>
+        <p className="font-text">
           Si tu souhaites voir ton évènement sur Goazen!, il te suffit de remplir ce formulaire. Une
           fois validé par notre équipe, ton évènement sera visible sur ce site et dans notre agenda
           Instagram.
+        </p>
+        <p className="font-text md:text-center">
+          Pour nous envoyer un mail c'est{' '}
+          <a href="mailto:goazen.info@gmail.com" className="underline">
+            ici
+          </a>
+          <> !</>
         </p>
       </div>
       <div className="w-full lg:w-2/3 flex flex-col gap-6 px-6">
@@ -152,6 +167,9 @@ export default function FormClient({
                   value: category.id,
                 })),
                 placeholder: 'Genres musicaux',
+              },
+              region: {
+                options: ['pays basque', 'landes'],
               },
             }}
             renderAfter={({ submit }) =>

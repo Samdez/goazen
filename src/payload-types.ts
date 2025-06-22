@@ -145,6 +145,7 @@ export interface Location {
 export interface City {
   id: string;
   name: string;
+  region?: ('pays-basque' | 'landes') | null;
   slug?: string | null;
   description?: string | null;
   'rich text description'?: {
@@ -207,6 +208,7 @@ export interface Event {
   image?: (string | null) | Media;
   location?: (string | null) | Location;
   location_alt?: string | null;
+  region?: ('pays-basque' | 'landes') | null;
   category?: (string | Category)[] | null;
   genres?: string | null;
   price?: string | null;
@@ -366,6 +368,7 @@ export interface EventsSelect<T extends boolean = true> {
   image?: T;
   location?: T;
   location_alt?: T;
+  region?: T;
   category?: T;
   genres?: T;
   price?: T;
@@ -420,6 +423,7 @@ export interface LocationsSelect<T extends boolean = true> {
  */
 export interface CitiesSelect<T extends boolean = true> {
   name?: T;
+  region?: T;
   slug?: T;
   description?: T;
   'rich text description'?: T;

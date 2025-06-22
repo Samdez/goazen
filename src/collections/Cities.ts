@@ -16,6 +16,14 @@ const Cities: CollectionConfig = {
       required: true,
     },
     {
+      name: 'region',
+      type: 'select',
+      options: [
+        { label: 'Pays basque', value: 'pays-basque' },
+        { label: 'Landes', value: 'landes' },
+      ],
+    },
+    {
       name: 'slug',
       type: 'text',
       hooks: {
