@@ -14,9 +14,11 @@ import { darkerGrotesque } from '../fonts'
 function EventThumbnail({
   event,
   placeholderImageUrl,
+  className,
 }: {
   event: Event
   placeholderImageUrl: string
+  className?: string
 }) {
   const imageUrl =
     !(typeof event.image === 'string') && event.image ? event.image?.url : placeholderImageUrl
@@ -50,10 +52,15 @@ function EventThumbnail({
   const locationCity = getLocationCity()
 
   return (
-    <Card className="relative h-[360px] rounded-xl border-black shadow-[15px_15px_0px_0px_rgba(0,0,0)]">
-      <Link href={eventUrl} className="rounded-xl">
-        <CardContent className="rounded-xl border-4 border-black px-0 py-0">
-          <CardHeader className="h-44 px-2 py-4">
+    <Card
+      className={cn(
+        'relative aspect-[302/360] rounded-xl border-black shadow-[15px_15px_0px_0px_rgba(0,0,0)]',
+        className,
+      )}
+    >
+      <Link href={eventUrl} className="rounded-xl h-full">
+        <CardContent className="rounded-xl border-4 border-black px-0 py-0 h-full">
+          <CardHeader className="h-[45%] px-2 py-4">
             <span className="text-xl text-[#ee2244bc]">{formatDate(event.date)}</span>
             <span className="pl-2">{event.time}</span>
             <CardTitle className="text-md text-balance text-2xl">{event.title}</CardTitle>
@@ -68,12 +75,11 @@ function EventThumbnail({
               </CardDescription>
             )}
           </CardHeader>
-          <div className="relative flex h-[176px] w-full justify-center">
+          <div className="relative flex h-[55%] w-full justify-center">
             <Image
               alt={event.title}
               src={imageUrl || ''}
               fill
-              sizes="176px"
               className="rounded-b-md object-cover"
               priority
             />

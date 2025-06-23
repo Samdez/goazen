@@ -9,6 +9,7 @@ import EventThumbnail from './EventThumbnail'
 import EmptyEventsSection from './EmptyEventsSection'
 import { useCategory } from '../hooks/useGenre'
 import { useSearchParams } from 'next/navigation'
+import { cn } from '@/lib/utils'
 
 export default function EventsGrid({
   initialEvents,
@@ -67,12 +68,18 @@ export default function EventsGrid({
   }
 
   return (
-    <div className="flex flex-wrap justify-around md:justify-between px-12 md:px-32 gap-24 md:gap-14 pb-32">
+    <div className="grid grid-cols-1 md:grid-cols-3 px-12 md:px-32 gap-24 pb-32">
       {events.map((event) => (
-        <EventThumbnail event={event} key={event.id} placeholderImageUrl={placeholderImageUrl} />
+        <div key={event.id} className="flex justify-center w-full">
+          <EventThumbnail
+            event={event}
+            placeholderImageUrl={placeholderImageUrl}
+            className="w-full"
+          />
+        </div>
       ))}
       {hasNextPage && (
-        <div className="flex h-32 w-full items-center justify-center" ref={ref}>
+        <div className="flex h-32 w-full items-center justify-center col-span-full" ref={ref}>
           <PacmanLoader />
         </div>
       )}
