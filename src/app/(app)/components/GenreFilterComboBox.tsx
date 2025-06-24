@@ -28,7 +28,7 @@ export function GenreFilterComboBox({ categories }: { categories: Category[] }) 
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="w-[130px] justify-center h-16">
+          <Button variant="outline" className="w-[150px] justify-center h-full">
             {category ? <>{category}</> : <>Tous les genres</>}
             <ChevronDownIcon className="ml-2 h-4 w-4" />
           </Button>

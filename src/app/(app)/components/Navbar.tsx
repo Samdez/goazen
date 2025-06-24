@@ -4,7 +4,7 @@ import { MouseEventHandler, useState } from 'react'
 import { cn } from '@/lib/utils'
 import Burger from './icons/burger'
 import Image from 'next/image'
-import { CalendarDays } from 'lucide-react'
+import { CalendarDays, MusicIcon } from 'lucide-react'
 
 function Navbar() {
   const [activePage, setActivePage] = useState('/')
@@ -23,7 +23,7 @@ function Navbar() {
           href={'/'}
           onClick={handleClickHome}
           className={cn(
-            'col-span-1 flex h-32 items-center justify-center text-4xl bg-[#FFF2DD] border-b-2 border-black',
+            'col-span-1 h-32 items-center justify-center text-4xl bg-[#FFF2DD] border-b-2 border-black',
           )}
         >
           <Image
@@ -49,77 +49,57 @@ function Navbar() {
           {isOpen ? <div className="text-4xl">X</div> : <Burger />}
         </div>
       </div>
-      <div className="fixed top-0 z-50 hidden h-32 w-full grid-cols-5 items-center justify-end bg-[#FFF2DD] text-black md:grid border-b-2 border-black">
-        <Link
-          href={'/'}
-          onClick={() => setActivePage('/')}
-          className={cn(
-            'group col-span-1 flex items-center text-2xl transition-all duration-300 ease-in-out hover:bg-[#E45110] hover:text-[#FFF2DD] text-[#E45110] h-32 relative overflow-hidden',
-          )}
-        >
-          <Image
-            src="/GOAZEN_MASCOTTES.png"
-            alt="Goazen!"
-            width={100}
-            height={100}
-            className="group-hover:opacity-0 transition-all duration-300 ease-in-out absolute left-4"
+      <div className="fixed top-0 z-50 hidden h-32 w-full grid-cols-3 gap-24 items-center justify-end bg-[#FFF2DD] text-black md:grid border-b-2 border-black px-32">
+        <div className="col-span-2 flex justify-between">
+          <Link
+            href={'/'}
+            onClick={() => setActivePage('/')}
+            className={cn(
+              'group flex items-center text-2xl transition-all duration-300 ease-in-out hover:bg-[#E45110] hover:text-[#FFF2DD] text-[#E45110] h-32 relative overflow-hidden w-1/3',
+            )}
+          >
+            <Image
+              src="/GOAZEN_MASCOTTES.png"
+              alt="Goazen!"
+              width={100}
+              height={100}
+              className="group-hover:opacity-0 transition-all duration-300 ease-in-out"
+            />
+            <p className="text-5xl font-bold transition-all duration-300 ease-in-out absolute w-full text-center translate-x-12 group-hover:translate-x-0">
+              Goazen!
+            </p>
+          </Link>
+          <NavBlock
+            href={'/concerts/pays-basque'}
+            text="Pays Basque"
+            onClick={() => setActivePage('pays-basque')}
+            className={activePage === 'pays-basque' ? 'bg-black text-[#FFF2DD] w-1/3' : 'w-1/3'}
           />
-          <p className="text-6xl font-bold transition-all duration-300 ease-in-out absolute w-full text-center translate-x-16 group-hover:translate-x-0">
-            Goazen!
-          </p>
-        </Link>
-        {/* <Link
-          href={'/concerts/pays-basque'}
-          onClick={() => setActivePage('pays-basque')}
-          className={cn(
-            'col-span-1 flex items-center justify-center  text-2xl transition-colors hover:bg-black hover:text-[#FFF2DD] max-h-full min-h-full',
-          )}
-        >
-          <p className="text-center text-6xl font-bold">Pays Basque</p>
-        </Link> */}
-        <NavBlock
-          href={'/concerts/pays-basque'}
-          text="Pays Basque"
-          onClick={() => setActivePage('pays-basque')}
-          className={activePage === 'pays-basque' ? 'bg-black text-[#FFF2DD]' : ''}
-        />
-        <NavBlock
-          href={'/concerts/landes'}
-          onClick={() => setActivePage('landes')}
-          text="Landes"
-          className={activePage === 'landes' ? 'bg-black text-[#FFF2DD]' : ''}
-        />
-        {/* <CityFilter
-          href={'/concerts/bayonne'}
-          onClick={() => setActivePage('bayonne')}
-          className={activePage === 'bayonne' ? 'bg-black text-[#FFF2DD]' : ''}
-          text="Bayonne"
-        /> */}
-        {/* <span></span> */}
-        <NavBlock
-          href={'/salles-de-concert?city=biarritz'}
-          text="Les salles de concert"
-          // secondaryText="du Pays Basque et des Landes"
-          className={
-            activePage === 'salles-de-concert' ? 'bg-black text-[#FFF2DD] font-text' : 'font-text'
-          }
-          onClick={() => setActivePage('/')}
-        />
-        <NavBlock
-          href={'/formulaire'}
-          text="Partage nous ton event!"
-          className="bg-[#E45110] text-white h-16 w-36 rounded-lg justify-self-center px-2 gap-2 font-text border-none"
-          onClick={() => setActivePage('/')}
-          icon={<CalendarDays className="w-10 h-10" />}
-          textSize="text-lg text-left leading-none"
-        />
-        {/* <CityFilter
-          href={'/contact'}
-          text="Contact"
-          secondaryText="parle-nous de ta soirée"
-          onClick={() => setActivePage('contact')}
-          className={activePage === 'contact' ? 'bg-black text-[#FFF2DD]' : ''}
-        /> */}
+          <NavBlock
+            href={'/concerts/landes'}
+            onClick={() => setActivePage('landes')}
+            text="Landes"
+            className={activePage === 'landes' ? 'bg-black text-[#FFF2DD] w-1/3' : 'w-1/3'}
+          />
+        </div>
+        <div className="flex col-span-1 justify-between">
+          <NavBlock
+            href={'/salles-de-concert?city=biarritz'}
+            text="Les salles de concert"
+            className=" text-[#E45110] h-16 w-36 justify-self-end px-2 gap-2 font-text border-none rounded-lg hover:bg-[#E45110] hover:text-[#FFF2DD]"
+            icon={<MusicIcon className="w-10 h-10" />}
+            textSize="text-lg text-left leading-none"
+            onClick={() => setActivePage('/')}
+          />
+          <NavBlock
+            href={'/formulaire'}
+            text="Partage nous ton event!"
+            className="bg-[#E45110] text-white h-16 w-36 rounded-lg justify-self-end px-2 gap-2 font-text border-none hover:bg-[#FFF2DD] hover:text-[#E45110]"
+            onClick={() => setActivePage('/')}
+            icon={<CalendarDays className="w-10 h-10" />}
+            textSize="text-lg text-left leading-none"
+          />
+        </div>
       </div>
     </>
   )

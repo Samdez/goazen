@@ -28,7 +28,7 @@ export function DateFilterComboBox({ days }: { days: ['day', 'week'] }) {
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="w-[130px] justify-center h-16">
+          <Button variant="outline" className="w-[150px] justify-center h-full">
             {day ? <>{day}</> : <>Quand ?</>}
             <ChevronDownIcon className="ml-2 h-4 w-4" />
           </Button>
