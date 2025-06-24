@@ -1,12 +1,15 @@
 import { isAdminOrHasLocationAccess } from '@/app/(payload)/access/isAdminOrHasLocationAccess'
 import type { CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
+import { isAdmin } from '@/app/(payload)/access/isAdmin'
 
 const Locations: CollectionConfig = {
   slug: 'locations',
   access: {
     read: isAdminOrHasLocationAccess('id'),
     update: isAdminOrHasLocationAccess('id'),
+    create: isAdmin,
+    delete: isAdmin,
   },
   admin: { useAsTitle: 'name' },
   fields: [

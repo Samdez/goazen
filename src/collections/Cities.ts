@@ -6,7 +6,10 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 const Cities: CollectionConfig = {
   slug: 'cities',
   access: {
-    // read: isAdmin,
+    read: isAdmin,
+    create: isAdmin,
+    update: isAdmin,
+    delete: isAdmin,
   },
   admin: { useAsTitle: 'name' },
   fields: [
