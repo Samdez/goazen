@@ -12,9 +12,11 @@ import { getCity } from '@/app/(app)/queries/get-city'
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ city: string; location: string }>
+  params: Promise<{ city: string; location: string; region: string }>
 }) {
   const locationParam = (await params).location
+  const regionParam = (await params).region
+  const cityParam = (await params).city
   try {
     const location = await getLocation(locationParam)
     if (!location) {
@@ -23,13 +25,15 @@ export async function generateMetadata({
         description: 'The page you are looking for does not exist',
       }
     }
+    const cityName =
+      typeof location['city V2'] === 'object' ? location['city V2']?.name : location.city
 
     const description =
       location.meta?.description ||
       `Découvrez la programmation complète des concerts et soirées à ${location.name}, ${location.city}. Agenda des événements, DJ sets, et infos pratiques. Le meilleur des concerts et soirées au Pays Basque. Réservez vos places dès maintenant !`
     const title =
       location.meta?.title ||
-      `Concerts à ${location.name} ${location.city} | Programme & Billetterie - Goazen!`
+      `Concerts à ${location.name} ${cityName} | Programme & Billetterie - Goazen!`
 
     const locationImage =
       typeof location.image !== 'string' &&
@@ -40,12 +44,12 @@ export async function generateMetadata({
       title,
       description,
       alternates: {
-        canonical: `https://goazen.info/concerts/${location.city}/${location.slug}`,
+        canonical: `https://goazen.info/concerts/${regionParam}/${cityParam}/${locationParam}`,
       },
       openGraph: {
         title,
         description,
-        url: `https://goazen.info/concerts/${location.city}/${location.slug}`,
+        url: `https://goazen.info/concerts/${regionParam}/${cityParam}/${locationParam}`,
         siteName: 'Goazen!',
         images: locationImage
           ? [
@@ -90,6 +94,24 @@ export async function generateMetadata({
   }
 }
 
+export async function generateStaticParams() {
+  const locations = await getLocations({ limit: 100 })
+
+  return locations.docs
+    .map((location) => {
+      const cityData = typeof location['city V2'] === 'object' ? location['city V2'] : null
+      const region = cityData?.region || 'pays-basque' // default to pays-basque if no region specified
+      const city = cityData?.slug || location.city
+
+      return {
+        region,
+        city,
+        location: location.slug,
+      }
+    })
+    .filter((params) => params.region && params.city && params.location)
+}
+
 async function LocationPage({
   params,
 }: {
@@ -110,7 +132,8 @@ async function LocationPage({
     getPlaceholderImage(),
   ])
   const cityName =
-    typeof location['city V2'] === 'string' ? location['city V2'] : location['city V2']?.name
+    typeof location['city V2'] === 'object' ? location['city V2']?.name : location.city
+
   const imageUrl =
     !(typeof location?.image === 'string') && location.image ? location.image?.url : ''
 
@@ -151,7 +174,7 @@ async function LocationPage({
         locations={relatedLocations}
         regionParam={regionParam}
         city={city}
-        sectionTitle={`Les autres lieux de concerts, soirées et DJ sets à ${city.name} :`}
+        sectionTitle={`Les autres lieux de concerts, soirées et DJ sets à ${cityName} :`}
       />
     </div>
   )

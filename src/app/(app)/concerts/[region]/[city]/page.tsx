@@ -26,20 +26,26 @@ function RichTextWrapper({ data }: { data: any }) {
   )
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ city: string[] }> }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ city: string; region: string }>
+}) {
   const cityParam = (await params).city
+  const regionParam = (await params).region
   const cityName = Array.isArray(cityParam) ? cityParam[0] : cityParam
+  const formattedRegionName = regionParam.charAt(0).toUpperCase() + regionParam.slice(1)
   const formattedCityName = cityName.charAt(0).toUpperCase() + cityName.slice(1)
   return {
     title: `Concerts et Soirées à ${formattedCityName} | Où Sortir ce Soir - Goazen!`,
     description: `Agenda des concerts et soirées à ${formattedCityName} : rock, électro, DJ sets. Découvrez la programmation des salles de concert au Pays Basque et dans les Landes.`,
     alternates: {
-      canonical: `https://goazen.info/concerts/${cityName}`,
+      canonical: `https://goazen.info/concerts/${regionParam}/${cityParam}`,
     },
     openGraph: {
       title: `Concerts et Soirées à ${formattedCityName} | Agenda Complet - Goazen!`,
       description: `Agenda des concerts et soirées à ${formattedCityName}. Découvrez tous les événements musicaux et trouvez votre prochaine sortie au Pays Basque ce soir !`,
-      url: `https://goazen.info/concerts/${cityName}`,
+      url: `https://goazen.info/concerts/${regionParam}/${cityParam}`,
       siteName: 'Goazen!',
       locale: 'fr_FR',
       type: 'website',

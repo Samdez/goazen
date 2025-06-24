@@ -10,9 +10,13 @@ import UnifiedFilterSections from '../../components/UnifiedFilterSection'
 import EventsGrid from '../../components/EventsGrid'
 import Link from 'next/link'
 
-export async function generateMetadata({ params }: { params: Promise<{ region: string[] }> }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ region: string; category: string; time: 'week' | 'day' | undefined }>
+}) {
   const regionParam = (await params).region
-  const regionName = Array.isArray(regionParam) ? regionParam[0] : regionParam
+  const regionName = regionParam.charAt(0).toUpperCase() + regionParam.slice(1)
 
   return {
     title:
