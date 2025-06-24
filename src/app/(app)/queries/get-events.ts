@@ -22,6 +22,7 @@ export async function _getEvents({
   locationId,
   limit,
   region,
+  city,
 }: {
   startDate?: string
   endDate?: string
@@ -30,6 +31,7 @@ export async function _getEvents({
   locationId?: string
   limit?: number
   region?: string
+  city?: string
 }) {
   const adjustedStartDate = startDate ? new Date(startDate) : new Date()
   adjustedStartDate.setDate(adjustedStartDate.getDate() - 1)
@@ -45,6 +47,13 @@ export async function _getEvents({
         ...(extendedEndDate ? [{ date: { less_than_equal: extendedEndDate } }] : []),
         ...(category ? [{ 'category.slug': { equals: category } }] : []),
         ...(region ? [{ 'location.city V2.region': { equals: region } }] : []),
+        ...(city
+          ? [
+              {
+                or: [{ 'location.city V2.slug': { equals: city } }],
+              },
+            ]
+          : []),
         { _status: { equals: 'published' } },
       ],
     },
@@ -65,6 +74,7 @@ export async function getCachedEvents({
   locationId,
   limit,
   region,
+  city,
 }: {
   startDate?: string
   endDate?: string
@@ -73,21 +83,26 @@ export async function getCachedEvents({
   locationId?: string
   limit?: number
   region?: string
+  city?: string
 }) {
+  const cacheKey = JSON.stringify({
+    startDate: startDate || '',
+    endDate: endDate || '',
+    page: page?.toString() || '',
+    category: category || '',
+    locationId: locationId || '',
+    limit: limit?.toString() || '',
+    region: region || '',
+    city: city || '',
+  })
+
   return unstable_cache(
-    async () => await _getEvents({ startDate, endDate, page, category, locationId, limit, region }),
-    [
-      startDate || '',
-      endDate || '',
-      page?.toString() || '',
-      category || '',
-      locationId || '',
-      limit?.toString() || '',
-      region || '',
-    ],
+    async () =>
+      await _getEvents({ startDate, endDate, page, category, locationId, limit, region, city }),
+    ['events', cacheKey], // Use a simpler cache key array
     {
       tags: ['events'],
-      revalidate: 60 * 60 * 24,
+      revalidate: 60 * 60 * 24, // 24 hours
     },
   )()
 }

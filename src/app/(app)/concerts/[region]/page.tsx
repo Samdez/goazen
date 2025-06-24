@@ -2,11 +2,12 @@ import { Suspense } from 'react'
 import { getCachedEvents } from '../../queries/get-events'
 import { getPlaceholderImage } from '../../queries/get-placeholder-image'
 import { PacmanLoader } from 'react-spinners'
-import EventThumbnail from '../../components/EventThumbnail'
 import { cn } from '@/lib/utils'
 import { darkerGrotesque } from '../../fonts'
 import { getCities } from '../../queries/get-cities'
 import { CityFilterCombobox } from '../../components/CityFilterCombobox'
+import UnifiedFilterSections from '../../components/UnifiedFilterSection'
+import EventsGrid from '../../components/EventsGrid'
 
 export async function generateMetadata({ params }: { params: Promise<{ region: string[] }> }) {
   const regionParam = (await params).region
@@ -54,15 +55,20 @@ export async function generateMetadata({ params }: { params: Promise<{ region: s
   }
 }
 
-export default async function RegionPage({ params }: { params: Promise<{ region: string }> }) {
+export default async function RegionPage({
+  params,
+}: {
+  params: Promise<{ region: string; category: string; time: 'week' | 'day' | undefined }>
+}) {
   const regionParam = (await params).region
+  const timeParam = (await params).time
   const placeholderImage = await getPlaceholderImage()
   if (!placeholderImage) {
     console.error('No placeholder image found')
     return
   }
 
-  const [cities, { docs: events }] = await Promise.all([
+  const [cities, events] = await Promise.all([
     getCities(regionParam),
     getCachedEvents({
       region: regionParam,
@@ -72,25 +78,20 @@ export default async function RegionPage({ params }: { params: Promise<{ region:
 
   return (
     <>
-      <div className="pb-8 md:px-32 md:flex w-full justify-evenly">
-        <div className="flex flex-col justify-center px-2">
-          <h1 className="text-balance text-2xl md:pl-8 text-center md:text-left">
-            Concerts, soirées et DJ sets{' '}
-            {regionParam === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'}
-          </h1>
-          <h2 className="font-text md:pl-8 text-lg leading-none text-center md:text-left">
-            Tous les concerts et soirées à venir:
-          </h2>
-        </div>
-        <div className="flex gap-2 justify-center pt-4">
+      <UnifiedFilterSections
+        activeTime={timeParam}
+        title={`Concerts, soirées et DJ sets ${regionParam === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'}`}
+        subTitle={`Tous les concerts et soirées à venir:`}
+        buttons={[
           <CityFilterCombobox
+            key="city-filter"
             cities={[
               ...cities,
               { id: 'all', name: 'Toutes les villes', createdAt: '', updatedAt: '' },
             ]}
-          />
-        </div>
-      </div>
+          />,
+        ]}
+      />
       <Suspense
         fallback={
           <div className="mx-auto mt-[14vh] flex min-h-screen w-full justify-center">
@@ -98,11 +99,15 @@ export default async function RegionPage({ params }: { params: Promise<{ region:
           </div>
         }
       >
-        <div className="flex flex-wrap justify-around gap-24 px-12 pb-32">
-          {events.map((event) => (
-            <EventThumbnail event={event} key={event.id} placeholderImageUrl={placeholderImage} />
-          ))}
-        </div>
+        <EventsGrid
+          initialEvents={events.docs}
+          initialNextPage={events.nextPage}
+          hasNextPageProps={events.hasNextPage}
+          startDate={new Date().toISOString()}
+          endDate={new Date().toISOString()}
+          placeholderImageUrl={placeholderImage}
+          region={regionParam}
+        />
       </Suspense>
 
       <div className={cn(darkerGrotesque.className, 'max-w-full mx-auto px-6 py-8 text-gray-800')}>

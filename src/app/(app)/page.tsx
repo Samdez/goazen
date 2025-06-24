@@ -4,8 +4,10 @@ import EventsGrid from './components/EventsGrid'
 import { getPlaceholderImage } from './queries/get-placeholder-image'
 import { Suspense } from 'react'
 import { PacmanLoader } from 'react-spinners'
-import FilterSection from './components/FilterSection'
 import { getCategories } from './queries/get-categories'
+import UnifiedFilterSections from './components/UnifiedFilterSection'
+import { GenreFilterComboBox } from './components/GenreFilterComboBox'
+import { DateFilterComboBox } from './components/DateFilterComboBox'
 
 const searchParamsSchema = z.object({
   startDate: z.string().optional(),
@@ -36,7 +38,15 @@ export default async function Page({
   }
   return (
     <>
-      <FilterSection activeTime={activeTime} categories={categories} />
+      <UnifiedFilterSections
+        activeTime={activeTime}
+        titleWithEffect
+        buttons={[
+          <GenreFilterComboBox key="genre-filter" categories={categories} />,
+          <DateFilterComboBox key="date-filter" days={['day', 'week']} />,
+        ]}
+        subTitle="Retrouve tous les concerts, DJ sets, festivals et soirées près de chez toi"
+      />
       <Suspense
         fallback={
           <div className="mx-auto mt-[14vh] flex min-h-screen w-full justify-center">

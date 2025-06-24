@@ -12,6 +12,10 @@ import Link from 'next/link'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { CityFilterCombobox } from '@/app/(app)/components/CityFilterCombobox'
 import { getCities } from '@/app/(app)/queries/get-cities'
+import UnifiedFilterSections from '@/app/(app)/components/UnifiedFilterSection'
+import { DateFilterComboBox } from '@/app/(app)/components/DateFilterComboBox'
+import { GenreFilterComboBox } from '@/app/(app)/components/GenreFilterComboBox'
+import EventsGrid from '@/app/(app)/components/EventsGrid'
 
 function RichTextWrapper({ data }: { data: any }) {
   return (
@@ -76,36 +80,26 @@ export default async function CityPage({
     getCities(regionParam),
   ])
 
-  let events: Event[] = []
-  for (const location of locations.docs) {
-    const locationEvents = await getCachedEvents({
-      locationId: location.id,
-      startDate: new Date().toISOString(),
-    })
-    events = [...events, ...locationEvents.docs].sort((a, b) => a.date.localeCompare(b.date))
-  }
+  const events = await getCachedEvents({
+    city: cityParam,
+    startDate: new Date().toISOString(),
+  })
 
   return (
     <>
-      <div className="pb-8 md:px-32 md:flex w-full justify-evenly">
-        <div className="flex flex-col justify-center px-2">
-          <h1 className="text-balance text-2xl md:pl-8 text-center md:text-left">
-            Concerts, soirées et DJ sets à {city.name}
-          </h1>
-          <h2 className="font-text md:pl-8 text-lg leading-none text-center md:text-left">
-            {' '}
-            Tous les concerts et soirées à venir:
-          </h2>
-        </div>
-        <div className="flex gap-2 justify-center pt-4">
+      <UnifiedFilterSections
+        title={`Concerts, soirées et DJ sets ${regionParam === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'}`}
+        subTitle={`Tous les concerts et soirées à venir:`}
+        buttons={[
           <CityFilterCombobox
+            key="city-filter"
             cities={[
               ...cities,
               { id: 'all', name: 'Toutes les villes', createdAt: '', updatedAt: '' },
             ]}
-          />
-        </div>
-      </div>
+          />,
+        ]}
+      />
       <Suspense
         fallback={
           <div className="mx-auto mt-[14vh] flex min-h-screen w-full justify-center">
@@ -113,19 +107,21 @@ export default async function CityPage({
           </div>
         }
       >
-        <div className="flex flex-wrap justify-around gap-24 px-12 pb-32">
-          {events.map((event) => (
-            <EventThumbnail event={event} key={event.id} placeholderImageUrl={placeholderImage} />
-          ))}
-        </div>
+        <EventsGrid
+          initialEvents={events.docs}
+          initialNextPage={events.nextPage}
+          hasNextPageProps={events.hasNextPage}
+          startDate={new Date().toISOString()}
+          endDate={new Date().toISOString()}
+          placeholderImageUrl={placeholderImage}
+          region={regionParam}
+        />
       </Suspense>
 
       <div className="max-w-full mx-auto px-6 py-8 text-gray-800">
         {city['rich text description'] && <RichTextWrapper data={city['rich text description']} />}
       </div>
       <div className={cn(darkerGrotesque.className, 'max-w-full mx-auto px-6 py-8 text-gray-800')}>
-        {/* <h2 className="text-2xl font-bold mb-4">Concerts, DJ sets et soirées à {city.name}</h2>
-        <p className="mb-4">{city.description}</p> */}
         <h2 className="text-2xl font-bold mb-4">Où écouter de la musique à {city.name} :</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-4 pb-4">
           {locations.docs

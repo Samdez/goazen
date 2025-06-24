@@ -1,5 +1,7 @@
+import { DateFilterComboBox } from '../../components/DateFilterComboBox'
 import EventsGrid from '../../components/EventsGrid'
-import FilterSection from '../../components/FilterSection'
+import { GenreFilterComboBox } from '../../components/GenreFilterComboBox'
+import UnifiedFilterSections from '../../components/UnifiedFilterSection'
 import { getCategories } from '../../queries/get-categories'
 import { getCachedEvents } from '../../queries/get-events'
 import { getPlaceholderImage } from '../../queries/get-placeholder-image'
@@ -29,7 +31,16 @@ async function Genre({
 
   return (
     <>
-      <FilterSection categories={categories} activeTime={activeTime} />
+      <UnifiedFilterSections
+        activeTime={activeTime}
+        titleWithEffect
+        buttons={[
+          <GenreFilterComboBox key="genre-filter" categories={categories} />,
+          <DateFilterComboBox key="date-filter" days={['day', 'week']} />,
+        ]}
+        subTitle="Retrouve tous les concerts, DJ sets, festivals et soirées près de chez toi"
+        categoryParam={genre}
+      />
       <EventsGrid
         initialEvents={initialEvents.docs}
         initialNextPage={initialEvents.nextPage}

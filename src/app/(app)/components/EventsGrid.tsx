@@ -1,7 +1,7 @@
 'use client'
 
 import type { Event } from '@/payload-types'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { PacmanLoader } from 'react-spinners'
 import { getCachedEvents } from '../queries/get-events'
@@ -20,6 +20,7 @@ export default function EventsGrid({
   locationId,
   hasNextPageProps,
   activeTime,
+  region,
 }: {
   initialEvents: Event[]
   initialNextPage?: number | null
@@ -29,6 +30,7 @@ export default function EventsGrid({
   activeTime?: string
   placeholderImageUrl: string
   locationId?: string
+  region?: string
 }) {
   const [events, setEvents] = useState<Event[]>(initialEvents)
   const [nextPage, setNextPage] = useState(initialNextPage)
@@ -36,6 +38,7 @@ export default function EventsGrid({
   const { ref, inView } = useInView()
   const category = useCategory()
   const searchParams = useSearchParams()
+  const prevRegionRef = useRef(region)
 
   const loadMoreEvents = async () => {
     const newEvents = await getCachedEvents({
@@ -44,24 +47,53 @@ export default function EventsGrid({
       endDate,
       locationId,
       category,
+      region,
     })
     setEvents((events) => [...events, ...newEvents.docs])
     setNextPage((prevPage) => (newEvents.nextPage ? newEvents.nextPage : prevPage))
     setHasNextPage(newEvents.hasNextPage)
   }
 
+  // Reset events when region changes
+  useEffect(() => {
+    if (prevRegionRef.current !== region) {
+      setEvents(initialEvents)
+      setNextPage(initialNextPage)
+      setHasNextPage(hasNextPageProps)
+      prevRegionRef.current = region
+    }
+  }, [region, initialEvents, initialNextPage, hasNextPageProps])
+
+  // Only reload events when search params change (not on initial mount)
   useEffect(() => {
     const loadInitialEvents = async () => {
-      const eventsData = await getCachedEvents({ startDate, endDate, category })
-      setEvents(eventsData.docs)
+      const eventsData = await getCachedEvents({
+        startDate,
+        endDate,
+        category,
+        region,
+        locationId,
+      })
+      if (prevRegionRef.current === region) {
+        // Only update if region hasn't changed
+        setEvents(eventsData.docs)
+        setNextPage(eventsData.nextPage)
+        setHasNextPage(eventsData.hasNextPage)
+      }
     }
-    loadInitialEvents()
-  }, [searchParams])
+
+    // Skip the initial mount effect
+    const searchParamsString = searchParams.toString()
+    if (searchParamsString) {
+      loadInitialEvents()
+    }
+  }, [searchParams, region, startDate, endDate, category, locationId])
+
   useEffect(() => {
     if (inView && hasNextPage) {
       loadMoreEvents()
     }
-  }, [inView])
+  }, [inView, hasNextPage])
 
   if (!events.length) {
     return <EmptyEventsSection activeTime={activeTime} category={category} />

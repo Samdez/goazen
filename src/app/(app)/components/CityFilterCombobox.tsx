@@ -14,8 +14,6 @@ import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from '@/components/
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { useParams, useRouter } from 'next/navigation'
-import { createHref } from '@/utils'
-import { useCategory } from '../hooks/useGenre'
 import { ChevronDownIcon } from 'lucide-react'
 import { City } from '@/payload-types'
 import { Params } from 'next/dist/server/request/params'
@@ -35,7 +33,7 @@ export function CityFilterCombobox({
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="w-[150px] justify-center h-16">
+          <Button variant="outline" className="w-[150px] justify-center h-full">
             {params.city ? params.city : 'Filtrer par ville'}
             <ChevronDownIcon className="ml-2 h-4 w-4" />
           </Button>
