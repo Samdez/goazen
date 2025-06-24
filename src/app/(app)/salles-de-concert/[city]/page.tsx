@@ -7,9 +7,11 @@ import UnifiedFilterSections from '../../components/UnifiedFilterSection'
 
 async function LocationsPage({ params }: { params: Promise<{ city: string }> }) {
   const cityParam = (await params).city
-  const locations = await getLocations({ cityName: cityParam })
-  const placeholderImageUrl = await getPlaceholderImage()
-  const cities = await getCities()
+  const [locations, placeholderImageUrl, cities] = await Promise.all([
+    getLocations({ cityName: cityParam }),
+    getPlaceholderImage(),
+    getCities(),
+  ])
 
   return (
     <>

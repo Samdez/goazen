@@ -1,6 +1,6 @@
 'use server'
 import { slugifyString } from '@/utils'
-import { payload } from '../client/payload-client'
+import { payload } from '../(client)/payload-client'
 
 export async function getLocations({
   cityName,

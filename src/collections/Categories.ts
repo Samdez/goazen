@@ -5,7 +5,10 @@ import { isAdmin } from '@/app/(payload)/access/isAdmin'
 const Categories: CollectionConfig = {
   slug: 'categories',
   access: {
-    // read: isAdmin,
+    read: isAdmin,
+    create: isAdmin,
+    update: isAdmin,
+    delete: isAdmin,
   },
   admin: { useAsTitle: 'name' },
   fields: [

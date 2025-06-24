@@ -5,6 +5,9 @@ const Medias: CollectionConfig = {
   slug: 'medias',
   access: {
     read: () => true,
+    create: () => true,
+    update: isAdmin,
+    delete: isAdmin,
   },
   upload: {
     staticDir: 'media',

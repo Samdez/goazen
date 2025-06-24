@@ -1,6 +1,6 @@
 'use server'
 
-import { payload } from '../client/payload-client'
+import { payload } from '../(client)/payload-client'
 
 export async function getCities(region?: string) {
   const cities = await payload.find({

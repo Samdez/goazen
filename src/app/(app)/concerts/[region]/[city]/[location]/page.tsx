@@ -96,19 +96,21 @@ async function LocationPage({
   params: Promise<{ city: string; location: string; region: string }>
 }) {
   const { location: locationParam, region: regionParam, city: cityParam } = await params
-  const location = await getLocation(locationParam)
-  const city = await getCity(cityParam)
+  const [location, city, relatedLocations, events, placeholderImageUrl] = await Promise.all([
+    getLocation(locationParam),
+    getCity(cityParam),
+    getLocations({
+      cityName: cityParam,
+      limit: 100,
+    }),
+    getCachedEvents({
+      locationId: locationParam,
+      startDate: new Date().toISOString(),
+    }),
+    getPlaceholderImage(),
+  ])
   const cityName =
     typeof location['city V2'] === 'string' ? location['city V2'] : location['city V2']?.name
-  const relatedLocations = await getLocations({
-    cityName,
-    limit: 100,
-  })
-  const { docs: events } = await getCachedEvents({
-    locationId: location.id,
-    startDate: new Date().toISOString(),
-  })
-  const placeholderImageUrl = await getPlaceholderImage()
   const imageUrl =
     !(typeof location?.image === 'string') && location.image ? location.image?.url : ''
 
@@ -116,8 +118,8 @@ async function LocationPage({
     <div className="flex flex-col items-center gap-4 px-4 py-8">
       <h1 className="text-center text-6xl font-bold text-black">{location.name}</h1>
       <h3 className="text-4xl text-black">Prochains concerts: </h3>
-      {events.length ? (
-        <EventsCarousel events={events} placeholderImageUrl={placeholderImageUrl || ''} />
+      {events.docs.length ? (
+        <EventsCarousel events={events.docs} placeholderImageUrl={placeholderImageUrl || ''} />
       ) : (
         <div className="flex h-36 items-center">
           <p className="text-4l text-black">Rien de prévu ici à notre connaissance...😔</p>

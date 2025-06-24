@@ -29,9 +29,11 @@ export default async function Page({
   } else {
     date = startDate
   }
-  const categories = await getCategories()
-  const initialEvents = await getCachedEvents({ startDate: date })
-  const placeholderImage = await getPlaceholderImage()
+  const [categories, initialEvents, placeholderImage] = await Promise.all([
+    getCategories(),
+    getCachedEvents({ startDate: date }),
+    getPlaceholderImage(),
+  ])
   if (!placeholderImage) {
     console.error('No placeholder image found')
     return

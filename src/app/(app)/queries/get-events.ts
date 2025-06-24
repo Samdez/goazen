@@ -1,7 +1,7 @@
 'use server'
 
 import { unstable_cache } from 'next/cache'
-import { payload } from '../client/payload-client'
+import { payload } from '../(client)/payload-client'
 
 function extendEndDateToEndOfDay(date: string) {
   return new Date(new Date(date).setUTCHours(24, 0, 0, 0))

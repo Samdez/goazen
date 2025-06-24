@@ -4,7 +4,7 @@ import { cn, formatDate, getLocationInfo, slugifyString } from '@/utils'
 import { Button } from '@/components/ui/button'
 import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
 import { getEvent } from '@/app/(app)/queries/get-event'
-import { payload } from '@/app/(app)/client/payload-client'
+import { payload } from '@/app/(app)/(client)/payload-client'
 import { darkerGrotesque } from '@/app/(app)/fonts'
 import { getCachedEvents } from '@/app/(app)/queries/get-events'
 import EventsCarousel from '@/app/(app)/components/EventsCarousel'
@@ -113,14 +113,15 @@ export async function generateStaticParams() {
 
 async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
   const slugParam = await params
+
   const event = await getEvent(slugParam.slug[0].split('_').reverse()[0])
-  const locationEvents =
-    event.location &&
-    (await getCachedEvents({
+  const [locationEvents, placeholderImage] = await Promise.all([
+    getCachedEvents({
       locationId: typeof event.location === 'string' ? event.location : event.location?.id,
       startDate: new Date().toISOString(),
-    }))
-  const placeholderImage = await getPlaceholderImage()
+    }),
+    getPlaceholderImage(),
+  ])
 
   const imageUrl =
     !(typeof event.image === 'string') && event.image ? event.image?.url : placeholderImage

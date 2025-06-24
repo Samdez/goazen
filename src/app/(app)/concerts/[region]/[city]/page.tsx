@@ -70,21 +70,20 @@ export default async function CityPage({
 }) {
   const cityParam = (await params).city
   const regionParam = (await params).region
-  const placeholderImage = await getPlaceholderImage()
+  const [locations, city, cities, placeholderImage, events] = await Promise.all([
+    getLocations({ cityName: cityParam, limit: 100 }),
+    getCity(cityParam),
+    getCities(regionParam),
+    getPlaceholderImage(),
+    getCachedEvents({
+      city: cityParam,
+      startDate: new Date().toISOString(),
+    }),
+  ])
   if (!placeholderImage) {
     console.error('No placeholder image found')
     return
   }
-  const [locations, city, cities] = await Promise.all([
-    getLocations({ cityName: cityParam, limit: 100 }),
-    getCity(cityParam),
-    getCities(regionParam),
-  ])
-
-  const events = await getCachedEvents({
-    city: cityParam,
-    startDate: new Date().toISOString(),
-  })
 
   return (
     <>
@@ -123,30 +122,6 @@ export default async function CityPage({
         {city['rich text description'] && <RichTextWrapper data={city['rich text description']} />}
       </div>
       <div className={cn(darkerGrotesque.className, 'max-w-full mx-auto px-6 py-8 text-gray-800')}>
-        {/* <h2 className="text-2xl font-bold mb-4">Où écouter de la musique à {city.name} :</h2> */}
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-4 pb-4">
-          {locations.docs
-            .reduce((acc, location, index) => {
-              if (index % 5 === 0) {
-                acc.push([])
-              }
-              acc[acc.length - 1].push(
-                <li key={location.id}>
-                  <Link href={`/concerts/${regionParam}/${city.slug}/${location.slug}`}>
-                    <h3 className="text-lg font-bold hover:text-white transition-all">
-                      {location.name}
-                    </h3>
-                  </Link>
-                </li>,
-              )
-              return acc
-            }, [] as JSX.Element[][])
-            .map((column, colIndex) => (
-              <ul key={colIndex} className="space-y-2">
-                {column}
-              </ul>
-            ))}
-        </div> */}
         <div>
           <RelatedLocations
             locations={locations}
@@ -160,22 +135,6 @@ export default async function CityPage({
             city={city}
             sectionTitle={`Concerts et DJ sets ${regionParam === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'}`}
           />
-          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-2 pb-4">
-            {city.cities_related?.map((city) => {
-              if (typeof city === 'string') {
-                return null
-              }
-              return (
-                <Link
-                  href={`/concerts/${regionParam}/${city.slug}`}
-                  key={city.id}
-                  className="text-lg font-bold hover:text-white transition-all"
-                >
-                  {city.name}
-                </Link>
-              )
-            })}
-          </div> */}
         </div>
       </div>
     </>

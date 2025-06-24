@@ -7,6 +7,8 @@ const Locations: CollectionConfig = {
   access: {
     read: isAdminOrHasLocationAccess('id'),
     update: isAdminOrHasLocationAccess('id'),
+    delete: isAdminOrHasLocationAccess('id'),
+    create: isAdminOrHasLocationAccess('id'),
   },
   admin: { useAsTitle: 'name' },
   fields: [

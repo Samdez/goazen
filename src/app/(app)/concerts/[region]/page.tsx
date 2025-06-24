@@ -63,19 +63,19 @@ export default async function RegionPage({
 }) {
   const regionParam = (await params).region
   const timeParam = (await params).time
-  const placeholderImage = await getPlaceholderImage()
-  if (!placeholderImage) {
-    console.error('No placeholder image found')
-    return
-  }
 
-  const [cities, events] = await Promise.all([
+  const [cities, events, placeholderImage] = await Promise.all([
     getCities(regionParam),
     getCachedEvents({
       region: regionParam,
       startDate: new Date().toISOString(),
     }),
+    getPlaceholderImage(),
   ])
+  if (!placeholderImage) {
+    console.error('No placeholder image found')
+    return
+  }
 
   return (
     <>
