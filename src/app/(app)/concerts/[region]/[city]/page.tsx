@@ -16,6 +16,7 @@ import UnifiedFilterSections from '@/app/(app)/components/UnifiedFilterSection'
 import { DateFilterComboBox } from '@/app/(app)/components/DateFilterComboBox'
 import { GenreFilterComboBox } from '@/app/(app)/components/GenreFilterComboBox'
 import EventsGrid from '@/app/(app)/components/EventsGrid'
+import RelatedLocations from '@/app/(app)/components/RelatedLocations'
 
 function RichTextWrapper({ data }: { data: any }) {
   return (
@@ -94,7 +95,7 @@ export default async function CityPage({
           <CityFilterCombobox
             key="city-filter"
             cities={[
-              ...cities,
+              ...cities.docs,
               { id: 'all', name: 'Toutes les villes', createdAt: '', updatedAt: '' },
             ]}
           />,
@@ -122,8 +123,8 @@ export default async function CityPage({
         {city['rich text description'] && <RichTextWrapper data={city['rich text description']} />}
       </div>
       <div className={cn(darkerGrotesque.className, 'max-w-full mx-auto px-6 py-8 text-gray-800')}>
-        <h2 className="text-2xl font-bold mb-4">Où écouter de la musique à {city.name} :</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-4 pb-4">
+        {/* <h2 className="text-2xl font-bold mb-4">Où écouter de la musique à {city.name} :</h2> */}
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-4 pb-4">
           {locations.docs
             .reduce((acc, location, index) => {
               if (index % 5 === 0) {
@@ -131,7 +132,7 @@ export default async function CityPage({
               }
               acc[acc.length - 1].push(
                 <li key={location.id}>
-                  <Link href={`/concerts/${city.slug}/${location.slug}`}>
+                  <Link href={`/concerts/${regionParam}/${city.slug}/${location.slug}`}>
                     <h3 className="text-lg font-bold hover:text-white transition-all">
                       {location.name}
                     </h3>
@@ -145,17 +146,28 @@ export default async function CityPage({
                 {column}
               </ul>
             ))}
-        </div>
+        </div> */}
         <div>
-          <h2 className="text-2xl font-bold mb-4">Concerts et soirées près de {city.name}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-2 pb-4">
+          <RelatedLocations
+            locations={locations}
+            regionParam={regionParam}
+            city={city}
+            sectionTitle={`Où écouter de la musique à ${city.name} :`}
+          />
+          <RelatedLocations
+            locations={cities}
+            regionParam={regionParam}
+            city={city}
+            sectionTitle={`Concerts et DJ sets ${regionParam === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'}`}
+          />
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-2 pb-4">
             {city.cities_related?.map((city) => {
               if (typeof city === 'string') {
                 return null
               }
               return (
                 <Link
-                  href={`/concerts/${city.slug}`}
+                  href={`/concerts/${regionParam}/${city.slug}`}
                   key={city.id}
                   className="text-lg font-bold hover:text-white transition-all"
                 >
@@ -163,7 +175,7 @@ export default async function CityPage({
                 </Link>
               )
             })}
-          </div>
+          </div> */}
         </div>
       </div>
     </>

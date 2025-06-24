@@ -1,0 +1,45 @@
+import { City, Location } from '@/payload-types'
+import Link from 'next/link'
+import { PaginatedDocs } from 'payload'
+import { JSX } from 'react'
+
+export default function RelatedLocations({
+  locations,
+  regionParam,
+  city,
+  sectionTitle,
+}: {
+  locations: PaginatedDocs<Location> | PaginatedDocs<City>
+  regionParam: string
+  city: City
+  sectionTitle: string
+}) {
+  return (
+    <div className="flex flex-col gap-4 w-full">
+      <h2 className="text-2xl text-black text-left font-text">{sectionTitle}</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-4 pb-4">
+        {locations.docs
+          .reduce((acc, location, index) => {
+            if (index % 5 === 0) {
+              acc.push([])
+            }
+            acc[acc.length - 1].push(
+              <li key={location.id}>
+                <Link href={`/concerts/${regionParam}/${city.slug}/${location.slug}`}>
+                  <h3 className="text-lg font-bold hover:text-white transition-all font-text">
+                    {location.name}
+                  </h3>
+                </Link>
+              </li>,
+            )
+            return acc
+          }, [] as JSX.Element[][])
+          .map((column, colIndex) => (
+            <ul key={colIndex} className="space-y-2">
+              {column}
+            </ul>
+          ))}
+      </div>
+    </div>
+  )
+}

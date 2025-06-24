@@ -5,6 +5,9 @@ import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
 import { getLocation } from '@/app/(app)/queries/get-location'
 import EventsCarousel from '@/app/(app)/components/EventsCarousel'
 import { env } from 'env'
+import RelatedLocations from '@/app/(app)/components/RelatedLocations'
+import { getLocations } from '@/app/(app)/queries/get-locations'
+import { getCity } from '@/app/(app)/queries/get-city'
 
 export async function generateMetadata({
   params,
@@ -87,9 +90,20 @@ export async function generateMetadata({
   }
 }
 
-async function LocationPage({ params }: { params: Promise<{ city: string; location: string }> }) {
-  const { location: locationParam } = await params
+async function LocationPage({
+  params,
+}: {
+  params: Promise<{ city: string; location: string; region: string }>
+}) {
+  const { location: locationParam, region: regionParam, city: cityParam } = await params
   const location = await getLocation(locationParam)
+  const city = await getCity(cityParam)
+  const cityName =
+    typeof location['city V2'] === 'string' ? location['city V2'] : location['city V2']?.name
+  const relatedLocations = await getLocations({
+    cityName,
+    limit: 100,
+  })
   const { docs: events } = await getCachedEvents({
     locationId: location.id,
     startDate: new Date().toISOString(),
@@ -99,9 +113,9 @@ async function LocationPage({ params }: { params: Promise<{ city: string; locati
     !(typeof location?.image === 'string') && location.image ? location.image?.url : ''
 
   return (
-    <div className="flex flex-col items-center gap-4 px-4 py-8 text-white">
+    <div className="flex flex-col items-center gap-4 px-4 py-8">
       <h1 className="text-center text-6xl font-bold text-black">{location.name}</h1>
-      <h2 className="text-4xl text-black">Prochains concerts: </h2>
+      <h3 className="text-4xl text-black">Prochains concerts: </h3>
       {events.length ? (
         <EventsCarousel events={events} placeholderImageUrl={placeholderImageUrl || ''} />
       ) : (
@@ -118,17 +132,25 @@ async function LocationPage({ params }: { params: Promise<{ city: string; locati
           height={640}
         />
       )}
-      {location.description && <RichText data={location.description} className="text-black" />}
+      {location.description && (
+        <RichText data={location.description} className="text-black font-text" />
+      )}
 
       <div className="flex w-full justify-center py-8">
         <iframe
-          width="600"
+          width="100%"
           height="450"
           loading="lazy"
           allowFullScreen
           src={`https://www.google.com/maps/embed/v1/place?q=place_id:${location.place_id}&key=${env.GOOGLE_MAPS_API_KEY}`}
         ></iframe>
       </div>
+      <RelatedLocations
+        locations={relatedLocations}
+        regionParam={regionParam}
+        city={city}
+        sectionTitle={`Les autres lieux de concerts, soirées et DJ sets à ${city.name} :`}
+      />
     </div>
   )
 }

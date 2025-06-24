@@ -129,7 +129,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
   return (
     <div className="flex flex-col items-center  gap-4 text-white">
       <h1 className="text-center text-6xl font-bold text-black px-4">{event.title}</h1>
-      <div className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
+      <div className="rounded-lg border-4 border-black bg-[#E45110] p-2 text-2xl text-white">
         <p className="font-semibold">
           {formatDate(event.date)} - {event.time}
         </p>
@@ -149,13 +149,13 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
         </div>
       )}
       {event.sold_out ? (
-        <Button className="pointer-events-none rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
+        <Button className="pointer-events-none rounded-lg border-4 border-black bg-[#E45110] p-2 text-2xl text-black">
           Complet 😢
         </Button>
       ) : (
         event.ticketing_url && (
           <a href={`${event.ticketing_url}`} target="_blank">
-            <Button className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
+            <Button className="rounded-lg border-4 border-black bg-[#E45110] p-2 text-2xl text-black">
               Billetterie
             </Button>
           </a>
@@ -176,7 +176,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
 
       <div className="flex flex-wrap items-center justify-center gap-4 px-4 pb-8 text-white">
         {event.category && event.category.length > 0 && (
-          <Button className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
+          <Button className="rounded-lg border-4 border-black bg-[#E45110] p-2 text-2xl text-black">
             <Link
               href={`/genres/${typeof event.category?.[0] === 'string' ? event.category?.[0] : event.category?.[0]?.slug}`}
               className="text-2xl text-black"
@@ -188,8 +188,11 @@ async function EventPage({ params }: { params: Promise<{ slug: string[] }> }) {
             </Link>
           </Button>
         )}
-        <Button className="rounded-lg border-4 border-black bg-[#ee2244bc] p-2 text-2xl text-black">
-          <Link href={`/concerts/${locationInfo?.citySlug}`} className="text-2xl text-black">
+        <Button className="rounded-lg border-4 border-black bg-[#E45110] p-2 text-2xl text-black">
+          <Link
+            href={`/concerts/${locationInfo?.region}/${locationInfo?.citySlug}`}
+            className="text-2xl text-black"
+          >
             Tous les concerts à {locationInfo?.cityName}
           </Link>
         </Button>

@@ -13,7 +13,7 @@ import {
 import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useMediaQuery } from '@/hooks/use-media-query'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { ChevronDownIcon } from 'lucide-react'
 import { City } from '@/payload-types'
 import { Params } from 'next/dist/server/request/params'
@@ -25,6 +25,8 @@ export function CityFilterCombobox({
   cities: City[]
   isLocationsPage?: boolean
 }) {
+  const searchParams = useSearchParams()
+  const cityParam = searchParams.get('city')
   const params = useParams()
   const [open, setOpen] = React.useState(false)
   const isDesktop = useMediaQuery('(min-width: 768px)')
@@ -34,7 +36,7 @@ export function CityFilterCombobox({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-[150px] justify-center h-full">
-            {params.city ? params.city : 'Filtrer par ville'}
+            {cityParam || params.city || 'Filtrer par ville'}
             <ChevronDownIcon className="ml-2 h-4 w-4" />
           </Button>
         </PopoverTrigger>
@@ -54,7 +56,7 @@ export function CityFilterCombobox({
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <Button variant="outline" className="w-[150px] justify-start">
-          {params.city ? params.city : 'Filtrer par ville'}
+          {cityParam || params.city || 'Filtrer par ville'}
         </Button>
       </DrawerTrigger>
       <DrawerContent>

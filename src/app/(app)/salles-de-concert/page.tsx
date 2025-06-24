@@ -6,6 +6,7 @@ import FilterByCity from '../components/FilterByCity'
 import { Suspense } from 'react'
 import { PacmanLoader } from 'react-spinners'
 import { CityFilterCombobox } from '../components/CityFilterCombobox'
+import UnifiedFilterSections from '../components/UnifiedFilterSection'
 
 async function LocationsPage({ searchParams }: { searchParams: Promise<{ city: string }> }) {
   const currSearchParams = await searchParams
@@ -18,25 +19,20 @@ async function LocationsPage({ searchParams }: { searchParams: Promise<{ city: s
 
   return (
     <>
-      <div className="pb-8 md:px-32 md:flex w-full justify-evenly">
-        <div className="flex flex-col justify-center px-2">
-          <h1 className="text-balance text-2xl md:pl-8 text-center md:text-left">
-            Tous les bars et salles de concert du Pays Basque et des Landes
-          </h1>
-          <h2 className="font-text md:pl-8 text-lg leading-none text-center md:text-left">
-            Retrouve tous les lieux où écouter de la musique dans le Pays Basque et les Landes
-          </h2>
-        </div>
-        <div className="flex gap-2 justify-center pt-4">
+      <UnifiedFilterSections
+        title={`Tous les bars et salles de concert du Pays Basque et des Landes`}
+        subTitle={`Retrouve tous les lieux où écouter de la musique dans le Pays Basque et les Landes`}
+        buttons={[
           <CityFilterCombobox
+            key="city-filter"
             cities={[
-              ...cities,
+              ...cities.docs,
               { id: 'all', name: 'Toutes les villes', createdAt: '', updatedAt: '' },
             ]}
             isLocationsPage={true}
-          />
-        </div>
-      </div>
+          />,
+        ]}
+      />
       <Suspense
         fallback={
           <div className="mx-auto mt-[14vh] flex min-h-screen w-full justify-center">

@@ -9,5 +9,5 @@ export async function getCities(region?: string) {
     limit: 100,
     where: { ...(region ? { region: { equals: region } } : {}) },
   })
-  return cities.docs
+  return cities
 }

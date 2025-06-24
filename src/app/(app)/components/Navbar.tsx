@@ -86,7 +86,7 @@ function Navbar() {
           <NavBlock
             href={'/salles-de-concert?city=biarritz'}
             text="Les salles de concert"
-            className=" text-[#E45110] h-16 w-36 justify-self-end px-2 gap-2 font-text border-none rounded-lg hover:bg-[#E45110] hover:text-[#FFF2DD]"
+            className=" text-[#E45110] h-16 w-36 justify-self-end gap-2 font-text border-none rounded-lg hover:bg-[#E45110] hover:text-[#FFF2DD]"
             icon={<MusicIcon className="w-10 h-10" />}
             textSize="text-lg text-left leading-none"
             onClick={() => setActivePage('/')}
