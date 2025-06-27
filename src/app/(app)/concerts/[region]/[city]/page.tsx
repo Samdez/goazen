@@ -16,7 +16,7 @@ import UnifiedFilterSections from '@/app/(app)/components/UnifiedFilterSection'
 import { DateFilterComboBox } from '@/app/(app)/components/DateFilterComboBox'
 import { GenreFilterComboBox } from '@/app/(app)/components/GenreFilterComboBox'
 import EventsGrid from '@/app/(app)/components/EventsGrid'
-import RelatedLocations from '@/app/(app)/components/RelatedLocations'
+import RelatedLocationsAndCities from '@/app/(app)/components/RelatedLocationsAndCities'
 
 function RichTextWrapper({ data }: { data: any }) {
   return (
@@ -129,13 +129,13 @@ export default async function CityPage({
       </div>
       <div className={cn(darkerGrotesque.className, 'max-w-full mx-auto px-6 py-8 text-gray-800')}>
         <div>
-          <RelatedLocations
+          <RelatedLocationsAndCities
             locations={locations}
             regionParam={regionParam}
             city={city}
             sectionTitle={`Où écouter de la musique à ${city.name} :`}
           />
-          <RelatedLocations
+          <RelatedLocationsAndCities
             locations={cities}
             regionParam={regionParam}
             city={city}

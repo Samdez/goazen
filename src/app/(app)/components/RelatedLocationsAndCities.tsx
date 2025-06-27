@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { PaginatedDocs } from 'payload'
 import { JSX } from 'react'
 
-export default function RelatedLocations({
+export default function RelatedLocationsAndCities({
   locations,
   regionParam,
   city,
@@ -14,6 +14,14 @@ export default function RelatedLocations({
   city: City
   sectionTitle: string
 }) {
+  function createHref(item: Location | City) {
+    //item is a location
+    if ('city V2' in item && typeof item['city V2'] !== 'string') {
+      return `/concerts/${regionParam}/${city.slug}/${item.slug}`
+    }
+    //item is a city
+    return `/concerts/${regionParam}/${item.slug}`
+  }
   return (
     <div className="flex flex-col gap-4 w-full">
       <h2 className="text-2xl text-black text-left font-text">{sectionTitle}</h2>
@@ -25,7 +33,7 @@ export default function RelatedLocations({
             }
             acc[acc.length - 1].push(
               <li key={location.id}>
-                <Link href={`/concerts/${regionParam}/${city.slug}/${location.slug}`}>
+                <Link href={createHref(location)}>
                   <h3 className="text-lg font-bold hover:text-white transition-all font-text">
                     {location.name}
                   </h3>

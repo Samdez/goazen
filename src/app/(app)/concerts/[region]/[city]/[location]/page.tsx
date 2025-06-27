@@ -5,7 +5,7 @@ import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
 import { getLocation } from '@/app/(app)/queries/get-location'
 import EventsCarousel from '@/app/(app)/components/EventsCarousel'
 import { env } from 'env'
-import RelatedLocations from '@/app/(app)/components/RelatedLocations'
+import RelatedLocationsAndCities from '@/app/(app)/components/RelatedLocationsAndCities'
 import { getLocations } from '@/app/(app)/queries/get-locations'
 import { getCity } from '@/app/(app)/queries/get-city'
 
@@ -170,7 +170,7 @@ async function LocationPage({
           src={`https://www.google.com/maps/embed/v1/place?q=place_id:${location.place_id}&key=${env.GOOGLE_MAPS_API_KEY}`}
         ></iframe>
       </div>
-      <RelatedLocations
+      <RelatedLocationsAndCities
         locations={relatedLocations}
         regionParam={regionParam}
         city={city}
