@@ -118,19 +118,19 @@ async function LocationPage({
   params: Promise<{ city: string; location: string; region: string }>
 }) {
   const { location: locationParam, region: regionParam, city: cityParam } = await params
-  const [location, city, relatedLocations, events, placeholderImageUrl] = await Promise.all([
+  const [location, city, relatedLocations, placeholderImageUrl] = await Promise.all([
     getLocation(locationParam),
     getCity(cityParam),
     getLocations({
       cityName: cityParam,
       limit: 100,
     }),
-    getCachedEvents({
-      locationId: locationParam,
-      startDate: new Date().toISOString(),
-    }),
     getPlaceholderImage(),
   ])
+  const events = await getCachedEvents({
+    locationId: location.id,
+    startDate: new Date().toISOString(),
+  })
   const cityName =
     typeof location['city V2'] === 'object' ? location['city V2']?.name : location.city
 

@@ -95,6 +95,7 @@ export async function getCachedEvents({
     region: region || '',
     city: city || '',
   })
+  console.log('🚀 ~ cacheKey:', cacheKey)
 
   return unstable_cache(
     async () =>
