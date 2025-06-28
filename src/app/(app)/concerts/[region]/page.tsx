@@ -1,50 +1,44 @@
-import { Suspense } from 'react'
 import { getCachedEvents } from '../../queries/get-events'
 import { getPlaceholderImage } from '../../queries/get-placeholder-image'
 import { PacmanLoader } from 'react-spinners'
+import { getCities } from '../../queries/get-cities'
+import UnifiedFilterSections from '../../components/UnifiedFilterSection'
+import { CityFilterCombobox } from '../../components/CityFilterCombobox'
+import { Suspense } from 'react'
+import EventsGrid from '../../components/EventsGrid'
 import { cn } from '@/lib/utils'
 import { darkerGrotesque } from '../../fonts'
-import { getCities } from '../../queries/get-cities'
-import { CityFilterCombobox } from '../../components/CityFilterCombobox'
-import UnifiedFilterSections from '../../components/UnifiedFilterSection'
-import EventsGrid from '../../components/EventsGrid'
 import Link from 'next/link'
+import { REGIONS } from '../../constants'
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ region: string; category: string; time: 'week' | 'day' | undefined }>
-}) {
-  const regionParam = (await params).region
-  const regionName = regionParam.charAt(0).toUpperCase() + regionParam.slice(1)
+export async function generateStaticParams() {
+  return REGIONS.map((region) => ({
+    region,
+  }))
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ region: string }> }) {
+  const { region } = await params
+  const formattedRegionName = region === 'pays-basque' ? 'Pays Basque' : 'Landes'
 
   return {
-    title:
-      regionName === 'pays-basque'
-        ? `Concerts et Soirées au Pays Basque | Où Sortir ce Soir - Goazen!`
-        : `Concerts et Soirées dans les Landes | Où Sortir ce Soir - Goazen!`,
-    description: `Agenda des concerts et soirées au Pays Basque et dans les Landes : rock, électro, DJ sets. Découvrez la programmation des salles de concert au Pays Basque et dans les Landes.`,
+    title: `Concerts et Soirées ${region === 'pays-basque' ? 'au' : 'dans les'} ${formattedRegionName} | Goazen!`,
+    description: `Agenda complet des concerts et soirées ${region === 'pays-basque' ? 'au' : 'dans les'} ${formattedRegionName}. Découvrez tous les événements musicaux à venir.`,
     alternates: {
-      canonical: `https://goazen.info/concerts/${regionParam}`,
+      canonical: `https://goazen.info/concerts/${region}`,
     },
     openGraph: {
-      title:
-        regionName === 'pays-basque'
-          ? `Concerts et Soirées au Pays Basque | Où Sortir ce Soir - Goazen!`
-          : `Concerts et Soirées dans les Landes | Où Sortir ce Soir - Goazen!`,
-      description: `Agenda des concerts et soirées au Pays Basque et dans les Landes : rock, électro, DJ sets. Découvrez la programmation des salles de concert au Pays Basque et dans les Landes.`,
-      url: `https://goazen.info/concerts/${regionParam}`,
+      title: `Concerts et Soirées ${region === 'pays-basque' ? 'au' : 'dans les'} ${formattedRegionName} | Agenda Complet`,
+      description: `Agenda des concerts et soirées ${region === 'pays-basque' ? 'au' : 'dans les'} ${formattedRegionName}. Trouvez votre prochaine sortie !`,
+      url: `https://goazen.info/concerts/${region}`,
       siteName: 'Goazen!',
       locale: 'fr_FR',
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
-      title:
-        regionName === 'pays-basque'
-          ? `Concerts et Soirées au Pays Basque | Où Sortir ce Soir - Goazen!`
-          : `Concerts et Soirées dans les Landes | Où Sortir ce Soir - Goazen!`,
-      description: `Agenda des concerts et soirées au Pays Basque et dans les Landes : rock, électro, DJ sets. Découvrez la programmation des salles de concert au Pays Basque et dans les Landes.`,
+      title: `Concerts ${region === 'pays-basque' ? 'au' : 'dans les'} ${formattedRegionName} | Agenda Complet`,
+      description: `Agenda des concerts et soirées ${region === 'pays-basque' ? 'au' : 'dans les'} ${formattedRegionName}. Trouvez votre prochaine sortie !`,
     },
     robots: {
       index: true,
@@ -60,22 +54,17 @@ export async function generateMetadata({
   }
 }
 
-export default async function RegionPage({
-  params,
-}: {
-  params: Promise<{ region: string; category: string; time: 'week' | 'day' | undefined }>
-}) {
-  const regionParam = (await params).region
-  const timeParam = (await params).time
-
-  const [cities, events, placeholderImage] = await Promise.all([
-    getCities(regionParam),
+export default async function RegionPage({ params }: { params: Promise<{ region: string }> }) {
+  const { region } = await params
+  const [cities, placeholderImage, events] = await Promise.all([
+    getCities(region),
+    getPlaceholderImage(),
     getCachedEvents({
-      region: regionParam,
+      region,
       startDate: new Date().toISOString(),
     }),
-    getPlaceholderImage(),
   ])
+
   if (!placeholderImage) {
     console.error('No placeholder image found')
     return
@@ -83,40 +72,39 @@ export default async function RegionPage({
 
   return (
     <>
-      <UnifiedFilterSections
-        activeTime={timeParam}
-        title={`Concerts, soirées et DJ sets ${regionParam === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'}`}
-        subTitle={`Tous les concerts et soirées à venir:`}
-        buttons={[
-          <CityFilterCombobox
-            key="city-filter"
-            cities={[
-              ...cities.docs,
-              { id: 'all', name: 'Toutes les villes', createdAt: '', updatedAt: '' },
-            ]}
-          />,
-        ]}
-      />
       <Suspense
+        key={region}
         fallback={
           <div className="mx-auto mt-[14vh] flex min-h-screen w-full justify-center">
             <PacmanLoader />
           </div>
         }
       >
+        <UnifiedFilterSections
+          title={`Concerts, soirées et DJ sets ${region === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'}`}
+          subTitle="Tous les concerts et soirées à venir:"
+          buttons={[
+            <CityFilterCombobox
+              key="city-filter"
+              cities={[
+                ...cities.docs,
+                { id: 'all', name: 'Toutes les villes', createdAt: '', updatedAt: '' },
+              ]}
+            />,
+          ]}
+        />
         <EventsGrid
           initialEvents={events.docs}
           initialNextPage={events.nextPage}
           hasNextPageProps={events.hasNextPage}
           startDate={new Date().toISOString()}
-          endDate={new Date().toISOString()}
           placeholderImageUrl={placeholderImage}
-          region={regionParam}
+          region={region}
         />
       </Suspense>
 
       <div className={cn(darkerGrotesque.className, 'max-w-full mx-auto px-6 py-8 text-gray-800')}>
-        {regionParam === 'pays-basque' ? (
+        {region === 'pays-basque' ? (
           <>
             <div className="prose max-w-none">
               <h2 className="text-2xl font-bold mb-4">Concerts et DJ Sets au Pays Basque</h2>
@@ -178,7 +166,7 @@ export default async function RegionPage({
                   }
                   return (
                     <Link
-                      href={`/concerts/${regionParam}/${city.slug}`}
+                      href={`/concerts/${region}/${city.slug}`}
                       key={city.id}
                       className="text-lg font-bold hover:text-white transition-all"
                     >
@@ -225,7 +213,7 @@ export default async function RegionPage({
                   }
                   return (
                     <Link
-                      href={`/concerts/${regionParam}/${city.slug}`}
+                      href={`/concerts/${region}/${city.slug}`}
                       key={city.id}
                       className="text-lg font-bold hover:text-white transition-all"
                     >

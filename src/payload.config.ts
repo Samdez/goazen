@@ -16,6 +16,8 @@ import Locations from './collections/Locations'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { buildEventSEODescription, buildEventSEOTitle } from './config-utils'
 import Cities from './collections/Cities'
+import SpecialEvents from './collections/SpecialEvents'
+import { ShowSpecialEvent } from './app/globals/ShowSpecialEvent'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -30,9 +32,9 @@ const config = buildConfig({
       afterDashboard: ['/app/(app)/components/Export'],
     },
   },
-  collections: [Users, Medias, Events, Categories, Locations, Cities],
+  collections: [Users, Medias, Events, Categories, Locations, Cities, SpecialEvents],
   editor: lexicalEditor(),
-  globals: [ImagePlaceholder],
+  globals: [ImagePlaceholder, ShowSpecialEvent],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

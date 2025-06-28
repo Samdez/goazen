@@ -8,6 +8,8 @@ import { getCategories } from './queries/get-categories'
 import UnifiedFilterSections from './components/UnifiedFilterSection'
 import { GenreFilterComboBox } from './components/GenreFilterComboBox'
 import { DateFilterComboBox } from './components/DateFilterComboBox'
+import { getShowSpecialEvent } from './queries/get-show-special-event'
+import SpecialEventBanner from './components/SpecialEventBanner'
 
 const searchParamsSchema = z.object({
   startDate: z.string().optional(),
@@ -22,6 +24,7 @@ export default async function Page({
 }) {
   const currSearchParams = await searchParams
   const { activeTime, startDate, endDate } = searchParamsSchema.parse(currSearchParams)
+  const showSpecialEvent = await getShowSpecialEvent()
 
   let date: string
   if (!startDate) {
@@ -40,6 +43,9 @@ export default async function Page({
   }
   return (
     <>
+      {showSpecialEvent.showSpecialEvent && (
+        <SpecialEventBanner event={showSpecialEvent.specialEvent} />
+      )}
       <UnifiedFilterSections
         activeTime={activeTime}
         titleWithEffect

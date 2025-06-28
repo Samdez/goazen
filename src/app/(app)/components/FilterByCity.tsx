@@ -42,8 +42,8 @@ function FilterButton({
   const router = useRouter()
   return (
     <Button
-      className={`hover:bg-black[#E2B748]  h-10 w-20 text-pretty border-2 border-black bg-white text-black hover:border-none hover:text-[#ee2244bc] ${
-        activeCity === slug && 'border-none text-[#ee2244bc]'
+      className={`hover:bg-black[#E2B748]  h-10 w-20 text-pretty border-2 border-black bg-white text-black hover:border-none hover:text-[#E45110] ${
+        activeCity === slug && 'border-none text-[#E45110]'
       }`}
       onClick={() => router.push(path)}
     >

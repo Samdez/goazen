@@ -1,6 +1,7 @@
 import { isAdminOrHasLocationAccess } from '@/app/(payload)/access/isAdminOrHasLocationAccess'
 import type { CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
+import { REGIONS } from '@/app/(app)/constants'
 
 const Events: CollectionConfig = {
   slug: 'events',
@@ -58,7 +59,7 @@ const Events: CollectionConfig = {
     {
       name: 'region',
       type: 'select',
-      options: ['pays-basque', 'landes'],
+      options: REGIONS,
       admin: {
         condition: (data) => !data.location,
       },
@@ -76,6 +77,15 @@ const Events: CollectionConfig = {
     },
     { name: 'price', type: 'text' },
     { name: 'sold_out', type: 'checkbox', label: 'Sold out' },
+    { name: 'special_event', type: 'relationship', relationTo: 'special-events' },
+    {
+      name: 'add_to_selection',
+      type: 'checkbox',
+      label: 'Ajouter à la sélection',
+      admin: {
+        condition: (data) => data.special_event,
+      },
+    },
     { name: 'ticketing_url', type: 'text' },
     { name: 'contact_email', type: 'text' },
     {

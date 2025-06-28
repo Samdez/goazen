@@ -8,7 +8,6 @@ type RegionType = 'pays basque' | 'landes'
 
 export default function Radio({ options }: { options: RegionType[] }) {
   const { field, error } = useTsController<z.infer<typeof RegionSchema>>()
-  console.log(field.value)
   return (
     <>
       <RadioGroup

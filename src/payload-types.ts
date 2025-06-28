@@ -17,11 +17,16 @@ export interface Config {
     categories: Category;
     locations: Location;
     cities: City;
+    'special-events': SpecialEvent;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    'special-events': {
+      events: 'events';
+    };
+  };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     medias: MediasSelect<false> | MediasSelect<true>;
@@ -29,6 +34,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     locations: LocationsSelect<false> | LocationsSelect<true>;
     cities: CitiesSelect<false> | CitiesSelect<true>;
+    'special-events': SpecialEventsSelect<false> | SpecialEventsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -38,9 +44,11 @@ export interface Config {
   };
   globals: {
     'image-placeholder': ImagePlaceholder;
+    'show-special-event': ShowSpecialEvent;
   };
   globalsSelect: {
     'image-placeholder': ImagePlaceholderSelect<false> | ImagePlaceholderSelect<true>;
+    'show-special-event': ShowSpecialEventSelect<false> | ShowSpecialEventSelect<true>;
   };
   locale: null;
   user: User & {
@@ -213,6 +221,8 @@ export interface Event {
   genres?: string | null;
   price?: string | null;
   sold_out?: boolean | null;
+  special_event?: (string | null) | SpecialEvent;
+  add_to_selection?: boolean | null;
   ticketing_url?: string | null;
   contact_email?: string | null;
   slug?: string | null;
@@ -232,6 +242,40 @@ export interface Category {
   id: string;
   name: string;
   slug?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "special-events".
+ */
+export interface SpecialEvent {
+  id: string;
+  name: string;
+  subtitle?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  place_id?: string | null;
+  'city V2'?: (string | null) | City;
+  image?: (string | null) | Media;
+  slug?: string | null;
+  events?: {
+    docs?: (string | Event)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -265,6 +309,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'cities';
         value: string | City;
+      } | null)
+    | ({
+        relationTo: 'special-events';
+        value: string | SpecialEvent;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -373,6 +421,8 @@ export interface EventsSelect<T extends boolean = true> {
   genres?: T;
   price?: T;
   sold_out?: T;
+  special_event?: T;
+  add_to_selection?: T;
   ticketing_url?: T;
   contact_email?: T;
   slug?: T;
@@ -433,6 +483,22 @@ export interface CitiesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "special-events_select".
+ */
+export interface SpecialEventsSelect<T extends boolean = true> {
+  name?: T;
+  subtitle?: T;
+  description?: T;
+  place_id?: T;
+  'city V2'?: T;
+  image?: T;
+  slug?: T;
+  events?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents_select".
  */
 export interface PayloadLockedDocumentsSelect<T extends boolean = true> {
@@ -475,10 +541,32 @@ export interface ImagePlaceholder {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "show-special-event".
+ */
+export interface ShowSpecialEvent {
+  id: string;
+  show_special_event?: boolean | null;
+  special_event?: (string | null) | SpecialEvent;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "image-placeholder_select".
  */
 export interface ImagePlaceholderSelect<T extends boolean = true> {
   ImagePlaceholder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "show-special-event_select".
+ */
+export interface ShowSpecialEventSelect<T extends boolean = true> {
+  show_special_event?: T;
+  special_event?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

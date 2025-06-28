@@ -1,22 +1,28 @@
-import { JSX, Suspense } from 'react'
+import { Suspense } from 'react'
 import { getCachedEvents } from '../../../queries/get-events'
 import { getLocations } from '../../../queries/get-locations'
 import { getPlaceholderImage } from '../../../queries/get-placeholder-image'
 import { PacmanLoader } from 'react-spinners'
-import { Event } from '@/payload-types'
-import EventThumbnail from '../../../components/EventThumbnail'
 import { cn } from '@/lib/utils'
 import { darkerGrotesque } from '../../../fonts'
 import { getCity } from '../../../queries/get-city'
-import Link from 'next/link'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { CityFilterCombobox } from '@/app/(app)/components/CityFilterCombobox'
 import { getCities } from '@/app/(app)/queries/get-cities'
 import UnifiedFilterSections from '@/app/(app)/components/UnifiedFilterSection'
-import { DateFilterComboBox } from '@/app/(app)/components/DateFilterComboBox'
-import { GenreFilterComboBox } from '@/app/(app)/components/GenreFilterComboBox'
 import EventsGrid from '@/app/(app)/components/EventsGrid'
 import RelatedLocationsAndCities from '@/app/(app)/components/RelatedLocationsAndCities'
+import type { City } from '@/payload-types'
+import type { PaginatedDocs } from 'payload'
+
+export async function generateStaticParams() {
+  const cities = await getCities()
+
+  return cities.docs.map((city) => ({
+    city: city.slug,
+    region: city.region,
+  }))
+}
 
 function RichTextWrapper({ data }: { data: any }) {
   return (
@@ -31,11 +37,10 @@ export async function generateMetadata({
 }: {
   params: Promise<{ city: string; region: string }>
 }) {
-  const cityParam = (await params).city
-  const regionParam = (await params).region
-  const cityName = Array.isArray(cityParam) ? cityParam[0] : cityParam
-  const formattedRegionName = regionParam.charAt(0).toUpperCase() + regionParam.slice(1)
+  const { city: cityParam, region: regionParam } = await params
+  const cityName = cityParam.charAt(0).toUpperCase() + cityParam.slice(1)
   const formattedCityName = cityName.charAt(0).toUpperCase() + cityName.slice(1)
+  const formattedRegionName = regionParam === 'pays-basque' ? 'Pays Basque' : 'Landes'
   return {
     title: `Concerts et Soirées à ${formattedCityName} | Où Sortir ce Soir - Goazen!`,
     description: `Agenda des concerts et soirées à ${formattedCityName} : rock, électro, DJ sets. Découvrez la programmation des salles de concert au Pays Basque et dans les Landes.`,
@@ -71,21 +76,27 @@ export async function generateMetadata({
 
 export default async function CityPage({
   params,
+  searchParams,
 }: {
-  params: Promise<{ city: string; region: string }>
+  params: Promise<{ region: string; city: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const cityParam = (await params).city
-  const regionParam = (await params).region
-  const [locations, city, cities, placeholderImage, events] = await Promise.all([
-    getLocations({ cityName: cityParam, limit: 100 }),
-    getCity(cityParam),
-    getCities(regionParam),
+  const { region, city } = await params
+  const [cityData, placeholderImage, events, citiesData] = await Promise.all([
+    getCity(city),
     getPlaceholderImage(),
     getCachedEvents({
-      city: cityParam,
+      region,
+      city,
       startDate: new Date().toISOString(),
     }),
+    getCities(),
   ])
+
+  if (!cityData) {
+    return null
+  }
+
   if (!placeholderImage) {
     console.error('No placeholder image found')
     return
@@ -93,19 +104,24 @@ export default async function CityPage({
 
   return (
     <>
-      <UnifiedFilterSections
-        title={`Concerts, soirées et DJ sets ${regionParam === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'}`}
-        subTitle={`Tous les concerts et soirées à venir:`}
-        buttons={[
-          <CityFilterCombobox
-            key="city-filter"
-            cities={[
-              ...cities.docs,
-              { id: 'all', name: 'Toutes les villes', createdAt: '', updatedAt: '' },
-            ]}
-          />,
-        ]}
-      />
+      <Suspense
+        fallback={
+          <div className="mx-auto mt-4 flex w-full justify-center">
+            <PacmanLoader />
+          </div>
+        }
+      >
+        <UnifiedFilterSections
+          titleWithEffect
+          buttons={[
+            <CityFilterCombobox
+              key="city-filter"
+              cities={citiesData.docs}
+              isLocationsPage={false}
+            />,
+          ]}
+        />
+      </Suspense>
       <Suspense
         fallback={
           <div className="mx-auto mt-[14vh] flex min-h-screen w-full justify-center">
@@ -118,31 +134,17 @@ export default async function CityPage({
           initialNextPage={events.nextPage}
           hasNextPageProps={events.hasNextPage}
           startDate={new Date().toISOString()}
-          endDate={new Date().toISOString()}
           placeholderImageUrl={placeholderImage}
-          region={regionParam}
+          region={region}
         />
       </Suspense>
-
-      <div className="max-w-full mx-auto px-6 py-8 text-gray-800">
-        {city['rich text description'] && <RichTextWrapper data={city['rich text description']} />}
-      </div>
-      <div className={cn(darkerGrotesque.className, 'max-w-full mx-auto px-6 py-8 text-gray-800')}>
-        <div>
-          <RelatedLocationsAndCities
-            locations={locations}
-            regionParam={regionParam}
-            city={city}
-            sectionTitle={`Où écouter de la musique à ${city.name} :`}
-          />
-          <RelatedLocationsAndCities
-            locations={cities}
-            regionParam={regionParam}
-            city={city}
-            sectionTitle={`Concerts et DJ sets ${regionParam === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'}`}
-          />
-        </div>
-      </div>
+      <RelatedLocationsAndCities
+        locations={citiesData}
+        regionParam={region}
+        city={cityData}
+        sectionTitle={`Concerts et DJ sets ${region === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'}`}
+      />
+      <RichTextWrapper data={cityData['rich text description']} />
     </>
   )
 }

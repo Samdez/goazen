@@ -61,11 +61,11 @@ function EventThumbnail({
       <Link href={eventUrl} className="rounded-xl h-full">
         <CardContent className="rounded-xl border-4 border-black px-0 py-0 h-full">
           <CardHeader className="h-[45%] px-2 py-4">
-            <span className="text-xl text-[#ee2244bc]">{formatDate(event.date)}</span>
+            <span className="text-xl text-[#E45110]">{formatDate(event.date)}</span>
             <span className="pl-2">{event.time}</span>
             <CardTitle className="text-md text-balance text-2xl">{event.title}</CardTitle>
             <CardDescription className="text-md items-center justify-center rounded-md border-black">
-              <span className={cn(darkerGrotesque.className, 'text-[#ee2244bc] text-xl font-bold')}>
+              <span className={cn(darkerGrotesque.className, 'text-[#E45110] text-xl font-bold')}>
                 {event.location ? `${locationName} / ${locationCity}` : event.location_alt}
               </span>
             </CardDescription>

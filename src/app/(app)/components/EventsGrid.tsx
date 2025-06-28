@@ -8,8 +8,22 @@ import { getCachedEvents } from '../queries/get-events'
 import EventThumbnail from './EventThumbnail'
 import EmptyEventsSection from './EmptyEventsSection'
 import { useCategory } from '../hooks/useGenre'
-import { useSearchParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
+
+type EventsGridProps = {
+  initialEvents: Event[]
+  initialNextPage?: number | null
+  hasNextPageProps: boolean
+  startDate: string
+  endDate?: string
+  activeTime?: string
+  placeholderImageUrl: string
+  locationId?: string
+  region?: string
+  specialEvent?: string
+  selectionOnly?: boolean
+}
 
 export default function EventsGrid({
   initialEvents,
@@ -21,79 +35,131 @@ export default function EventsGrid({
   hasNextPageProps,
   activeTime,
   region,
-}: {
-  initialEvents: Event[]
-  initialNextPage?: number | null
-  hasNextPageProps: boolean
-  startDate: string
-  endDate?: string
-  activeTime?: string
-  placeholderImageUrl: string
-  locationId?: string
-  region?: string
-}) {
+  specialEvent,
+  selectionOnly,
+}: EventsGridProps) {
   const [events, setEvents] = useState<Event[]>(initialEvents)
   const [nextPage, setNextPage] = useState(initialNextPage)
   const [hasNextPage, setHasNextPage] = useState(hasNextPageProps)
+  const [isLoading, setIsLoading] = useState(false)
   const { ref, inView } = useInView()
   const category = useCategory()
   const searchParams = useSearchParams()
+  const params = useParams()
+  const cityParam = params.city as string
+
   const prevRegionRef = useRef(region)
+  const prevSearchParamsRef = useRef(searchParams.toString())
+  const prevSelectionOnlyRef = useRef(selectionOnly)
 
-  const loadMoreEvents = async () => {
-    const newEvents = await getCachedEvents({
-      page: nextPage ? nextPage : undefined,
-      startDate,
-      endDate,
-      locationId,
-      category,
-      region,
-    })
-    setEvents((events) => [...events, ...newEvents.docs])
-    setNextPage((prevPage) => (newEvents.nextPage ? newEvents.nextPage : prevPage))
-    setHasNextPage(newEvents.hasNextPage)
-  }
-
-  // Reset events when region changes
   useEffect(() => {
-    if (prevRegionRef.current !== region) {
-      setEvents(initialEvents)
-      setNextPage(initialNextPage)
-      setHasNextPage(hasNextPageProps)
-      prevRegionRef.current = region
+    const currentSearchParams = searchParams.toString()
+    const hasSearchParamsChanged = prevSearchParamsRef.current !== currentSearchParams
+    const hasRegionChanged = prevRegionRef.current !== region
+    const hasSelectionOnlyChanged = prevSelectionOnlyRef.current !== selectionOnly
+
+    // Only reset if something actually changed
+    if (!hasSearchParamsChanged && !hasRegionChanged && !hasSelectionOnlyChanged) {
+      return
     }
-  }, [region, initialEvents, initialNextPage, hasNextPageProps])
 
-  // Only reload events when search params change (not on initial mount)
-  useEffect(() => {
+    // Update refs
+    prevSearchParamsRef.current = currentSearchParams
+    prevRegionRef.current = region
+    prevSelectionOnlyRef.current = selectionOnly
+
+    // If we're on the initial load with the same filters that were used to fetch initialEvents,
+    // just use the initial events instead of refetching
+    const isInitialLoad = events === initialEvents
+    const hasMatchingFilters =
+      (!category ||
+        events.some((event) =>
+          event.category?.some((cat) => typeof cat !== 'string' && cat.slug === category),
+        )) &&
+      (!region ||
+        events.some((event) => {
+          if (typeof event.location === 'string') return false
+          const cityV2 = event.location?.['city V2']
+          return typeof cityV2 !== 'string' && cityV2?.region === region
+        })) &&
+      (!locationId ||
+        events.some(
+          (event) => typeof event.location !== 'string' && event.location?.id === locationId,
+        )) &&
+      (!specialEvent ||
+        events.some(
+          (event) =>
+            typeof event.special_event !== 'string' && event.special_event?.slug === specialEvent,
+        )) &&
+      (selectionOnly === undefined ||
+        events.some((event) => event.add_to_selection === selectionOnly))
+
+    if (isInitialLoad && hasMatchingFilters) {
+      return
+    }
+
     const loadInitialEvents = async () => {
-      const eventsData = await getCachedEvents({
-        startDate,
-        endDate,
-        category,
-        region,
-        locationId,
-      })
-      if (prevRegionRef.current === region) {
-        // Only update if region hasn't changed
+      try {
+        setIsLoading(true)
+        const eventsData = await getCachedEvents({
+          startDate,
+          endDate,
+          category,
+          region,
+          locationId,
+          specialEvent,
+          selectionOnly,
+          city: cityParam,
+        })
         setEvents(eventsData.docs)
         setNextPage(eventsData.nextPage)
         setHasNextPage(eventsData.hasNextPage)
+      } catch (error) {
+        console.error('Error loading initial events:', error)
+        // On error, reset to initial state
+        setEvents(initialEvents)
+        setNextPage(initialNextPage)
+        setHasNextPage(hasNextPageProps)
+      } finally {
+        setIsLoading(false)
       }
     }
 
-    // Skip the initial mount effect
-    const searchParamsString = searchParams.toString()
-    if (searchParamsString) {
-      loadInitialEvents()
+    // Load new events if we have filters that don't match our current events
+    loadInitialEvents()
+  }, [searchParams, region, category, locationId, selectionOnly, events, initialEvents])
+
+  const loadMoreEvents = async () => {
+    if (!nextPage || isLoading) return
+
+    try {
+      setIsLoading(true)
+      const newEvents = await getCachedEvents({
+        page: nextPage,
+        startDate,
+        endDate,
+        locationId,
+        category,
+        region,
+        city: cityParam,
+        specialEvent,
+        selectionOnly,
+      })
+      setEvents((prev) => [...prev, ...newEvents.docs])
+      setNextPage(newEvents.nextPage)
+      setHasNextPage(newEvents.hasNextPage)
+    } catch (error) {
+      console.error('Error loading more events:', error)
+    } finally {
+      setIsLoading(false)
     }
-  }, [searchParams, region, startDate, endDate, category, locationId])
+  }
 
   useEffect(() => {
-    if (inView && hasNextPage) {
+    if (inView && hasNextPage && !isLoading) {
       loadMoreEvents()
     }
-  }, [inView, hasNextPage])
+  }, [inView, hasNextPage, isLoading])
 
   if (!events.length) {
     return <EmptyEventsSection activeTime={activeTime} category={category} />
@@ -110,7 +176,7 @@ export default function EventsGrid({
           />
         </div>
       ))}
-      {hasNextPage && (
+      {(hasNextPage || isLoading) && (
         <div className="flex h-32 w-full items-center justify-center col-span-full" ref={ref}>
           <PacmanLoader />
         </div>

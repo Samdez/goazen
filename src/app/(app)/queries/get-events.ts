@@ -14,16 +14,7 @@ function extendEndDateToEndOfPreviousDay(date: string) {
   return new Date(new Date(yesterday).setUTCHours(24, 0, 0, 0))
 }
 
-export async function _getEvents({
-  startDate,
-  endDate,
-  page,
-  category,
-  locationId,
-  limit,
-  region,
-  city,
-}: {
+export type GetEventsParams = {
   startDate?: string
   endDate?: string
   page?: number
@@ -32,7 +23,22 @@ export async function _getEvents({
   limit?: number
   region?: string
   city?: string
-}) {
+  specialEvent?: string
+  selectionOnly?: boolean
+}
+
+export async function _getEvents({
+  startDate,
+  endDate,
+  page = 1,
+  category,
+  locationId,
+  limit = 12,
+  region,
+  city,
+  specialEvent,
+  selectionOnly,
+}: GetEventsParams) {
   const adjustedStartDate = startDate ? new Date(startDate) : new Date()
   adjustedStartDate.setDate(adjustedStartDate.getDate() - 1)
   adjustedStartDate.setUTCHours(22, 0, 0, 0)
@@ -54,6 +60,8 @@ export async function _getEvents({
               },
             ]
           : []),
+        ...(specialEvent ? [{ 'special_event.slug': { equals: specialEvent } }] : []),
+        ...(selectionOnly ? [{ add_to_selection: { equals: true } }] : []),
         { _status: { equals: 'published' } },
       ],
     },
@@ -61,49 +69,34 @@ export async function _getEvents({
     page,
     limit,
     draft: false,
+    depth: 2,
   })
 
-  return events
+  // Deduplicate events by ID
+  const uniqueEvents = {
+    ...events,
+    docs: Array.from(new Map(events.docs.map((event) => [event.id, event])).values()),
+  }
+
+  return uniqueEvents
 }
 
-export async function getCachedEvents({
-  startDate,
-  endDate,
-  page,
-  category,
-  locationId,
-  limit,
-  region,
-  city,
-}: {
-  startDate?: string
-  endDate?: string
-  page?: number
-  category?: string
-  locationId?: string
-  limit?: number
-  region?: string
-  city?: string
-}) {
+export async function getCachedEvents(params: GetEventsParams) {
   const cacheKey = JSON.stringify({
-    startDate: startDate || '',
-    endDate: endDate || '',
-    page: page?.toString() || '',
-    category: category || '',
-    locationId: locationId || '',
-    limit: limit?.toString() || '',
-    region: region || '',
-    city: city || '',
+    startDate: params.startDate || '',
+    endDate: params.endDate || '',
+    page: params.page || 1,
+    category: params.category || '',
+    locationId: params.locationId || '',
+    limit: params.limit || 12,
+    region: params.region || '',
+    city: params.city || '',
+    specialEvent: params.specialEvent || '',
+    selectionOnly: params.selectionOnly || false,
   })
-  console.log('🚀 ~ cacheKey:', cacheKey)
 
-  return unstable_cache(
-    async () =>
-      await _getEvents({ startDate, endDate, page, category, locationId, limit, region, city }),
-    ['events', cacheKey], // Use a simpler cache key array
-    {
-      tags: ['events'],
-      revalidate: 60 * 60 * 24, // 24 hours
-    },
-  )()
+  return unstable_cache(async () => await _getEvents(params), ['events', cacheKey], {
+    tags: ['events'],
+    revalidate: 60 * 60 * 24, // 24 hours
+  })()
 }

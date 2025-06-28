@@ -49,10 +49,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
-      <body className={bebas.className}>
+      <body className={bebas.className} suppressHydrationWarning>
         <Navbar />
         <main className="mt-32 min-h-screen bg-[#FFF2DD] py-8">
-          <NextTopLoader color="#ee2244bc" showSpinner={false} />
+          <NextTopLoader color="#E45110" showSpinner={false} />
           {children}
           <Analytics />
           <SpeedInsights />
