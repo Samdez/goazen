@@ -62,15 +62,12 @@ export function buildEventUrl(event: Event) {
 }
 
 export function getLocationInfo(event: Event) {
-  if (typeof event.location === 'string' || !event.location) {
-    return {
-      citySlug: slugify(event.location_alt?.split(/[-/,]/)?.at(1) || 'no-location'),
-      cityName: slugify(event.location_alt?.split(/[-/,]/)?.at(1) || 'no-location'),
-      locationSlug: slugify(event.location_alt?.split(/[-/,]/)?.at(0) || 'no-location'),
-      locationName: event.location_alt?.split(/[-/,]/)?.at(0) || 'no-location',
-    }
-  }
-  if (event.location['city V2'] && typeof event.location['city V2'] !== 'string') {
+  if (
+    event.location &&
+    typeof event.location !== 'string' &&
+    event.location['city V2'] &&
+    typeof event.location['city V2'] !== 'string'
+  ) {
     return {
       citySlug: event.location['city V2'].slug,
       cityName: event.location['city V2'].name,
@@ -79,10 +76,20 @@ export function getLocationInfo(event: Event) {
       region: event.location['city V2'].region,
     }
   }
+  if (typeof event.location === 'string' || !event.location) {
+    return {
+      citySlug: slugify(event.location_alt?.split(/[-/,]/)?.at(1) || 'no-location'),
+      cityName: slugify(event.location_alt?.split(/[-/,]/)?.at(1) || 'no-location'),
+      locationSlug: slugify(event.location_alt?.split(/[-/,]/)?.at(0) || 'no-location'),
+      locationName: event.location_alt?.split(/[-/,]/)?.at(0) || 'no-location',
+      region: event.region,
+    }
+  }
   return {
     citySlug: event.location.city,
     cityName: event.location.city,
     locationSlug: event.location.slug,
     locationName: event.location.name,
+    region: event.region,
   }
 }
