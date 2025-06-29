@@ -1,5 +1,5 @@
 import { isAdminOrHasLocationAccess } from '@/app/(payload)/access/isAdminOrHasLocationAccess'
-import type { CollectionConfig } from 'payload'
+import { APIError, type CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
 import { REGIONS } from '@/app/(app)/constants'
 
@@ -96,6 +96,25 @@ const Events: CollectionConfig = {
           ({ req: { payload }, data }) => {
             if (payload) {
               return slugifyString(data?.title)
+            }
+          },
+          ({ req: { payload }, data }) => {
+            const errors = {
+              location_alt: 'Veuillez saisir le nom de la salle alternative',
+              region: 'Veuillez sélectionner une région',
+            }
+
+            if (data && !data.location) {
+              if (!data.location_alt) {
+                throw new APIError(errors.location_alt, 400, {
+                  field: 'location_alt',
+                })
+              }
+              if (!data.region) {
+                throw new APIError(errors.region, 400, {
+                  field: 'region',
+                })
+              }
             }
           },
         ],
