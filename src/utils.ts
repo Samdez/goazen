@@ -58,14 +58,6 @@ export function createHref({
 
 export function buildEventUrl(event: Event) {
   const locationInfo = getLocationInfo(event)
-  if (
-    !locationInfo?.region ||
-    !event.region ||
-    !locationInfo.citySlug ||
-    !locationInfo.locationSlug
-  ) {
-    return null
-  }
   return `/concerts/${locationInfo?.region || event.region}/${locationInfo?.citySlug}/${locationInfo?.locationSlug}/${event.slug}_${event.id}`
 }
 
