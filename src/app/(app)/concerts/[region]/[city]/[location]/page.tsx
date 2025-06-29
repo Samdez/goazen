@@ -8,6 +8,7 @@ import { env } from 'env'
 import RelatedLocationsAndCities from '@/app/(app)/components/RelatedLocationsAndCities'
 import { getLocations } from '@/app/(app)/queries/get-locations'
 import { getCity } from '@/app/(app)/queries/get-city'
+import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
 
 export async function generateMetadata({
   params,
@@ -137,10 +138,13 @@ async function LocationPage({
   const imageUrl =
     !(typeof location?.image === 'string') && location.image ? location.image?.url : ''
 
+  const description = location.description_V2 || location.description
+
   return (
     <div className="flex flex-col items-center gap-4 px-4 py-8">
-      <h1 className="text-center text-6xl font-bold text-black">{location.name}</h1>
-      <h3 className="text-4xl text-black">Prochains concerts: </h3>
+      <h1 className="text-center text-4xl font-bold text-black">
+        Tous les concerts, DJ sets, et soirées à {location.name} {cityName} :
+      </h1>
       {events.docs.length ? (
         <EventsCarousel events={events.docs} placeholderImageUrl={placeholderImageUrl || ''} />
       ) : (
@@ -157,9 +161,7 @@ async function LocationPage({
           height={640}
         />
       )}
-      {location.description && (
-        <RichText data={location.description} className="text-black font-text" />
-      )}
+      {description && <RichTextWrapper data={description} />}
 
       <div className="flex w-full justify-center py-8">
         <iframe

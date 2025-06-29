@@ -171,7 +171,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
         )
       )}
       {otherEvents && otherEvents.length > 0 && (
-        <div className="flex flex-col items-center gap-4 px-4 py-8 text-white md:w-1/2 w-full">
+        <div className="flex flex-col items-center gap-4 px-4 py-8 text-white w-full">
           <h2 className="text-center text-6xl font-bold text-black">
             {locationInfo?.locationName}
           </h2>

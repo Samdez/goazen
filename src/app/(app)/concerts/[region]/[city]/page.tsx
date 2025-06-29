@@ -14,6 +14,7 @@ import EventsGrid from '@/app/(app)/components/EventsGrid'
 import RelatedLocationsAndCities from '@/app/(app)/components/RelatedLocationsAndCities'
 import type { City } from '@/payload-types'
 import type { PaginatedDocs } from 'payload'
+import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
 
 export async function generateStaticParams() {
   const cities = await getCities()
@@ -22,14 +23,6 @@ export async function generateStaticParams() {
     city: city.slug,
     region: city.region,
   }))
-}
-
-function RichTextWrapper({ data }: { data: any }) {
-  return (
-    <div className={darkerGrotesque.className}>
-      <RichText data={data} />
-    </div>
-  )
 }
 
 export async function generateMetadata({

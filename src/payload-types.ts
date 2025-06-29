@@ -118,6 +118,21 @@ export interface Location {
     };
     [k: string]: unknown;
   } | null;
+  description_V2?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   place_id?: string | null;
   'city V2'?: (string | null) | City;
   city?:
@@ -489,6 +504,7 @@ export interface CategoriesSelect<T extends boolean = true> {
 export interface LocationsSelect<T extends boolean = true> {
   name?: T;
   description?: T;
+  description_V2?: T;
   place_id?: T;
   'city V2'?: T;
   city?: T;

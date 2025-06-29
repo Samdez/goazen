@@ -11,14 +11,7 @@ import styles from '@/app/(app)/styles.module.css'
 import SelectionSwitch from '@/app/(app)/components/SelectionSwitch'
 import { getCities } from '@/app/(app)/queries/get-cities'
 import { getSpecialEvents } from '@/app/(app)/queries/get-special-events'
-
-function RichTextWrapper({ data }: { data: any }) {
-  return (
-    <div className={`${darkerGrotesque.className} ${styles.richText}`}>
-      <RichText data={data} />
-    </div>
-  )
-}
+import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
 
 export async function generateStaticParams() {
   const specialEvents = await getSpecialEvents()

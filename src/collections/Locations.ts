@@ -23,6 +23,11 @@ const Locations: CollectionConfig = {
       type: 'richText',
     },
     {
+      name: 'description_V2',
+      label: 'Description V2',
+      type: 'richText',
+    },
+    {
       name: 'place_id',
       label: 'place id',
       type: 'text',
