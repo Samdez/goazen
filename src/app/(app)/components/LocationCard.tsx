@@ -19,7 +19,7 @@ function LocationCard({
 
   const imageUrl =
     !(typeof location.image === 'string') && location.image
-      ? location.image?.url
+      ? location.image.sizes?.card?.url || location.image?.url
       : placeholderImageUrl
 
   return (
@@ -43,10 +43,11 @@ function LocationCard({
             <Image
               alt={location.name}
               src={imageUrl || ''}
-              width={500}
-              height={300}
+              width={640}
+              height={360}
               className="h-[300px] w-full object-cover transition hover:scale-110"
               priority={true}
+              unoptimized
             />
           </CardContent>
         </Link>

@@ -17,10 +17,24 @@ const Medias: CollectionConfig = {
     },
     imageSizes: [
       {
-        width: 310,
-        height: 176,
+        name: 'thumbnail',
+        width: 326,
+        height: 215,
         position: 'centre',
+        formatOptions: { format: 'webp' },
+      },
+      {
         name: 'card',
+        width: 640,
+        height: 360,
+        position: 'centre',
+        formatOptions: { format: 'webp' },
+      },
+      {
+        name: 'eventCard',
+        width: 640,
+        height: 360,
+        position: 'centre',
         formatOptions: { format: 'webp' },
       },
     ],

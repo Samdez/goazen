@@ -21,7 +21,9 @@ function EventThumbnail({
   className?: string
 }) {
   const imageUrl =
-    !(typeof event.image === 'string') && event.image ? event.image?.url : placeholderImageUrl
+    !(typeof event.image === 'string') && event.image
+      ? event.image.sizes?.eventCard?.url || event.image?.url
+      : placeholderImageUrl
   const eventPrice = event.sold_out
     ? 'Complet'
     : event.price === '0'
@@ -79,9 +81,11 @@ function EventThumbnail({
             <Image
               alt={event.title}
               src={imageUrl || ''}
-              fill
+              width={640}
+              height={360}
               className="rounded-b-md object-cover"
               priority
+              unoptimized
             />
             <div className="absolute bottom-4 right-4 flex h-6 min-w-14 items-center justify-center rounded-md bg-white px-2">
               {eventPrice}
