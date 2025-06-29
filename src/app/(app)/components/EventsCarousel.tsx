@@ -22,7 +22,7 @@ function EventsCarousel({
       <CarouselContent>
         {events.map((event) => {
           return (
-            <CarouselItem key={event.id} className="md:basis-1/3">
+            <CarouselItem key={event.id} className="md:basis-1/2">
               <EventThumbnail event={event} placeholderImageUrl={placeholderImageUrl} />
             </CarouselItem>
           )

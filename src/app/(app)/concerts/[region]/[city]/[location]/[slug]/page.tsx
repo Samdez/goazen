@@ -123,6 +123,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
       }),
     getPlaceholderImage(),
   ])
+  const otherEvents = locationEvents !== '' && locationEvents?.docs.filter((e) => e.id !== event.id)
 
   const imageUrl =
     !(typeof event.image === 'string') && event.image ? event.image?.url : placeholderImage
@@ -169,16 +170,13 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
           </a>
         )
       )}
-      {locationEvents && locationEvents.docs.length > 0 && (
-        <div className="flex flex-col items-center gap-4 px-4 py-8 text-white max-w-full">
+      {otherEvents && otherEvents.length > 0 && (
+        <div className="flex flex-col items-center gap-4 px-4 py-8 text-white md:w-1/2 w-full">
           <h2 className="text-center text-6xl font-bold text-black">
             {locationInfo?.locationName}
           </h2>
           <h2 className="text-4xl text-black">Prochains concerts: </h2>
-          <EventsCarousel
-            events={locationEvents.docs.filter((e) => e.id !== event.id)}
-            placeholderImageUrl={placeholderImage || ''}
-          />
+          <EventsCarousel events={otherEvents} placeholderImageUrl={placeholderImage || ''} />
         </div>
       )}
 
