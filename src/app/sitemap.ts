@@ -63,10 +63,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 1,
     },
-    ...eventsUrls,
-    ...locationsUrls,
+    ...specialEventsUrls,
     ...regionsUrls,
     ...citiesUrls,
-    ...specialEventsUrls,
+    ...locationsUrls,
+    ...eventsUrls,
   ]
 }
