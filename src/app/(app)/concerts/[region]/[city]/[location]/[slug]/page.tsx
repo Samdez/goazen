@@ -116,10 +116,11 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
 
   const event = await getEvent(slugParam.split('_').reverse()[0])
   const [locationEvents, placeholderImage] = await Promise.all([
-    getCachedEvents({
-      locationId: typeof event.location === 'string' ? event.location : event.location?.id,
-      startDate: new Date().toISOString(),
-    }),
+    event.location &&
+      getCachedEvents({
+        locationId: typeof event.location === 'string' ? event.location : event.location?.id,
+        startDate: new Date().toISOString(),
+      }),
     getPlaceholderImage(),
   ])
 
@@ -136,12 +137,18 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
         </p>
       </div>
       <div>
-        <Link
-          href={`/concerts/${locationInfo?.region}/${locationInfo?.citySlug}/${locationInfo?.locationSlug}`}
-          className="rounded-md p-2 text-center text-4xl font-bold text-black hover:bg-black hover:text-[#FFF2DD]"
-        >
-          {locationInfo?.locationName}
-        </Link>
+        {event.location ? (
+          <Link
+            href={`/concerts/${locationInfo?.region}/${locationInfo?.citySlug}/${locationInfo?.locationSlug}`}
+            className="rounded-md p-2 text-center text-4xl font-bold text-black hover:bg-black hover:text-[#FFF2DD]"
+          >
+            {locationInfo?.locationName}
+          </Link>
+        ) : (
+          <p className="rounded-md p-2 text-center text-4xl font-bold text-black">
+            {locationInfo?.locationName}
+          </p>
+        )}
       </div>
       <Image className="mx-auto" src={imageUrl || ''} alt={event.title} width={640} height={640} />
       {event.description && (
@@ -189,14 +196,16 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
             </Link>
           </Button>
         )}
-        <Button className="rounded-lg border-4 border-black bg-[#E45110] p-2 text-2xl text-black">
-          <Link
-            href={`/concerts/${locationInfo?.region}/${locationInfo?.citySlug}`}
-            className="text-2xl text-black"
-          >
-            Tous les concerts à {locationInfo?.cityName}
-          </Link>
-        </Button>
+        {event.location && (
+          <Button className="rounded-lg border-4 border-black bg-[#E45110] p-2 text-2xl text-black">
+            <Link
+              href={`/concerts/${locationInfo?.region}/${locationInfo?.citySlug}`}
+              className="text-2xl text-black"
+            >
+              Tous les concerts à {locationInfo?.cityName}
+            </Link>
+          </Button>
+        )}
       </div>
     </div>
   )
