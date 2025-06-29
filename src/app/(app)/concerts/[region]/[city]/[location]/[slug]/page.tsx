@@ -9,10 +9,10 @@ import { darkerGrotesque } from '@/app/(app)/fonts'
 import { getCachedEvents } from '@/app/(app)/queries/get-events'
 import EventsCarousel from '@/app/(app)/components/EventsCarousel'
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const slugParam = (await params).slug
   try {
-    const event = await getEvent(slugParam[0].split('_').reverse()[0])
+    const event = await getEvent(slugParam.split('_').reverse()[0])
     const locationInfo = getLocationInfo(event)
     if (!event) {
       return {
