@@ -36,7 +36,7 @@ function Navbar() {
           {/* <p className="text-3xl font-bold">Goazen!</p> */}
         </Link>
         <Link
-          href={'/'}
+          href={'/formulaire'}
           className="col-span-2 bg-[#FFF2DD] border-b-2 border-black flex flex-col justify-center items-center text-2xl pl-4"
         >
           <CalendarDays className="w-10 h-10" />
