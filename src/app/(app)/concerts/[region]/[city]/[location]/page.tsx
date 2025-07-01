@@ -9,6 +9,7 @@ import RelatedLocationsAndCities from '@/app/(app)/components/RelatedLocationsAn
 import { getLocations } from '@/app/(app)/queries/get-locations'
 import { getCity } from '@/app/(app)/queries/get-city'
 import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
+import Script from 'next/script'
 
 export async function generateMetadata({
   params,
@@ -140,45 +141,146 @@ async function LocationPage({
 
   const description = location.description_V2 || location.description
 
-  return (
-    <div className="flex flex-col items-center gap-4 px-4 py-8">
-      <h1 className="text-center text-4xl font-bold text-black">
-        Tous les concerts, DJ sets, et soirées à {location.name} {cityName} :
-      </h1>
-      {events.docs.length ? (
-        <EventsCarousel events={events.docs} placeholderImageUrl={placeholderImageUrl || ''} />
-      ) : (
-        <div className="flex h-36 items-center">
-          <p className="text-4l text-black">Rien de prévu ici à notre connaissance...😔</p>
-        </div>
-      )}
-      {imageUrl && (
-        <Image
-          className="mx-auto"
-          src={imageUrl || ''}
-          alt={location.name}
-          width={640}
-          height={640}
-        />
-      )}
-      {description && <RichTextWrapper data={description} />}
+  // Create structured data for the music venue
+  const venueStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'MusicVenue',
+    name: location.name,
+    description: description,
+    image: imageUrl || placeholderImageUrl,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: cityName,
+      addressRegion: regionParam === 'pays-basque' ? 'Pays Basque' : 'Landes',
+      addressCountry: 'FR',
+    },
+    geo: location.place_id
+      ? {
+          '@type': 'GeoCoordinates',
+          // You might want to add latitude and longitude if you have them
+        }
+      : undefined,
+    // Add upcoming events
+    event: events.docs.map((event) => {
+      const isPastEvent = new Date(event.date) < new Date()
 
-      <div className="flex w-full justify-center py-8">
-        <iframe
-          width="100%"
-          height="450"
-          loading="lazy"
-          allowFullScreen
-          src={`https://www.google.com/maps/embed/v1/place?q=place_id:${location.place_id}&key=${env.GOOGLE_MAPS_API_KEY}`}
-        ></iframe>
+      return {
+        '@type': 'MusicEvent',
+        name: event.title,
+        startDate: event.date,
+        endDate: event.date,
+        description: event.description,
+        image: typeof event.image === 'object' ? event.image?.url : undefined,
+        eventStatus: isPastEvent
+          ? 'https://schema.org/EventScheduled'
+          : 'https://schema.org/EventScheduled',
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        // Add performer information if available
+        performer: event.category
+          ?.map((cat) =>
+            typeof cat === 'object'
+              ? {
+                  '@type': 'MusicGroup',
+                  name: cat.name,
+                  genre: cat.slug,
+                }
+              : undefined,
+          )
+          .filter(Boolean),
+        // Add music-specific details
+        musicType: event.category
+          ?.map((cat) => (typeof cat === 'object' ? cat.name : undefined))
+          .filter(Boolean)
+          .join(', '),
+        location: {
+          '@type': 'MusicVenue',
+          name: location.name,
+          address: {
+            '@type': 'PostalAddress',
+            addressLocality: cityName,
+            addressRegion: regionParam === 'pays-basque' ? 'Pays Basque' : 'Landes',
+            addressCountry: 'FR',
+          },
+        },
+        offers: event.ticketing_url
+          ? {
+              '@type': 'Offer',
+              url: event.ticketing_url,
+              availability:
+                isPastEvent || event.sold_out
+                  ? 'https://schema.org/SoldOut'
+                  : 'https://schema.org/InStock',
+              validFrom: event.createdAt || event.date,
+              ...(event.price && {
+                price: event.price,
+                priceCurrency: 'EUR',
+              }),
+            }
+          : undefined,
+      }
+    }),
+    // Add venue-specific details
+    publicAccess: true,
+    smokingAllowed: false,
+    openingHoursSpecification: {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Friday', 'Saturday'], // Add actual opening days if you have them
+      opens: '20:00',
+      closes: '02:00',
+    },
+    // Add organization information
+    parentOrganization: {
+      '@type': 'Organization',
+      name: 'Goazen!',
+      url: 'https://goazen.info',
+    },
+  }
+
+  return (
+    <>
+      <Script id="venue-structured-data" type="application/ld+json">
+        {JSON.stringify(venueStructuredData)}
+      </Script>
+
+      <div className="flex flex-col items-center gap-4 px-4 py-8">
+        <h1 className="text-center text-4xl font-bold text-black">
+          Tous les concerts, DJ sets, et soirées à {location.name} {cityName} :
+        </h1>
+        {events.docs.length ? (
+          <EventsCarousel events={events.docs} placeholderImageUrl={placeholderImageUrl || ''} />
+        ) : (
+          <div className="flex h-36 items-center">
+            <p className="text-4l text-black">Rien de prévu ici à notre connaissance...😔</p>
+          </div>
+        )}
+        {imageUrl && (
+          <Image
+            className="mx-auto"
+            src={imageUrl || ''}
+            alt={location.name}
+            width={640}
+            height={640}
+          />
+        )}
+        {description && <RichTextWrapper data={description} />}
+
+        <div className="flex w-full justify-center py-8">
+          <iframe
+            width="100%"
+            height="450"
+            loading="lazy"
+            allowFullScreen
+            src={`https://www.google.com/maps/embed/v1/place?q=place_id:${location.place_id}&key=${env.GOOGLE_MAPS_API_KEY}`}
+          ></iframe>
+        </div>
+        <RelatedLocationsAndCities
+          locations={relatedLocations}
+          regionParam={regionParam}
+          city={city}
+          sectionTitle={`Les autres lieux de concerts, soirées et DJ sets à ${cityName} :`}
+        />
       </div>
-      <RelatedLocationsAndCities
-        locations={relatedLocations}
-        regionParam={regionParam}
-        city={city}
-        sectionTitle={`Les autres lieux de concerts, soirées et DJ sets à ${cityName} :`}
-      />
-    </div>
+    </>
   )
 }
 

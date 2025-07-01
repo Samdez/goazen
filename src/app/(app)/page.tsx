@@ -10,6 +10,7 @@ import { GenreFilterComboBox } from './components/GenreFilterComboBox'
 import { DateFilterComboBox } from './components/DateFilterComboBox'
 import { getShowSpecialEvent } from './queries/get-show-special-event'
 import SpecialEventBanner from './components/SpecialEventBanner'
+import Script from 'next/script'
 
 const searchParamsSchema = z.object({
   startDate: z.string().optional(),
@@ -41,8 +42,62 @@ export default async function Page({
     console.error('No placeholder image found')
     return
   }
+
+  // Create structured data for the organization and upcoming events
+  const organizationStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Goazen!',
+    description:
+      'Découvrez tous les concerts, DJ sets, festivals et soirées au Pays Basque et dans les Landes',
+    url: 'https://goazen.info',
+    logo: 'https://goazen.info/GOAZEN_MASCOTTES.png',
+    event: initialEvents.docs.map((event) => {
+      const eventLocation =
+        event.location && typeof event.location === 'object' ? event.location : null
+      const cityData =
+        eventLocation?.['city V2'] && typeof eventLocation['city V2'] === 'object'
+          ? eventLocation['city V2']
+          : null
+
+      return {
+        '@type': 'Event',
+        name: event.title,
+        startDate: event.date,
+        endDate: event.date,
+        description: event.description,
+        image: typeof event.image === 'object' ? event.image?.url : undefined,
+        location: eventLocation
+          ? {
+              '@type': 'Place',
+              name: eventLocation.name,
+              address: {
+                '@type': 'PostalAddress',
+                addressLocality: cityData?.name,
+                addressRegion: cityData?.region === 'pays-basque' ? 'Pays Basque' : 'Landes',
+                addressCountry: 'FR',
+              },
+            }
+          : undefined,
+        offers: event.ticketing_url
+          ? {
+              '@type': 'Offer',
+              url: event.ticketing_url,
+              availability: event.sold_out
+                ? 'https://schema.org/SoldOut'
+                : 'https://schema.org/InStock',
+            }
+          : undefined,
+      }
+    }),
+  }
+
   return (
     <>
+      <Script id="organization-structured-data" type="application/ld+json">
+        {JSON.stringify(organizationStructuredData)}
+      </Script>
+
       {showSpecialEvent.showSpecialEvent && (
         <SpecialEventBanner event={showSpecialEvent.specialEvent} />
       )}

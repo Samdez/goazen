@@ -15,6 +15,7 @@ import RelatedLocationsAndCities from '@/app/(app)/components/RelatedLocationsAn
 import type { City } from '@/payload-types'
 import type { PaginatedDocs } from 'payload'
 import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
+import Script from 'next/script'
 
 export async function generateStaticParams() {
   const cities = await getCities()
@@ -95,8 +96,62 @@ export default async function CityPage({
     return
   }
 
+  // Create structured data for the city and its events
+  const cityStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'City',
+    name: cityData.name,
+    description: cityData['rich text description'],
+    containedInPlace: {
+      '@type': 'AdministrativeArea',
+      name: region === 'pays-basque' ? 'Pays Basque' : 'Landes',
+      containedInPlace: {
+        '@type': 'Country',
+        name: 'France',
+      },
+    },
+    event: events.docs.map((event) => {
+      const eventLocation =
+        event.location && typeof event.location === 'object' ? event.location : null
+
+      return {
+        '@type': 'Event',
+        name: event.title,
+        startDate: event.date,
+        endDate: event.date,
+        description: event.description,
+        image: typeof event.image === 'object' ? event.image?.url : undefined,
+        location: eventLocation
+          ? {
+              '@type': 'Place',
+              name: eventLocation.name,
+              address: {
+                '@type': 'PostalAddress',
+                addressLocality: cityData.name,
+                addressRegion: region === 'pays-basque' ? 'Pays Basque' : 'Landes',
+                addressCountry: 'FR',
+              },
+            }
+          : undefined,
+        offers: event.ticketing_url
+          ? {
+              '@type': 'Offer',
+              url: event.ticketing_url,
+              availability: event.sold_out
+                ? 'https://schema.org/SoldOut'
+                : 'https://schema.org/InStock',
+            }
+          : undefined,
+      }
+    }),
+  }
+
   return (
     <>
+      <Script id="city-structured-data" type="application/ld+json">
+        {JSON.stringify(cityStructuredData)}
+      </Script>
+
       <Suspense
         fallback={
           <div className="mx-auto mt-4 flex w-full justify-center">
