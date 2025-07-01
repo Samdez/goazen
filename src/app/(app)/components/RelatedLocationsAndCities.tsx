@@ -16,8 +16,8 @@ export default function RelatedLocationsAndCities({
 }) {
   function createHref(item: Location | City) {
     //item is a location
-    if ('city V2' in item && typeof item['city V2'] !== 'string') {
-      return `/concerts/${regionParam}/${city.slug}/${item.slug}`
+    if ('city V2' in item && typeof item['city V2'] !== 'string' && item['city V2']) {
+      return `/concerts/${regionParam}/${item['city V2'].slug}/${item.slug}`
     }
     //item is a city
     return `/concerts/${regionParam}/${item.slug}`
