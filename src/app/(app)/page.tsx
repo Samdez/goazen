@@ -66,7 +66,12 @@ export default async function Page({
         startDate: event.date,
         endDate: event.date,
         description: event.description,
-        image: typeof event.image === 'object' ? event.image?.url : undefined,
+        image:
+          typeof event.image === 'object' && event.image
+            ? event.image.url?.startsWith('http')
+              ? event.image.url
+              : `https://goazen.info${event.image.url}`
+            : undefined,
         location: eventLocation
           ? {
               '@type': 'Place',

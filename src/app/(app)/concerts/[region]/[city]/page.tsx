@@ -120,7 +120,12 @@ export default async function CityPage({
         startDate: event.date,
         endDate: event.date,
         description: event.description,
-        image: typeof event.image === 'object' ? event.image?.url : undefined,
+        image:
+          typeof event.image === 'object' && event.image
+            ? event.image.url?.startsWith('http')
+              ? event.image.url
+              : `https://goazen.info${event.image.url}`
+            : `https://goazen.info${placeholderImage}`,
         location: eventLocation
           ? {
               '@type': 'Place',
@@ -190,7 +195,9 @@ export default async function CityPage({
         locations={citiesData}
         regionParam={region}
         city={cityData}
-        sectionTitle={`Concerts et DJ sets ${region === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'}`}
+        sectionTitle={`Concerts et DJ sets ${
+          region === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'
+        }`}
       />
       <RichTextWrapper data={cityData['rich text description']} />
     </>

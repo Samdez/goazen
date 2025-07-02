@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
     const title =
       event.meta?.title ||
-      `${event.title} ${isPastEvent ? '(Passé) ' : ''}en Concert à ${
+      `${event.title} ${isPastEvent ? '(Archive) ' : ''}en Concert à ${
         locationInfo?.cityName && locationInfo?.cityName
       } le ${date} | Goazen!`
     const description =
@@ -42,12 +42,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         locationInfo?.cityName && locationInfo?.cityName
       } le ${date}. ${event.description || ''} ${
         isPastEvent
-          ? 'Cet événement est passé.'
+          ? 'Retrouvez les archives des concerts passés à ' + locationInfo?.locationName
           : 'Réservez vos places pour ce concert live au Pays Basque.'
       }`
 
     const imageUrl =
       !(typeof event.image === 'string') && event.image ? event.image?.url : undefined
+
+    // Ensure we have a fully qualified URL for metadata
+    const fullImageUrl = imageUrl?.startsWith('http')
+      ? imageUrl
+      : imageUrl
+      ? `https://goazen.info${imageUrl}`
+      : undefined
 
     return {
       title,
@@ -60,13 +67,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         description,
         url: `https://goazen.info/concerts/${locationInfo?.region}/${locationInfo?.citySlug}/${locationInfo?.locationSlug}/${event.slug}_${event.id}`,
         siteName: 'Goazen!',
-        images: imageUrl
+        images: fullImageUrl
           ? [
               {
-                url: imageUrl,
+                url: fullImageUrl,
                 width: 1200,
                 height: 630,
-                alt: `${event.title} en concert à ${
+                alt: `${event.title} ${isPastEvent ? '(Archive) ' : ''}en concert à ${
                   locationInfo?.cityName && locationInfo?.cityName
                 } ${locationInfo?.locationName && locationInfo?.locationName}`,
               },
@@ -79,7 +86,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         card: 'summary_large_image',
         title,
         description,
-        images: imageUrl ? [imageUrl] : undefined,
+        images: fullImageUrl ? [fullImageUrl] : undefined,
       },
       robots: {
         index: true,
@@ -140,6 +147,10 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
 
   const imageUrl =
     !(typeof event.image === 'string') && event.image ? event.image?.url : placeholderImage
+
+  // Ensure we have a fully qualified URL for structured data
+  const fullImageUrl = imageUrl?.startsWith('http') ? imageUrl : `https://goazen.info${imageUrl}`
+
   const locationInfo = getLocationInfo(event)
 
   const isPastEvent = new Date(event.date) < new Date()
@@ -153,7 +164,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     description: event.description,
-    image: imageUrl,
+    image: fullImageUrl,
     // Add performer information if available in categories
     performer: event.category
       ?.map((cat) =>
