@@ -37,14 +37,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       specialEvent.description ||
       `Découvrez l'événement spécial ${specialEvent.name} et tous les concerts associés.`,
     alternates: {
-      canonical: `https://goazen.info/concerts/special/${slug}`,
+      canonical: `https://goazen.info/concerts/evenement/${slug}`,
     },
     openGraph: {
       title: `${specialEvent.name} | Événement Spécial - Goazen!`,
       description:
         specialEvent.description ||
         `Découvrez l'événement spécial ${specialEvent.name} et tous les concerts associés.`,
-      url: `https://goazen.info/concerts/special/${slug}`,
+      url: `https://goazen.info/concerts/evenement/${slug}`,
       siteName: 'Goazen!',
       locale: 'fr_FR',
       type: 'website',
