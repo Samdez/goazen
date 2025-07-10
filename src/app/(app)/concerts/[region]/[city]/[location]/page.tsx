@@ -42,6 +42,14 @@ export async function generateMetadata({
       typeof location.image?.url === 'string' &&
       location.image?.url
 
+    // Ensure we have a fully qualified URL for metadata
+    const fullLocationImage =
+      locationImage && typeof locationImage === 'string'
+        ? locationImage.startsWith('http')
+          ? locationImage
+          : `https://goazen.info${locationImage}`
+        : undefined
+
     return {
       title,
       description,
@@ -53,10 +61,10 @@ export async function generateMetadata({
         description,
         url: `https://goazen.info/concerts/${regionParam}/${cityParam}/${locationParam}`,
         siteName: 'Goazen!',
-        images: locationImage
+        images: fullLocationImage
           ? [
               {
-                url: locationImage,
+                url: fullLocationImage,
                 width: 1200,
                 height: 630,
                 alt: `Concerts à ${location.name} ${location.city}`,
@@ -70,7 +78,7 @@ export async function generateMetadata({
         card: 'summary_large_image',
         title,
         description,
-        images: locationImage ? [locationImage] : undefined,
+        images: fullLocationImage ? [fullLocationImage] : undefined,
       },
       robots: {
         index: true,
@@ -139,6 +147,15 @@ async function LocationPage({
   const imageUrl =
     !(typeof location?.image === 'string') && location.image ? location.image?.url : ''
 
+  // Ensure we have a fully qualified URL for structured data
+  const fullImageUrl = imageUrl?.startsWith('http')
+    ? imageUrl
+    : imageUrl
+    ? `https://goazen.info${imageUrl}`
+    : placeholderImageUrl?.startsWith('http')
+    ? placeholderImageUrl
+    : `https://goazen.info${placeholderImageUrl}`
+
   const description = location.description_V2 || location.description
 
   // Create structured data for the music venue
@@ -147,7 +164,7 @@ async function LocationPage({
     '@type': 'MusicVenue',
     name: location.name,
     description: description,
-    image: imageUrl || placeholderImageUrl,
+    image: fullImageUrl,
     address: {
       '@type': 'PostalAddress',
       addressLocality: cityName,
@@ -170,7 +187,12 @@ async function LocationPage({
         startDate: event.date,
         endDate: event.date,
         description: event.description,
-        image: typeof event.image === 'object' ? event.image?.url : undefined,
+        image:
+          typeof event.image === 'object' && event.image
+            ? event.image.url?.startsWith('http')
+              ? event.image.url
+              : `https://goazen.info${event.image.url}`
+            : undefined,
         eventStatus: isPastEvent
           ? 'https://schema.org/EventScheduled'
           : 'https://schema.org/EventScheduled',

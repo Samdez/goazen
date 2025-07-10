@@ -29,7 +29,11 @@ const config = buildConfig({
       baseDir: path.resolve(dirname),
     },
     components: {
-      afterDashboard: ['/app/(app)/components/Export'],
+      afterDashboard: [
+        '/app/(app)/components/Export',
+        '/app/(app)/components/ExportSpecialEvent',
+        '/app/(app)/components/ExportSpecialEventSelection',
+      ],
     },
   },
   collections: [Users, Medias, Events, Categories, Locations, Cities, SpecialEvents],
