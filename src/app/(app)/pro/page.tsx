@@ -220,7 +220,7 @@ const offers = {
     },
     {
       name: '🌟 PREMIUM - Le plus populaire',
-      description: '79€/mois - SANS ENGAGEMENT',
+      description: '39€/mois - SANS ENGAGEMENT',
       features: [
         'Accès CMS complet (gestion autonome)',
         'Envoi des events par mail/whatsapp',
@@ -236,7 +236,7 @@ const offers = {
       name: '🤝 PARTENAIRE - Places limitées',
       description: '79€/mois - Engagement 12 mois',
       features: [
-        'Tout PRO+ inclus',
+        'Tout PREMIUM inclus',
         '1er reel OFFERT (valeur 300€)',
         "Position assurée dans l'agenda Instagram",
         'TOP POSITION site & agenda',
