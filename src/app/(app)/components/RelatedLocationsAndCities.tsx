@@ -23,7 +23,7 @@ export default function RelatedLocationsAndCities({
     return `/concerts/${regionParam}/${item.slug}`
   }
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-4 w-full px-6">
       <h2 className="text-2xl text-black text-left font-text">{sectionTitle}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-4 pb-4">
         {locations.docs
