@@ -30,7 +30,8 @@ const config = buildConfig({
     },
     components: {
       afterDashboard: [
-        '/app/(app)/components/Export',
+        '/app/(app)/components/ExportPaysBasque',
+        '/app/(app)/components/ExportLandes',
         '/app/(app)/components/ExportSpecialEvent',
         '/app/(app)/components/ExportSpecialEventSelection',
       ],

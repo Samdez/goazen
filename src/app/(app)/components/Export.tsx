@@ -23,7 +23,7 @@ function getDay(date: Date) {
   }
 }
 
-const ExportComponent = () => {
+const ExportComponent = ({ region }: { region: 'pays-basque' | 'landes' }) => {
   const convertToCSV = (objArray: Event[]) => {
     let str = ''
 
@@ -63,6 +63,7 @@ const ExportComponent = () => {
         startDate,
         endDate,
         limit: 1000,
+        region,
       })
       if (events.docs) {
         const csvData = new Blob([convertToCSV(events.docs)], {
@@ -85,7 +86,7 @@ const ExportComponent = () => {
   return (
     <div>
       <button onClick={fetchOptions} type="button">
-        Download this week events
+        {region === 'pays-basque' ? 'Export events pays basque' : 'Export events landes'}
       </button>
     </div>
   )

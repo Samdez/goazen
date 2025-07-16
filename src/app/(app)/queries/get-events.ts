@@ -34,7 +34,7 @@ export async function _getEvents({
   category,
   locationId,
   limit = 12,
-  region,
+  region: regionParam,
   city,
   specialEvent,
   selectionOnly,
@@ -52,7 +52,26 @@ export async function _getEvents({
         ...(adjustedStartDate ? [{ date: { greater_than_equal: adjustedStartDate } }] : []),
         ...(extendedEndDate ? [{ date: { less_than_equal: extendedEndDate } }] : []),
         ...(category ? [{ 'category.slug': { equals: category } }] : []),
-        ...(region ? [{ 'location.city V2.region': { equals: region } }] : []),
+        ...(regionParam
+          ? [
+              {
+                or: [
+                  {
+                    and: [
+                      { 'location.city V2.region': { exists: true } },
+                      { 'location.city V2.region': { equals: regionParam } },
+                    ],
+                  },
+                  {
+                    and: [
+                      { 'location.city V2.region': { exists: false } },
+                      { region: { equals: regionParam } },
+                    ],
+                  },
+                ],
+              },
+            ]
+          : []),
         ...(city
           ? [
               {
