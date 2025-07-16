@@ -84,7 +84,7 @@ export default async function CityPage({
       city,
       startDate: new Date().toISOString(),
     }),
-    getCities(),
+    getCities(region),
   ])
 
   if (!cityData) {
