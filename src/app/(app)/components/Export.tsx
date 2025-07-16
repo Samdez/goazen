@@ -62,7 +62,7 @@ const ExportComponent = () => {
       const events = await _getEvents({
         startDate,
         endDate,
-        limit: 100,
+        limit: 1000,
       })
       if (events.docs) {
         const csvData = new Blob([convertToCSV(events.docs)], {

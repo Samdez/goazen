@@ -84,7 +84,7 @@ export default async function CityPage({
       city,
       startDate: new Date().toISOString(),
     }),
-    getCities(),
+    getCities(region),
   ])
 
   if (!cityData) {
@@ -199,7 +199,7 @@ export default async function CityPage({
           region === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'
         }`}
       />
-      <RichTextWrapper data={cityData['rich text description']} />
+      <RichTextWrapper data={cityData['rich text description']} className="px-6" />
     </>
   )
 }
