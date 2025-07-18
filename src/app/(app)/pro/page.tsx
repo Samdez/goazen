@@ -1,285 +1,216 @@
 import { Button } from '@/components/ui/button'
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import Image from 'next/image'
+
+const sections = [
+  {
+    id: 1,
+    title: 'Communication',
+    items: [
+      'Contenu réseaux sociaux',
+      'Stratégie de communication',
+      'Aftermovie, interviews',
+      'Visuels, affiches, flyers',
+      'Création de site web',
+    ],
+    image: '/dj.jpg',
+  },
+  {
+    id: 2,
+    title: 'Direction artistique',
+    items: [
+      'Programmation musicale',
+      'Conception de playlists',
+      "Création d'identité sonore",
+      "Création d'identité visuelle",
+    ],
+    image: '/festival.jpg',
+  },
+  {
+    id: 3,
+    title: 'Production évènementielle',
+    items: [
+      "Organisation d'évènements",
+      'Activation de marque',
+      'Showcase',
+      'Lancement de produit',
+    ],
+    image: '/dj.jpg',
+  },
+]
 
 export default function ProPage() {
   return (
-    <div className="flex justify-center">
-      <Tabs
-        defaultValue="organisateur"
-        className="w-full px-12 md:px-32 flex flex-col items-center gap-4"
-      >
-        <TabsList>
-          <TabsTrigger value="organisateur">Organisateur</TabsTrigger>
-          <TabsTrigger value="artiste">Artiste</TabsTrigger>
-          <TabsTrigger value="festival">Festival</TabsTrigger>
-        </TabsList>
-        <TabsContent value="organisateur">
-          <Organisateur />
-        </TabsContent>
-        <TabsContent value="artiste">
-          <Artiste />
-        </TabsContent>
-        <TabsContent value="festival">
-          <Festival />
-        </TabsContent>
-      </Tabs>
+    <>
+      <h1 className="text-2xl text-center font-title mb-4">
+        Goazen! <span className="text-2xl font-title text-[#E45110]">pour les professionnels</span>
+      </h1>
+      <ul className="text-xl text-left px-6 md:px-12 font-text mb-12 space-y-4 list-none">
+        <li className="flex">
+          <div className="w-2 h-2 bg-[#E45110] rounded-full mt-2 mr-3 flex-shrink-0" />
+          <span className="leading-5">
+            <strong>Media musical de référence</strong> au Pays Basque et dans les Landes, Goazen!
+            est aussi une <strong>agence d&apos;évènementiel</strong> et de{' '}
+            <strong>communication</strong> spécialisée dans le milieu musical.
+          </span>
+        </li>
+        <li className="flex">
+          <div className="w-2 h-2 bg-[#E45110] rounded-full mt-2 mr-3 flex-shrink-0" />
+          <span className="leading-5">
+            Nous mettons notre expertise à votre disposition pour vous aider à faire passer votre
+            communication à un niveau supérieur. Que vous soyez{' '}
+            <strong>organisateur d&apos;évènement</strong>, <strong>artiste</strong> ou{' '}
+            <strong>festival</strong>, nous sommes là pour vous aider à faire connaitre votre
+            projet.
+          </span>
+        </li>
+        <li className="flex">
+          <div className="w-2 h-2 bg-[#E45110] rounded-full mt-2 mr-3 flex-shrink-0" />
+          <span className="leading-5">
+            Grâce à notre{' '}
+            <strong>leadership dans le milieu musical du Pays Basque et des Landes</strong>, vous
+            êtes assuré de toucher un <strong>public local</strong>, passioné, et avide de nouvelles
+            expériences musicales et festives.
+          </span>
+        </li>
+      </ul>
+      <div className="flex flex-col gap-12">
+        {sections.map((section, index) => (
+          <section key={section.id} className="relative">
+            {/* Mobile Layout - Background Image with Overlay Card */}
+            <div className="lg:hidden relative min-h-screen flex items-center justify-center p-6">
+              <div
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                style={{
+                  backgroundImage: `url('${section.image}')`,
+                }}
+              />
+              <div className="absolute inset-0 bg-black/20" />
+
+              <Card className="relative z-10 w-full max-w-md bg-white/90 backdrop-blur-sm">
+                <CardContent className="p-8 flex flex-col gap-4 justify-between">
+                  <h2 className="text-2xl font-bold mb-6 text-gray-900">{section.title}</h2>
+                  <ul className="space-y-4">
+                    {section.items.map((item, itemIndex) => (
+                      <li key={itemIndex} className="flex items-start">
+                        <div className="w-2 h-2 bg-[#E45110] rounded-full mt-2 mr-3 flex-shrink-0" />
+                        <span className="text-gray-700 leading-relaxed">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+                <CardFooter className="flex justify-center px-8">
+                  <Button className="bg-[#E45110] hover:bg-secondary hover:text-black hover:scale-110 w-full">
+                    Discutons-en!
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+
+            {/* Desktop Layout - Side by Side */}
+            <div className="hidden lg:flex items-center justify-between px-12">
+              <div className="container">
+                <div className={`grid grid-cols-2 gap-12 items-center lg:grid-flow-col-dense`}>
+                  {/* Content Section */}
+                  <div className={`space-y-8 lg:col-start-2`}>
+                    <h2 className="text-4xl font-bold text-gray-900 leading-tight">
+                      {section.title}
+                    </h2>
+                    <ul className="space-y-6">
+                      {section.items.map((item, itemIndex) => (
+                        <li key={itemIndex} className="flex items-start">
+                          <div className="w-3 h-3 bg-[#E45110] rounded-full mt-1.5 mr-4 flex-shrink-0" />
+                          <span className="text-lg text-gray-700 leading-relaxed">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button
+                      //  className="bg-[#E45110] hover:bg-secondary hover:text-black hover:scale-110 w-1/2"
+                      className="bg-[#E45110] text-white h-16 w-36 rounded-lg justify-self-end px-2 gap-2 font-lg border-none hover:bg-[#FFF2DD] hover:text-[#E45110] text-lg"
+                    >
+                      Discutons-en!
+                    </Button>
+                  </div>
+
+                  {/* Image Section */}
+                  <div className={`relative ${index % 2 === 1 ? 'lg:col-start-1' : ''}`}>
+                    <div className="aspect-[4/3] relative overflow-hidden rounded-2xl shadow-2xl">
+                      <Image
+                        src={section.image || '/placeholder.svg'}
+                        alt={section.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        ))}
+      </div>
+
+      <div className="bg-white flex flex-col items-center mt-12 py-4 gap-4">
+        <p className="text-xl font-title text-center">Ils nous ont fait confiance:</p>
+        <ul className="text-md font-text flex gap-8 flex-wrap justify-center">
+          <Image
+            src="/cropped-casa-lola-1-blanc.png"
+            alt="logo"
+            width={130}
+            height={130}
+            className="[filter:brightness(0)_saturate(100%)] object-contain"
+          />
+          <Image src="/astra.jpg" alt="logo" width={130} height={130} className="object-contain" />
+          <Image
+            src="/sunsets.png"
+            alt="logo"
+            width={130}
+            height={130}
+            className="object-contain"
+          />
+          <Image src="/BHM.png" alt="logo" width={130} height={130} className="object-contain" />
+          <Image src="/nous.png" alt="logo" width={130} height={130} className="object-contain" />
+          <Image
+            src="/resonance.png"
+            alt="logo"
+            width={130}
+            height={130}
+            className="object-contain"
+          />
+          <Image
+            src="/banana.png"
+            alt="logo"
+            width={130}
+            height={130}
+            className="[filter:brightness(0)_saturate(100%)] object-contain"
+          />
+        </ul>
+      </div>
+    </>
+  )
+}
+
+function Communication() {
+  return (
+    <div className="flex flex-col md:flex-row gap-8 md:gap-4 w-full">
+      <Card className={`flex flex-col justify-between cursor-default`}>
+        <CardHeader>
+          <CardTitle>Communication</CardTitle>
+          <ul className="list-disc list-inside text-md font-text">
+            <li>Contenu réseaux sociaux</li>
+            <li>Stratégie de communication</li>
+            <li>Aftermovie, interviews</li>
+            <li>Visuels, affiches, flyers</li>
+            <li>Création de site web</li>
+          </ul>
+        </CardHeader>
+        <CardFooter className="flex justify-center">
+          <Button className="bg-[#E45110] hover:bg-secondary hover:text-black hover:scale-110">
+            Discutons-en!
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   )
-}
-
-function Organisateur() {
-  return (
-    <>
-      <div className="flex gap-4 w-full justify-center mb-4">
-        <Card className="cursor-default w-full">
-          <CardHeader>
-            <CardTitle>🆓 Notre offre gratuite</CardTitle>
-            <CardDescription>
-              Goazen! vous offre la possibilité de communiquer gratuitement sur tous vos events
-              musicaux
-            </CardDescription>
-            <ul className="list-disc list-inside text-md font-text">
-              <li>Présence sur le site référence des concerts au Pays Basque et dans les Landes</li>
-              <li>Plus de 4000 visiteurs uniques par mois</li>
-              <li>La possibilité de partager facilement vos évènements via notre formulaire</li>
-              <li>
-                Une chance de figurer chaque semaine dans l&apos;agenda Instagram (8000+ abonnés)
-              </li>
-              <li>Une page dédiée sur le site pour votre lieu</li>
-            </ul>
-          </CardHeader>
-        </Card>
-      </div>
-      <p className="text-md font-title mb-4">
-        Pour que vos évènements rencontrent le succès qu&apos;ils méritent, Goazen! vous propose des
-        offres sur mesure:{' '}
-      </p>
-      <div className="flex flex-col md:flex-row gap-8 md:gap-4 w-full">
-        {offers.organisateur.map((offer) => (
-          <Card
-            className={`flex flex-col justify-between cursor-default ${offer.isPremium ? 'border-[#E45110] border-2' : ''}`}
-            key={offer.name}
-          >
-            <CardHeader>
-              <CardTitle>{offer.name}</CardTitle>
-              <CardDescription>{offer.description}</CardDescription>
-              <ul className="list-disc list-inside text-md font-text">
-                {offer.features.map((feature) => (
-                  <li key={feature}>{feature}</li>
-                ))}
-              </ul>
-            </CardHeader>
-            <CardFooter className="flex justify-center">
-              <Button className="bg-[#E45110] hover:bg-secondary hover:text-black hover:scale-110">
-                Discutons-en!
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-      <p className="text-md font-title my-4">
-        Vous souhaitez faire passer votre communication à un niveau supérieur? Goazen! vous propose
-        un accompagnement personnalisé, selon vos besoins:
-      </p>
-      <div className="flex gap-4 w-full justify-center">
-        <Card className="cursor-default">
-          <CardHeader>
-            <CardTitle>💎 Communication clé en main</CardTitle>
-            <CardDescription>Sur devis</CardDescription>
-            <ul className="list-disc list-inside text-md font-text">
-              <li>Gestion complète (site, réseaux, visuels, vidéos)</li>
-              <li>Création site web dédié</li>
-              <li>Stratégie marketing personnalisée</li>
-            </ul>
-          </CardHeader>
-          <CardFooter className="flex justify-center">
-            <Button className="bg-[#E45110] hover:bg-secondary hover:text-black hover:scale-110">
-              Discutons-en!
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
-    </>
-  )
-}
-
-function Artiste() {
-  return (
-    <>
-      <div className="flex gap-4 w-full justify-center mb-4">
-        <Card className="cursor-default w-full">
-          <CardHeader>
-            <CardTitle>🆓 Notre offre gratuite</CardTitle>
-            <CardDescription>
-              Goazen! vous offre la possibilité de communiquer gratuitement sur tous vos events
-              musicaux
-            </CardDescription>
-            <ul className="list-disc list-inside text-md font-text">
-              <li>Présence sur le site référence des concerts au Pays Basque et dans les Landes</li>
-              <li>Plus de 4000 visiteurs uniques par mois</li>
-              <li>La possibilité de partager facilement vos évènements via notre formulaire</li>
-              <li>
-                Une chance de figurer chaque semaine dans l&apos;agenda Instagram (8000+ abonnés)
-              </li>
-              <li>Une page dédiée sur le site pour votre projet musical</li>
-            </ul>
-          </CardHeader>
-        </Card>
-      </div>
-      <p className="text-md font-title mb-4">
-        Pour que vos évènements rencontrent le succès qu&apos;ils méritent, Goazen! vous propose des
-        offres sur mesure:{' '}
-      </p>
-      <div className="flex flex-col md:flex-row gap-8 md:gap-4 w-full">
-        {offers.artiste.map((offer) => (
-          <Card
-            className={`flex flex-col justify-between cursor-default ${offer.isPremium ? 'border-[#E45110] border-2' : ''}`}
-            key={offer.name}
-          >
-            <CardHeader>
-              <CardTitle>{offer.name}</CardTitle>
-              <CardDescription>{offer.description}</CardDescription>
-              <ul className="list-disc list-inside text-md font-text">
-                {offer.features.map((feature) => (
-                  <li key={feature}>{feature}</li>
-                ))}
-              </ul>
-            </CardHeader>
-            <CardFooter className="flex justify-center">
-              <Button className="bg-[#E45110] hover:bg-secondary hover:text-black hover:scale-110">
-                Discutons-en!
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-    </>
-  )
-}
-
-function Festival() {
-  return (
-    <>
-      <div className="flex gap-4 w-full justify-center mb-4">
-        <Card className="cursor-default w-full">
-          <CardHeader>
-            <CardTitle>🆓 Notre offre gratuite</CardTitle>
-            <CardDescription>
-              Goazen! vous offre la possibilité de communiquer gratuitement sur votre festival
-            </CardDescription>
-            <ul className="list-disc list-inside text-md font-text">
-              <li>Présence sur le site référence des concerts au Pays Basque et dans les Landes</li>
-              <li>Plus de 4000 visiteurs uniques par mois</li>
-              <li>La possibilité de partager facilement votre festival via notre formulaire</li>
-              <li>
-                Une chance de figurer chaque semaine dans l&apos;agenda Instagram (8000+ abonnés)
-              </li>
-              <li>Une page dédiée sur le site pour votre festival</li>
-            </ul>
-          </CardHeader>
-        </Card>
-      </div>
-      <p className="text-md font-title mb-4">
-        Pour que votre festival rencontre le succès qu&apos;il mérite, Goazen! vous propose des
-        offres sur mesure:
-      </p>
-      <div className="flex flex-col md:flex-row gap-8 md:gap-4 w-full">
-        {offers.festival.map((offer) => (
-          <Card
-            className={`flex flex-col justify-between cursor-default ${offer.isPremium ? 'border-[#E45110] border-2' : ''}`}
-            key={offer.name}
-          >
-            <CardHeader>
-              <CardTitle>{offer.name}</CardTitle>
-              <CardDescription>{offer.description}</CardDescription>
-              <ul className="list-disc list-inside text-md font-text">
-                {offer.features.map((feature) => (
-                  <li key={feature}>{feature}</li>
-                ))}
-              </ul>
-            </CardHeader>
-            <CardFooter className="flex justify-center">
-              <Button className="bg-[#E45110] hover:bg-secondary hover:text-black hover:scale-110">
-                Discutons-en!
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-    </>
-  )
-}
-
-const offers = {
-  organisateur: [
-    {
-      name: '⚙️ PRO - Occasionnel',
-      description: 'Pour des besoins ponctuels',
-      features: ['Reel : 300€', 'Live report : 500€'],
-    },
-    {
-      name: '🌟 PREMIUM - Le plus populaire',
-      description: '39€/mois - SANS ENGAGEMENT',
-      features: [
-        'Accès CMS complet (gestion autonome)',
-        'Envoi des events par mail/whatsapp',
-        'Gestion des évènements récurrents',
-        'Reels à 200€ (au lieu de 300€)',
-        'Live reports à 350€ (au lieu de 500€)',
-        'Contact privilégié & suivi personnalisé',
-        'Support par WhatsApp/mail',
-      ],
-      isPremium: true,
-    },
-    {
-      name: '🤝 PARTENAIRE - Places limitées',
-      description: '79€/mois - Engagement 12 mois',
-      features: [
-        'Tout PREMIUM inclus',
-        '1er reel OFFERT (valeur 300€)',
-        "Position assurée dans l'agenda Instagram",
-        'TOP POSITION site & agenda',
-        'Statut partenaire officiel',
-      ],
-    },
-  ],
-  artiste: [
-    {
-      name: '🚀 PRO - À la carte',
-      description: 'Pour des besoins ponctuels',
-      features: ['Reel portrait artiste : 200€', 'Live report : 350€'],
-    },
-    {
-      name: '🌟 PARTENAIRE - Places limitées',
-      description: '39€/mois - Engagement 12 mois',
-      features: [
-        '1er reel OFFERT (valeur 200€)',
-        'Partage sur Instagram Goazen!',
-        'Position assurée dans l&apos;agenda Instagram',
-        '-30% sur tous les réels suivants',
-        'Top position sur les pages artistes',
-      ],
-      isPremium: true,
-    },
-  ],
-  festival: [
-    {
-      name: '⚡ PRO - Couverture standard',
-      features: ['Reel pre-festival: 300€', 'Mini Live report : 250€', 'Full Live report : 500€'],
-    },
-    {
-      name: '💼 PARTENAIRE - Places limitées',
-      description: 'Reel présentation OFFERT (en amont)',
-      features: [
-        'Reel pre-festival: 200€',
-        'Mini Live report : 200€ (-20%)',
-        'Full Live report : 400€ (-20%)',
-        'Mise en avant spéciale (bannière, site & agenda)',
-        '-30% sur prestations suivantes',
-        'Création de jeu concours',
-      ],
-      isPremium: true,
-    },
-  ],
 }
