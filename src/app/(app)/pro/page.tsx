@@ -136,11 +136,13 @@ export default function ProPage() {
                   <div className={`relative ${index % 2 === 1 ? 'lg:col-start-1' : ''}`}>
                     <div className="aspect-[4/3] relative overflow-hidden rounded-2xl shadow-2xl">
                       <Image
-                        src={section.image || '/placeholder.svg'}
+                        src={section.image}
                         alt={section.title}
                         fill
                         className="object-cover"
                         sizes="(max-width: 1024px) 100vw, 50vw"
+                        priority={index === 0}
+                        unoptimized
                       />
                     </div>
                   </div>
