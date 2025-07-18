@@ -26,15 +26,7 @@ function Navbar() {
             'col-span-1 h-32 items-center justify-center text-4xl bg-[#FFF2DD] border-b-2 border-black',
           )}
         >
-          <Image
-            src="/GOAZEN_MASCOTTES.png"
-            alt="Goazen!"
-            width={100}
-            height={100}
-            // className="group-hover:opacity-0 transition-all duration-300 ease-in-outleft-4"
-            unoptimized
-          />
-          {/* <p className="text-3xl font-bold">Goazen!</p> */}
+          <Image src="/GOAZEN_MASCOTTES.png" alt="Goazen!" width={100} height={100} unoptimized />
         </Link>
         <Link
           href={'/formulaire'}
@@ -88,7 +80,7 @@ function Navbar() {
           <NavBlock
             href={'/salles-de-concert?city=biarritz'}
             text="Les salles de concert"
-            className=" text-[#E45110] h-16 w-36 justify-self-end gap-2 font-text border-none rounded-lg hover:bg-[#E45110] hover:text-[#FFF2DD]"
+            className=" text-[#E45110] h-16 w-36 justify-self-end gap-2 font-text border-none hover:bg-[#E45110] hover:text-[#FFF2DD]"
             icon={<MusicIcon className="w-10 h-10" />}
             textSize="text-lg text-left leading-none"
             onClick={() => setActivePage('/')}
@@ -96,10 +88,18 @@ function Navbar() {
           <NavBlock
             href={'/formulaire'}
             text="Partage nous ton event!"
-            className="bg-[#E45110] text-white h-16 w-36 rounded-lg justify-self-end px-2 gap-2 font-text border-none hover:bg-[#FFF2DD] hover:text-[#E45110]"
+            className="bg-[#E45110] text-white h-16 w-36  justify-self-end px-2 gap-2 font-text border-none hover:bg-[#FFF2DD] hover:text-[#E45110]"
             onClick={() => setActivePage('/')}
             icon={<CalendarDays className="w-10 h-10" />}
             textSize="text-lg text-left leading-none"
+          />
+          <NavBlock
+            href={'/pro'}
+            text="Espace Pro"
+            className=" text-[#E45110] h-16 w-36 justify-self-end gap-2 font-text border-none hover:bg-[#E45110] hover:text-[#FFF2DD]"
+            // icon={<MusicIcon className="w-10 h-10" />}
+            textSize="text-lg text-left leading-none"
+            onClick={() => setActivePage('/')}
           />
         </div>
       </div>
@@ -152,7 +152,7 @@ function SideBar({
   return (
     <div
       className={cn(
-        'fixed right-0 z-50 flex min-h-[86vh] w-full flex-col items-center justify-evenly bg-[#FFF2DD] py-2 text-black duration-300 ease-in-out sm:hidden',
+        'fixed right-0 z-50 flex min-h-[86vh] w-full flex-col items-center justify-evenly bg-[#FFF2DD] py-2 text-black duration-300 ease-in-out sm:hidden pb-8',
         {
           'translate-x-0 ': isOpen,
           'translate-x-full': !isOpen,
@@ -172,6 +172,7 @@ function SideBar({
         onClick={onClick}
         className="border-none"
       />
+      <NavBlock href={'/pro'} text="Espace Pro" onClick={onClick} className="border-none" />
       {/* <NavBlock href={'/contact'} text="Contact" onClick={onClick} /> */}
     </div>
   )
