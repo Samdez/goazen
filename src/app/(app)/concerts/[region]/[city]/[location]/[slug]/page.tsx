@@ -53,8 +53,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const fullImageUrl = imageUrl?.startsWith('http')
       ? imageUrl
       : imageUrl
-      ? `https://goazen.info${imageUrl}`
-      : undefined
+        ? `https://goazen.info${imageUrl}`
+        : undefined
 
     return {
       title,
@@ -264,6 +264,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
           alt={event.title}
           width={640}
           height={640}
+          unoptimized
         />
         {event.description && (
           <div className="rounded-lg border-4 border-black bg-white px-6 py-4 text-2xl text-black lg:w-1/2 mx-6 mb-6">

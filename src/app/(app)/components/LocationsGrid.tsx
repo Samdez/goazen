@@ -50,7 +50,7 @@ export default function LocationsGrid({
           Goazen! n&apos;a pas encore répertorié de salles de concert dans cette ville. Si tu
           voudrais voir la tienne y figurer, envoie nous un mail via le formulaire de contact!
         </p>
-        <Image src={placeholderImageUrl} alt="placeholder" height={400} width={400} />
+        <Image src={placeholderImageUrl} alt="placeholder" height={400} width={400} unoptimized />
       </div>
     )
   }

@@ -158,61 +158,62 @@ export default function ProPage() {
         <ul className="text-md font-text flex gap-8 flex-wrap justify-center">
           <Image
             src="/cropped-casa-lola-1-blanc.png"
-            alt="logo"
+            alt="Casa Lola"
             width={130}
             height={130}
             className="[filter:brightness(0)_saturate(100%)] object-contain"
+            unoptimized
           />
-          <Image src="/astra.jpg" alt="logo" width={130} height={130} className="object-contain" />
+          <Image
+            src="/astra.jpg"
+            alt="Astra"
+            width={130}
+            height={130}
+            className="object-contain"
+            unoptimized
+          />
           <Image
             src="/sunsets.png"
-            alt="logo"
+            alt="Sunsets"
             width={130}
             height={130}
             className="object-contain"
+            unoptimized
           />
-          <Image src="/BHM.png" alt="logo" width={130} height={130} className="object-contain" />
-          <Image src="/nous.png" alt="logo" width={130} height={130} className="object-contain" />
+          <Image
+            src="/BHM.png"
+            alt="BHM"
+            width={130}
+            height={130}
+            className="object-contain"
+            unoptimized
+          />
+          <Image
+            src="/nous.png"
+            alt="Nous"
+            width={130}
+            height={130}
+            className="object-contain"
+            unoptimized
+          />
           <Image
             src="/resonance.png"
-            alt="logo"
+            alt="Resonance"
             width={130}
             height={130}
             className="object-contain"
+            unoptimized
           />
           <Image
             src="/banana.png"
-            alt="logo"
+            alt="Banana"
             width={130}
             height={130}
             className="[filter:brightness(0)_saturate(100%)] object-contain"
+            unoptimized
           />
         </ul>
       </div>
     </>
-  )
-}
-
-function Communication() {
-  return (
-    <div className="flex flex-col md:flex-row gap-8 md:gap-4 w-full">
-      <Card className={`flex flex-col justify-between cursor-default`}>
-        <CardHeader>
-          <CardTitle>Communication</CardTitle>
-          <ul className="list-disc list-inside text-md font-text">
-            <li>Contenu réseaux sociaux</li>
-            <li>Stratégie de communication</li>
-            <li>Aftermovie, interviews</li>
-            <li>Visuels, affiches, flyers</li>
-            <li>Création de site web</li>
-          </ul>
-        </CardHeader>
-        <CardFooter className="flex justify-center">
-          <Button className="bg-[#E45110] hover:bg-secondary hover:text-black hover:scale-110">
-            Discutons-en!
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
   )
 }

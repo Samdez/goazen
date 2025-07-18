@@ -151,10 +151,10 @@ async function LocationPage({
   const fullImageUrl = imageUrl?.startsWith('http')
     ? imageUrl
     : imageUrl
-    ? `https://goazen.info${imageUrl}`
-    : placeholderImageUrl?.startsWith('http')
-    ? placeholderImageUrl
-    : `https://goazen.info${placeholderImageUrl}`
+      ? `https://goazen.info${imageUrl}`
+      : placeholderImageUrl?.startsWith('http')
+        ? placeholderImageUrl
+        : `https://goazen.info${placeholderImageUrl}`
 
   const description = location.description_V2 || location.description
 
@@ -282,6 +282,7 @@ async function LocationPage({
             alt={location.name}
             width={640}
             height={640}
+            unoptimized
           />
         )}
         {description && <RichTextWrapper data={description} />}

@@ -32,6 +32,7 @@ function Navbar() {
             width={100}
             height={100}
             // className="group-hover:opacity-0 transition-all duration-300 ease-in-outleft-4"
+            unoptimized
           />
           {/* <p className="text-3xl font-bold">Goazen!</p> */}
         </Link>
@@ -64,6 +65,7 @@ function Navbar() {
               width={100}
               height={100}
               className="group-hover:opacity-0 transition-all duration-300 ease-in-out"
+              unoptimized
             />
             <p className="text-5xl font-bold transition-all duration-300 ease-in-out absolute w-full text-center translate-x-12 group-hover:translate-x-0">
               Goazen!
