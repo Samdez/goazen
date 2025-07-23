@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import Image from 'next/image'
+import { ContactDialog } from '../components/ContactDialog'
 
 const sections = [
   {
@@ -100,9 +101,7 @@ export default function ProPage() {
                   </ul>
                 </CardContent>
                 <CardFooter className="flex justify-center px-8">
-                  <Button className="bg-[#E45110] hover:bg-secondary hover:text-black hover:scale-110 w-full">
-                    Discutons-en!
-                  </Button>
+                  <ContactDialog />
                 </CardFooter>
               </Card>
             </div>
@@ -124,12 +123,13 @@ export default function ProPage() {
                         </li>
                       ))}
                     </ul>
-                    <Button
+                    <ContactDialog className="bg-[#E45110] text-white h-16 w-36 rounded-lg justify-self-end px-2 gap-2 font-lg border-none hover:bg-[#FFF2DD] hover:text-[#E45110] text-lg" />
+                    {/* <Button
                       //  className="bg-[#E45110] hover:bg-secondary hover:text-black hover:scale-110 w-1/2"
                       className="bg-[#E45110] text-white h-16 w-36 rounded-lg justify-self-end px-2 gap-2 font-lg border-none hover:bg-[#FFF2DD] hover:text-[#E45110] text-lg"
                     >
                       Discutons-en!
-                    </Button>
+                    </Button> */}
                   </div>
 
                   {/* Image Section */}

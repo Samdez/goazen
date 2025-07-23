@@ -1,10 +1,15 @@
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/utils'
 import { useDescription, useTsController } from '@ts-react/form'
 
 export default function TextArea() {
   const { field, error } = useTsController<string>()
   const { label, placeholder } = useDescription()
+
+  // Extract custom classes from description (format: "Label // Placeholder // classes")
+  const customClasses = label?.split('//')[2]?.trim() || ''
+
   return (
     <>
       <Textarea
@@ -12,11 +17,11 @@ export default function TextArea() {
         onChange={(e) => {
           field.onChange(e.target.value)
         }}
-        name={label}
+        name={label?.split('//')[0]?.trim()}
         placeholder={placeholder}
-        className="p-2"
+        className={cn('p-2', customClasses)}
       />
-      {error?.errorMessage && <span>{error?.errorMessage}</span>}
+      {error?.errorMessage && <span className="text-red-500">{error?.errorMessage}</span>}
     </>
   )
 }
