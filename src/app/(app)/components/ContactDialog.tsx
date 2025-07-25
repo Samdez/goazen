@@ -21,6 +21,8 @@ import TextField from '../formulaire/form-components/TextField'
 import { useDescription, useTsController } from '@ts-react/form'
 import { PacmanLoader } from 'react-spinners'
 import { useState } from 'react'
+import { sendEmail } from '../queries/send-email'
+import { useToast } from '@/components/ui/use-toast'
 
 const ContactTextArea = () => {
   const { field, error } = useTsController<string>()
@@ -58,11 +60,34 @@ const ContactForm = createTsForm(mapping, {
 
 export function ContactDialog({ className }: { className?: string }) {
   const [isLoading, setIsLoading] = useState(false)
-  function onSubmit(data: z.infer<typeof contactFormSchema>) {
+  const [open, setOpen] = useState(false)
+  const { toast } = useToast()
+
+  async function onSubmit(data: z.infer<typeof contactFormSchema>) {
+    setIsLoading(true)
     console.log(data)
+    try {
+      const res = await sendEmail(data)
+      if (res.ok) {
+        setIsLoading(false)
+        setOpen(false)
+        toast({
+          description: 'Email envoyé avec succès',
+        })
+      } else {
+        throw new Error('Failed to send email')
+      }
+    } catch (error) {
+      setIsLoading(false)
+      toast({
+        variant: 'destructive',
+        description: "Erreur lors de l'envoi de l'email",
+      })
+    }
   }
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className={className}>
           Discutons-en!
@@ -86,8 +111,8 @@ export function ContactDialog({ className }: { className?: string }) {
                     <PacmanLoader color="#000" size={20} />
                   </div>
                 ) : (
-                  <div className="flex justify-center w-full">
-                    <Button onClick={submit} type="button">
+                  <div className="flex justify-center gap-4 w-full">
+                    <Button onClick={submit} type="button" disabled={isLoading}>
                       Envoyer
                     </Button>
                   </div>

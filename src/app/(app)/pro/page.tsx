@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import Image from 'next/image'
 import { ContactDialog } from '../components/ContactDialog'
@@ -36,7 +35,7 @@ const sections = [
       'Showcase',
       'Lancement de produit',
     ],
-    image: '/dj.jpg',
+    image: '/show.jpg',
   },
 ]
 
