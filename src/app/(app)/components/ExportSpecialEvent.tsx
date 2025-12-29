@@ -1,5 +1,4 @@
 'use client'
-import { endOfWeek, startOfWeek } from 'date-fns'
 import type { Event } from '../../../payload-types'
 import * as React from 'react'
 import { _getEvents } from '../queries/get-events'
@@ -56,7 +55,7 @@ const ExportSpecialEvent = () => {
     try {
       const events = await _getEvents({
         limit: 1000,
-        specialEvent: 'fetes-de-bayonne',
+        specialEvent: 'nouvel-an-2026',
       })
       if (events.docs) {
         const csvData = new Blob([convertToCSV(events.docs)], {
@@ -79,7 +78,7 @@ const ExportSpecialEvent = () => {
   return (
     <div>
       <button onClick={fetchOptions} type="button">
-        Tous les concerts des Fêtes de Bayonne
+        Tous les concerts du Nouvel An 2026
       </button>
     </div>
   )
