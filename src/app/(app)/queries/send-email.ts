@@ -45,7 +45,7 @@ export async function sendEmail(props: SendEmailProps) {
     } = props
     try {
       const res = await resend.emails.send({
-        from: 'Goazen <contact@goazen.info>',
+        from: 'Goazen <events@goazen.info>',
         to: env.GOAZEN_EMAIL_ADDRESS,
         subject: `Nouvel event: ${title} - ${location?.name || location_alt}`,
         text: `Nouvel event: 
