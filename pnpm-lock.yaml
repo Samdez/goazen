@@ -29,11 +29,7 @@ importers:
         version: 3.5.0(monaco-editor@0.52.0)(next@15.1.9(react-dom@19.0.0-rc-65a56d0e-20241020(react@19.0.0-rc-65a56d0e-20241020))(react@19.0.0-rc-65a56d0e-20241020)(sass@1.77.4))(payload@3.5.0(graphql@16.9.0)(monaco-editor@0.52.0)(react-dom@19.0.0-rc-65a56d0e-20241020(react@19.0.0-rc-65a56d0e-20241020))(react@19.0.0-rc-65a56d0e-20241020)(typescript@5.6.3))(react-dom@19.0.0-rc-65a56d0e-20241020(react@19.0.0-rc-65a56d0e-20241020))(react@19.0.0-rc-65a56d0e-20241020)(types-react@19.0.0-rc.1)(typescript@5.6.3)
       '@payloadcms/richtext-lexical':
         specifier: ^3.5.0
-<<<<<<< HEAD
-        version: 3.5.0(r4exnmabqhvsrasrtlcneufi3m)
-=======
-        version: 3.5.0(f6bc00c30fb109fddda94572ade84cf1)
->>>>>>> main
+        version: 3.5.0(cwqzztdmukjr3hajeyqaqtn5gi)
       '@payloadcms/storage-s3':
         specifier: latest
         version: 3.5.0(payload@3.5.0(graphql@16.9.0)(monaco-editor@0.52.0)(react-dom@19.0.0-rc-65a56d0e-20241020(react@19.0.0-rc-65a56d0e-20241020))(react@19.0.0-rc-65a56d0e-20241020)(typescript@5.6.3))
@@ -6432,11 +6428,7 @@ snapshots:
       - supports-color
       - typescript
 
-<<<<<<< HEAD
-  '@payloadcms/richtext-lexical@3.5.0(r4exnmabqhvsrasrtlcneufi3m)':
-=======
-  '@payloadcms/richtext-lexical@3.5.0(f6bc00c30fb109fddda94572ade84cf1)':
->>>>>>> main
+  '@payloadcms/richtext-lexical@3.5.0(cwqzztdmukjr3hajeyqaqtn5gi)':
     dependencies:
       '@faceless-ui/modal': 3.0.0-beta.2(react-dom@19.0.0-rc-65a56d0e-20241020(react@19.0.0-rc-65a56d0e-20241020))(react@19.0.0-rc-65a56d0e-20241020)
       '@faceless-ui/scroll-info': 2.0.0-beta.0(react-dom@19.0.0-rc-65a56d0e-20241020(react@19.0.0-rc-65a56d0e-20241020))(react@19.0.0-rc-65a56d0e-20241020)
