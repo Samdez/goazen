@@ -20,6 +20,7 @@ export async function createEvent(formData: CreateEventSchemaType) {
     region,
     event_kind,
   } = formData
+  const genresText = preciseGenre?.trim() || undefined
   //Store date in same format as payload dashboard
   const eventDate = new Date(date.date)
   eventDate.setDate(eventDate.getDate() + 1) // Add one day
@@ -49,8 +50,8 @@ export async function createEvent(formData: CreateEventSchemaType) {
         description,
         location: location?.id,
         time,
-        category: genres?.genres.map((genre) => genre),
-        genres: preciseGenre,
+        ...(genres.length > 0 && { category: genres }),
+        genres: genresText,
         price,
         ticketing_url: ticketingLink,
         createdAt: new Date().toISOString(),

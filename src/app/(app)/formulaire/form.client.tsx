@@ -22,6 +22,7 @@ import TextArea from './form-components/TextArea'
 import TextField from './form-components/TextField'
 import Radio from './form-components/Radio'
 import EventKindRadio from './form-components/EventKindRadio'
+import PriceField from './form-components/PriceField'
 import { EventKindSchema } from './event-kind-schema'
 
 export const LocationSchema = z.object({
@@ -31,23 +32,27 @@ export const LocationSchema = z.object({
 export const DateSchema = z.object({
   date: z.date(),
 })
-export const GenresSchema = z.object({
-  genres: z.string().array(),
-})
+/** Branded array so @ts-react/form maps to MultipleSelector; errors attach to `genres` (not nested paths). */
+const GenresListSchema = createUniqueFieldSchema(
+  z.array(z.string()).min(1, 'Sélectionne au moins un genre musical'),
+  'genres',
+)
 export const RegionSchema = z.object({
   region: z.enum(['pays basque', 'landes']).optional(),
 })
 const TextAreaSchema = createUniqueFieldSchema(z.string(), 'description')
 const ImageInputSchema = createUniqueFieldSchema(z.custom<File>().brand('image'), 'image')
+const PriceSchema = createUniqueFieldSchema(z.string().min(1).max(20), 'price')
 const mapping = [
   [z.string(), TextField],
   [LocationSchema, LocationsCommand],
   [DateSchema, DatePicker],
-  [GenresSchema, MultipleSelector],
+  [GenresListSchema, MultipleSelector],
   [TextAreaSchema, TextArea],
   [ImageInputSchema, InputFile],
   [RegionSchema, Radio],
   [EventKindSchema, EventKindRadio],
+  [PriceSchema, PriceField],
 ] as const
 const MyForm = createTsForm(mapping, {
   FormComponent: FormContainer,
@@ -70,14 +75,14 @@ const createEventSchema = z
     region: RegionSchema.optional(),
     date: DateSchema,
     time: z.string().optional().describe("Heure // Heure de l'event"),
-    genres: GenresSchema.optional(),
+    genres: GenresListSchema.describe('Genres musicaux // Sélectionne au moins un genre'),
     preciseGenre: z
       .string()
       .optional()
       .describe(
         'Genre musical précis // Genre musical précis (deep house, afro house, hardcore, etc... - optionnel)',
       ),
-    price: z.string().optional().describe('Prix // Prix (0 si gratuit, optionnel)'),
+    price: PriceSchema.describe('Prix // Prix (obligatoire, 20 caractères max)'),
     email: z.string().email().describe('Email // Email'),
     ticketingLink: z
       .string()
@@ -136,6 +141,10 @@ export default function FormClient({
         >
           <MyForm
             schema={createEventSchema}
+            defaultValues={{
+              genres: [],
+              price: '',
+            }}
             onSubmit={async (formData) => {
               try {
                 setIsLoading(true)
