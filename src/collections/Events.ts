@@ -15,6 +15,17 @@ const Events: CollectionConfig = {
   fields: [
     { name: 'title', type: 'text', required: true },
     {
+      name: 'event_kind',
+      type: 'select',
+      label: "Type d'événement",
+      options: [
+        { label: 'Set DJ', value: 'dj_set' },
+        { label: 'Live show', value: 'live_show' },
+        { label: 'Autre', value: 'other' },
+      ],
+      index: true,
+    },
+    {
       name: 'description',
       type: 'text',
     },

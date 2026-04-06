@@ -21,6 +21,8 @@ import MultipleSelector from './form-components/MultipleSelector'
 import TextArea from './form-components/TextArea'
 import TextField from './form-components/TextField'
 import Radio from './form-components/Radio'
+import EventKindRadio from './form-components/EventKindRadio'
+import { EventKindSchema } from './event-kind-schema'
 
 export const LocationSchema = z.object({
   name: z.string(),
@@ -45,6 +47,7 @@ const mapping = [
   [TextAreaSchema, TextArea],
   [ImageInputSchema, InputFile],
   [RegionSchema, Radio],
+  [EventKindSchema, EventKindRadio],
 ] as const
 const MyForm = createTsForm(mapping, {
   FormComponent: FormContainer,
@@ -52,6 +55,9 @@ const MyForm = createTsForm(mapping, {
 const createEventSchema = z
   .object({
     title: z.string().describe("Nom de l'event // Nom de l'event"),
+    event_kind: EventKindSchema.describe(
+      "Type d'événement // Set DJ, live show, ou autre type d'événement",
+    ),
     description: TextAreaSchema.optional().describe(
       "Description // Description de l'event ou line-up (optionnel)",
     ),

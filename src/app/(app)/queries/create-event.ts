@@ -18,6 +18,7 @@ export async function createEvent(formData: CreateEventSchemaType) {
     ticketingLink,
     location_alt,
     region,
+    event_kind,
   } = formData
   //Store date in same format as payload dashboard
   const eventDate = new Date(date.date)
@@ -55,6 +56,7 @@ export async function createEvent(formData: CreateEventSchemaType) {
         createdAt: new Date().toISOString(),
         contact_email: email,
         location_alt,
+        event_kind: event_kind.event_kind,
         ...(imageRes && { image: imageRes.id }),
         _status: 'draft',
         region: region?.region === 'pays basque' ? 'pays-basque' : 'landes',

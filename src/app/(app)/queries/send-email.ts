@@ -42,6 +42,7 @@ export async function sendEmail(props: SendEmailProps) {
       price,
       email,
       ticketingLink,
+      event_kind,
     } = props
     try {
       const res = await resend.emails.send({
@@ -50,6 +51,7 @@ export async function sendEmail(props: SendEmailProps) {
         subject: `Nouvel event: ${title} - ${location?.name || location_alt}`,
         text: `Nouvel event: 
         title: ${title}, 
+        type: ${event_kind.event_kind}, 
         location: ${location?.name || location_alt}, 
         date: ${date.date}, 
         time: ${time}, 

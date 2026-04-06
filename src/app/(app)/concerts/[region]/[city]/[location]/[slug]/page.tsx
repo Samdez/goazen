@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { cn, formatDate, getLocationInfo, slugifyString } from '@/utils'
+import { getEventKindBadgeClassName, getEventKindLabel, hasEventKind } from '@/utils/event-kind'
 import { Button } from '@/components/ui/button'
 import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
 import { getEvent } from '@/app/(app)/queries/get-event'
@@ -234,6 +235,18 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
           </div>
         )}
         <h1 className="text-center text-6xl font-bold text-black px-4">{event.title}</h1>
+        {hasEventKind(event) && (
+          <div className="flex justify-center px-4">
+            <span
+              className={cn(
+                'inline-block rounded-md border-4 border-black px-4 py-1 text-lg font-bold uppercase tracking-wide',
+                getEventKindBadgeClassName(event.event_kind),
+              )}
+            >
+              {getEventKindLabel(event.event_kind)}
+            </span>
+          </div>
+        )}
         <div
           className={cn(
             'rounded-lg border-4 border-black p-2 text-2xl text-white',
