@@ -4,12 +4,14 @@ import { useTsController } from '@ts-react/form'
 import type { z } from 'zod'
 import { EventKindSchema } from '../event-kind-schema'
 
-const EVENT_KIND_OPTIONS: { value: z.infer<typeof EventKindSchema>['event_kind']; label: string }[] =
-  [
-    { value: 'dj_set', label: 'Set DJ' },
-    { value: 'live_show', label: 'Live show' },
-    { value: 'other', label: 'Autre' },
-  ]
+const EVENT_KIND_OPTIONS: {
+  value: z.infer<typeof EventKindSchema>['event_kind']
+  label: string
+}[] = [
+  { value: 'dj_set', label: 'DJ Set' },
+  { value: 'live_show', label: 'Concert' },
+  { value: 'other', label: 'Autre' },
+]
 
 export default function EventKindRadio() {
   const { field, error } = useTsController<z.infer<typeof EventKindSchema>>()

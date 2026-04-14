@@ -2,7 +2,7 @@
 
 import { env } from 'env'
 import { Resend } from 'resend'
-import { CreateEventSchemaType } from '../formulaire/form.client'
+import { CreateEventSchemaType } from '../formulaire/create-event-form-schema'
 import { payload } from '../(client)/payload-client'
 
 const resend = new Resend(env.RESEND_API_KEY)
