@@ -1,5 +1,6 @@
 'use client'
 import type { Event } from '../../../payload-types'
+import { getEventKindDisplayLabel } from '@/utils/event-kind'
 import * as React from 'react'
 import { _getEvents } from '../queries/get-events'
 
@@ -45,7 +46,7 @@ const ExportSpecialEvent = () => {
 
       str += `${event.title},${getDay(new Date(event.date))},${location} / ${locationCity} - ${
         event.time
-      },${event.genres || categories},${event.price === '0' ? 'Gratuit' : `${event.price}€`}\r\n`
+      },${event.genres || categories},${event.price === '0' ? 'Gratuit' : `${event.price}€`},${getEventKindDisplayLabel(event)}\r\n`
     }
 
     return str

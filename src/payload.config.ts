@@ -17,6 +17,7 @@ import { seoPlugin } from '@payloadcms/plugin-seo'
 import { buildEventSEODescription, buildEventSEOTitle } from './config-utils'
 import Cities from './collections/Cities'
 import SpecialEvents from './collections/SpecialEvents'
+import EmailConsents from './collections/EmailConsents'
 import { ShowSpecialEvent } from './app/globals/ShowSpecialEvent'
 
 const filename = fileURLToPath(import.meta.url)
@@ -37,7 +38,7 @@ const config = buildConfig({
       ],
     },
   },
-  collections: [Users, Medias, Events, Categories, Locations, Cities, SpecialEvents],
+  collections: [Users, Medias, Events, Categories, Locations, Cities, SpecialEvents, EmailConsents],
   editor: lexicalEditor(),
   globals: [ImagePlaceholder, ShowSpecialEvent],
   secret: process.env.PAYLOAD_SECRET || '',

@@ -1,5 +1,6 @@
 import { Event } from '@/payload-types'
 import { buildEventUrl, cn, formatDate } from '@/utils'
+import { getEventKindBadgeClassName, getEventKindLabel, hasEventKind } from '@/utils/event-kind'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
@@ -52,7 +53,7 @@ function EventThumbnail({
     return event.location.city
   }
   const locationCity = getLocationCity()
-
+console.log(event.event_kind)
   return (
     <Card
       className={cn(
@@ -63,9 +64,21 @@ function EventThumbnail({
       <Link href={eventUrl} className="rounded-xl h-full">
         <CardContent className="rounded-xl border-4 border-black px-0 py-0 h-full">
           <CardHeader className="h-[45%] px-2 py-4 flex flex-col justify-between">
-            <div>
-              <span className="text-xl text-[#E45110]">{formatDate(event.date)}</span>
-              <span className="pl-2">{event.time}</span>
+            <div className="mb-1 flex w-full items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <span className="text-xl text-[#E45110]">{formatDate(event.date)}</span>
+                <span className="pl-2">{event.time}</span>
+              </div>
+              {hasEventKind(event) && (
+                <span
+                  className={cn(
+                    'shrink-0 rounded-md border-2 px-2 py-0.5 text-xs font-bold uppercase tracking-wide',
+                    getEventKindBadgeClassName(event.event_kind),
+                  )}
+                >
+                  {getEventKindLabel(event.event_kind)}
+                </span>
+              )}
             </div>
             <CardTitle className="text-md text-balance text-xl">{event.title}</CardTitle>
             <CardDescription className="text-md items-center justify-center rounded-md border-black">

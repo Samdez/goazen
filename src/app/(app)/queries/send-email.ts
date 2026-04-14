@@ -2,9 +2,24 @@
 
 import { env } from 'env'
 import { Resend } from 'resend'
-import { CreateEventSchemaType } from '../formulaire/form.client'
+import { CreateEventSchemaType } from '../formulaire/create-event-form-schema'
+import { payload } from '../(client)/payload-client'
 
 const resend = new Resend(env.RESEND_API_KEY)
+
+async function formatCategoryIdsForEmail(ids: string[]): Promise<string> {
+  if (ids.length === 0) {
+    return ''
+  }
+  const result = await payload.find({
+    collection: 'categories',
+    where: { id: { in: ids } },
+    limit: ids.length,
+    overrideAccess: true,
+  })
+  const nameById = new Map(result.docs.map((d) => [d.id, d.name]))
+  return ids.map((id) => nameById.get(id) ?? id).join(', ')
+}
 
 export type SendEmailProps = {
   email: string
@@ -42,18 +57,21 @@ export async function sendEmail(props: SendEmailProps) {
       price,
       email,
       ticketingLink,
+      event_kind,
     } = props
     try {
+      const genresLabel = await formatCategoryIdsForEmail(genres)
       const res = await resend.emails.send({
         from: 'Goazen <events@goazen.info>',
         to: env.GOAZEN_EMAIL_ADDRESS,
         subject: `Nouvel event: ${title} - ${location?.name || location_alt}`,
         text: `Nouvel event: 
         title: ${title}, 
+        type: ${event_kind.event_kind}, 
         location: ${location?.name || location_alt}, 
         date: ${date.date}, 
         time: ${time}, 
-        genres: ${genres?.genres.map((genre) => genre).join(', ')}, 
+        genres: ${genresLabel}, 
         preciseGenre: ${preciseGenre}, 
         price: ${price}, 
         email: ${email}, 

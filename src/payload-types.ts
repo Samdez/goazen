@@ -18,6 +18,7 @@ export interface Config {
     locations: Location;
     cities: City;
     'special-events': SpecialEvent;
+    'email-consents': EmailConsent;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -35,6 +36,7 @@ export interface Config {
     locations: LocationsSelect<false> | LocationsSelect<true>;
     cities: CitiesSelect<false> | CitiesSelect<true>;
     'special-events': SpecialEventsSelect<false> | SpecialEventsSelect<true>;
+    'email-consents': EmailConsentsSelect<false> | EmailConsentsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -241,6 +243,7 @@ export interface Media {
 export interface Event {
   id: string;
   title: string;
+  event_kind?: ('dj_set' | 'live_show' | 'other') | null;
   description?: string | null;
   date: string;
   time?: string | null;
@@ -312,6 +315,18 @@ export interface SpecialEvent {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-consents".
+ */
+export interface EmailConsent {
+  id: string;
+  email: string;
+  consentedAt: string;
+  events?: (string | Event)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -344,6 +359,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'special-events';
         value: string | SpecialEvent;
+      } | null)
+    | ({
+        relationTo: 'email-consents';
+        value: string | EmailConsent;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -461,6 +480,7 @@ export interface MediasSelect<T extends boolean = true> {
  */
 export interface EventsSelect<T extends boolean = true> {
   title?: T;
+  event_kind?: T;
   description?: T;
   date?: T;
   time?: T;
@@ -545,6 +565,17 @@ export interface SpecialEventsSelect<T extends boolean = true> {
   'city V2'?: T;
   image?: T;
   slug?: T;
+  events?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-consents_select".
+ */
+export interface EmailConsentsSelect<T extends boolean = true> {
+  email?: T;
+  consentedAt?: T;
   events?: T;
   updatedAt?: T;
   createdAt?: T;

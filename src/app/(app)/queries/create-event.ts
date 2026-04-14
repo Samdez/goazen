@@ -2,7 +2,7 @@
 
 import type { Media } from '@/payload-types'
 import { payload } from '../(client)/payload-client'
-import type { CreateEventSchemaType } from '../formulaire/form.client'
+import type { CreateEventSchemaType } from '../formulaire/create-event-form-schema'
 
 export async function createEvent(formData: CreateEventSchemaType) {
   const {
@@ -18,7 +18,9 @@ export async function createEvent(formData: CreateEventSchemaType) {
     ticketingLink,
     location_alt,
     region,
+    event_kind,
   } = formData
+  const genresText = preciseGenre?.trim() || undefined
   //Store date in same format as payload dashboard
   const eventDate = new Date(date.date)
   eventDate.setDate(eventDate.getDate() + 1) // Add one day
@@ -48,19 +50,52 @@ export async function createEvent(formData: CreateEventSchemaType) {
         description,
         location: location?.id,
         time,
-        category: genres?.genres.map((genre) => genre),
-        genres: preciseGenre,
+        ...(genres.length > 0 && { category: genres }),
+        genres: genresText,
         price,
         ticketing_url: ticketingLink,
         createdAt: new Date().toISOString(),
         contact_email: email,
         location_alt,
+        event_kind: event_kind.event_kind,
         ...(imageRes && { image: imageRes.id }),
         _status: 'draft',
         region: region?.region === 'pays basque' ? 'pays-basque' : 'landes',
       },
       draft: true,
     })
+
+    // Upsert EmailConsents — non-bloquant
+    try {
+      const existing = await payload.find({
+        collection: 'email-consents',
+        where: { email: { equals: email } },
+        limit: 1,
+      })
+
+      if (existing.docs.length > 0) {
+        const doc = existing.docs[0]
+        const currentEvents = (doc.events as Array<{ id: string } | string> | null)
+          ?.map((e) => (typeof e === 'string' ? e : e.id)) ?? []
+        await payload.update({
+          collection: 'email-consents',
+          id: doc.id,
+          data: { events: [...currentEvents, res.id] },
+        })
+      } else {
+        await payload.create({
+          collection: 'email-consents',
+          data: {
+            email,
+            consentedAt: new Date().toISOString(),
+            events: [res.id],
+          },
+        })
+      }
+    } catch (err) {
+      console.error('EmailConsents upsert failed (non-blocking):', err)
+    }
+
     return { ok: true, res }
   } catch (error) {
     if (error instanceof Error) {

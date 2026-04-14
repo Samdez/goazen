@@ -196,7 +196,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
     }: MultipleSelectorProps,
     ref: React.Ref<MultipleSelectorRef>,
   ) => {
-    const { field, error } = useTsController<{ genres: string[] }>()
+    const { field, error } = useTsController<string[]>()
 
     const inputRef = React.useRef<HTMLInputElement>(null)
     const [open, setOpen] = React.useState(false)
@@ -219,10 +219,10 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
         focus: () => inputRef?.current?.focus(),
         reset: () => {
           setSelected([])
-          field.onChange({ genres: [] })
+          field.onChange([])
         },
       }),
-      [selected],
+      [field, selected],
     )
 
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
@@ -241,10 +241,10 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
       (option: Option) => {
         const newOptions = selected.filter((s) => s.value !== option.value)
         setSelected(newOptions)
-        field.onChange({ genres: newOptions.map((o) => o.value) })
+        field.onChange(newOptions.map((o) => o.value))
         onChange?.(newOptions)
       },
-      [onChange, selected],
+      [field, onChange, selected],
     )
 
     const handleKeyDown = React.useCallback(
@@ -287,7 +287,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
     useEffect(() => {
       if (value) {
         setSelected(value)
-        field.onChange({ genres: value.map((o) => o.value) })
+        field.onChange(value.map((o) => o.value))
       }
     }, [value, field])
 
@@ -377,7 +377,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
             setInputValue('')
             const newOptions = [...selected, { value, label: value }]
             setSelected(newOptions)
-            field.onChange({ genres: newOptions.map((o) => o.value) })
+            field.onChange(newOptions.map((o) => o.value))
             onChange?.(newOptions)
           }}
         >
@@ -536,7 +536,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                 type="button"
                 onClick={() => {
                   setSelected(selected.filter((s) => s.fixed))
-                  field.onChange({ genres: selected.filter((s) => s.fixed).map((s) => s.value) })
+                  field.onChange(selected.filter((s) => s.fixed).map((s) => s.value))
                   onChange?.(selected.filter((s) => s.fixed))
                 }}
                 className={cn(
@@ -594,7 +594,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
                                   setInputValue('')
                                   const newOptions = [...selected, option]
                                   setSelected(newOptions)
-                                  field.onChange({ genres: newOptions.map((o) => o.value) })
+                                  field.onChange(newOptions.map((o) => o.value))
                                   onChange?.(newOptions)
                                 }}
                                 className={cn(
@@ -615,7 +615,9 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
             )}
           </div>
         </Command>
-        {error?.errorMessage && <span>{error?.errorMessage}</span>}
+        {error?.errorMessage && (
+          <span className="text-red-500 font-text text-sm">{error.errorMessage}</span>
+        )}
       </>
     )
   },
