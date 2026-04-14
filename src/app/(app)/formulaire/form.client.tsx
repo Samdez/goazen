@@ -102,7 +102,7 @@ export default function FormClient({
             </a>
             <> !</>
           </p>
-          <p className="font-text text-sm">L'agenda Goazen! est 100&nbsp;% gratuit.</p>
+          <p className="font-text text-sm">L&apos;agenda Goazen! est 100&nbsp;% gratuit.</p>
           <p className="text-sm font-text">
             En contrepartie, ton adresse email sera partagée avec nos partenaires commerciaux
             (billetteries, prestataires événementiels) qui pourront te contacter avec des offres
