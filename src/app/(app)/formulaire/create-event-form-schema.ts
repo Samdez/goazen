@@ -69,8 +69,8 @@ const locationRefine = (data: {
 
 const locationRefineConfig = {
   message: 'Merci de choisir un lieu dans notre liste OU de renseigner le nom du lieu et sa région',
-  path: ['region'],
-} as const
+  path: ['region'] as (string | number)[],
+}
 
 /**
  * Schéma utilisé par @ts-react/form dans le formulaire.
@@ -88,4 +88,5 @@ export const createEventSchema = z
   .object({ ...baseEventFields, cguAccepted: z.literal(true) })
   .refine(locationRefine, locationRefineConfig)
 
+export type FormEventSchemaType = z.infer<typeof formEventSchema>
 export type CreateEventSchemaType = z.infer<typeof createEventSchema>

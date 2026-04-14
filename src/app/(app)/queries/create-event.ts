@@ -2,9 +2,9 @@
 
 import type { Media } from '@/payload-types'
 import { payload } from '../(client)/payload-client'
-import type { CreateEventSchemaType } from '../formulaire/create-event-form-schema'
+import type { FormEventSchemaType } from '../formulaire/create-event-form-schema'
 
-export async function createEvent(formData: CreateEventSchemaType) {
+export async function createEvent(formData: FormEventSchemaType) {
   const {
     title,
     description,
