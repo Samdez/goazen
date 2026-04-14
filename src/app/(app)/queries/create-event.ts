@@ -2,7 +2,7 @@
 
 import type { Media } from '@/payload-types'
 import { payload } from '../(client)/payload-client'
-import type { CreateEventSchemaType } from '../formulaire/form.client'
+import type { CreateEventSchemaType } from '../formulaire/create-event-form-schema'
 
 export async function createEvent(formData: CreateEventSchemaType) {
   const {
@@ -64,6 +64,38 @@ export async function createEvent(formData: CreateEventSchemaType) {
       },
       draft: true,
     })
+
+    // Upsert EmailConsents — non-bloquant
+    try {
+      const existing = await payload.find({
+        collection: 'email-consents',
+        where: { email: { equals: email } },
+        limit: 1,
+      })
+
+      if (existing.docs.length > 0) {
+        const doc = existing.docs[0]
+        const currentEvents = (doc.events as Array<{ id: string } | string> | null)
+          ?.map((e) => (typeof e === 'string' ? e : e.id)) ?? []
+        await payload.update({
+          collection: 'email-consents',
+          id: doc.id,
+          data: { events: [...currentEvents, res.id] },
+        })
+      } else {
+        await payload.create({
+          collection: 'email-consents',
+          data: {
+            email,
+            consentedAt: new Date().toISOString(),
+            events: [res.id],
+          },
+        })
+      }
+    } catch (err) {
+      console.error('EmailConsents upsert failed (non-blocking):', err)
+    }
+
     return { ok: true, res }
   } catch (error) {
     if (error instanceof Error) {
