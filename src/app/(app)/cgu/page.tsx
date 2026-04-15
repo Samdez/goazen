@@ -44,7 +44,7 @@ export default function CguPage() {
 
       <h2>4. Modèle économique — données contre service</h2>
       <p>
-        L'agenda Goazen! est un service entièrement gratuit. En contrepartie de cette gratuité,
+        L&apos;agenda Goazen! est un service entièrement gratuit. En contrepartie de cette gratuité,
         l&apos;utilisation du formulaire de soumission implique que votre adresse email soit
         collectée et transmise à des partenaires commerciaux de Goazen!, notamment des billetteries
         et prestataires événementiels, qui pourront vous contacter avec des offres liées à

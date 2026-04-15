@@ -2,7 +2,7 @@
 
 import { env } from 'env'
 import { Resend } from 'resend'
-import { CreateEventSchemaType } from '../formulaire/create-event-form-schema'
+import { FormEventSchemaType } from '../formulaire/create-event-form-schema'
 import { payload } from '../(client)/payload-client'
 
 const resend = new Resend(env.RESEND_API_KEY)
@@ -27,7 +27,7 @@ export type SendEmailProps = {
   | {
       message: string
     }
-  | CreateEventSchemaType
+  | FormEventSchemaType
 )
 
 export async function sendEmail(props: SendEmailProps) {
