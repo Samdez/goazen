@@ -22,7 +22,7 @@ export function getEventKindDisplayLabel(event: Event): string {
 export function getEventKindLabel(kind: Event['event_kind']): string {
   switch (kind) {
     case 'dj_set':
-      return 'Set DJ'
+      return 'DJ Set'
     case 'live_show':
       return 'Live show'
     case 'other':
@@ -38,7 +38,7 @@ export function getEventKindLabel(kind: Event['event_kind']): string {
 export function getEventKindBadgeClassName(kind: NonNullable<Event['event_kind']>): string {
   switch (kind) {
     case 'dj_set':
-      return 'border-black bg-violet-600 text-white'
+      return 'border-black bg-violet-600 text-black'
     case 'live_show':
       return 'border-black bg-rose-200 text-black'
     case 'other':
