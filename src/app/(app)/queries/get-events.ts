@@ -56,18 +56,8 @@ export async function _getEvents({
           ? [
               {
                 or: [
-                  {
-                    and: [
-                      { 'location.city V2.region': { exists: true } },
-                      { 'location.city V2.region': { equals: regionParam } },
-                    ],
-                  },
-                  {
-                    and: [
-                      { 'location.city V2.region': { exists: false } },
-                      { region: { equals: regionParam } },
-                    ],
-                  },
+                  { 'location.city V2.region': { equals: regionParam } },
+                  { region: { equals: regionParam } },
                 ],
               },
             ]
