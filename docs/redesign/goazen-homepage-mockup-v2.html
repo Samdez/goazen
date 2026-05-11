@@ -1,0 +1,932 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Goazen! — Homepage Mockup v2 (identity preserved)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAEDD2;
+    --cream-soft: #FBE8C9;
+    --paper: #FFFFFF;
+    --ink: #000000;
+    --orange: #EA5C1F;
+    --orange-hover: #D04F18;
+    --venue: #8E8FAE;        /* the muted lavender/grey from the original */
+    --muted: #5A5A5A;
+    --line: #000000;
+    --radius: 18px;
+    --display: 'Archivo Black', Impact, sans-serif;
+    --body: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --shadow: 7px 7px 0 var(--ink);
+    --shadow-sm: 4px 4px 0 var(--ink);
+    --border-w: 2.5px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--cream); color: var(--ink); font-family: var(--body); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: 0; background: transparent; color: inherit; }
+  img { display: block; max-width: 100%; }
+
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+
+  /* ================================ HEADER =============================== */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--cream);
+    border-bottom: var(--border-w) solid var(--ink);
+  }
+  .topbar-inner {
+    display: flex; align-items: center; gap: 28px;
+    height: 96px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 14px;
+    flex-shrink: 0;
+  }
+  .brand-mascot {
+    width: 88px; height: 88px;
+    display: grid; place-items: center;
+  }
+  /* Inline SVG placeholder evoking the mascot — orange line-art glyph */
+  .brand-mascot svg { width: 100%; height: 100%; }
+  .brand-wordmark {
+    font-family: var(--display);
+    font-size: 44px;
+    letter-spacing: -1px;
+    color: var(--orange);
+    line-height: 0.85;
+  }
+  .nav-main {
+    display: flex; gap: 36px; flex: 1; justify-content: center;
+  }
+  .nav-main a {
+    font-family: var(--display);
+    font-size: 18px; letter-spacing: 0.5px;
+    color: var(--ink);
+    position: relative;
+  }
+  .nav-main a:hover { color: var(--orange); }
+  .nav-main a.active::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -8px;
+    height: 3px; background: var(--orange);
+  }
+  .nav-right { display: flex; align-items: center; gap: 22px; }
+  .nav-link-orange {
+    color: var(--orange); font-weight: 600; font-size: 14px;
+    display: flex; align-items: center; gap: 6px;
+    line-height: 1.2;
+  }
+  .nav-link-orange:hover { color: var(--orange-hover); }
+  .nav-link-orange .ico { font-size: 16px; }
+
+  .btn-share {
+    background: var(--orange); color: var(--paper);
+    padding: 11px 16px; border-radius: 6px;
+    font-weight: 700; font-size: 14px;
+    line-height: 1.15;
+    display: flex; align-items: center; gap: 8px;
+    transition: background 0.15s;
+    border: var(--border-w) solid var(--ink);
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-share:hover { background: var(--orange-hover); transform: translate(1px,1px); box-shadow: 3px 3px 0 var(--ink); }
+  .btn-share .ico { font-size: 16px; }
+
+  .nav-pro { color: var(--orange); font-weight: 600; font-size: 14px; }
+  .nav-pro:hover { color: var(--orange-hover); }
+
+  /* ================================ HERO ================================= */
+  .hero-section { padding: 56px 0 28px; }
+  .hero-flex {
+    display: flex; gap: 40px; align-items: flex-end; justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .hero-text { max-width: 64ch; }
+  .hero-section h1 {
+    font-family: var(--display);
+    font-size: clamp(34px, 4vw, 48px);
+    line-height: 1.05;
+    letter-spacing: -0.5px;
+  }
+  .hero-section h1 .accent { color: var(--orange); }
+  .hero-section p {
+    margin-top: 12px;
+    font-size: 17px; color: var(--muted);
+    max-width: 64ch;
+  }
+
+  /* ============================ FILTER BAR =============================== */
+  .filter-bar {
+    position: sticky; top: 96px; z-index: 40;
+    background: var(--cream);
+    border-bottom: var(--border-w) solid var(--ink);
+    padding: 16px 0;
+  }
+  .filter-row {
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  .chip {
+    padding: 9px 16px; border-radius: 100px;
+    border: var(--border-w) solid var(--ink); background: var(--paper);
+    font-size: 13px; font-weight: 700; color: var(--ink);
+    letter-spacing: 0.3px;
+    transition: all 0.12s; white-space: nowrap;
+    text-transform: uppercase;
+  }
+  .chip:hover { background: var(--cream-soft); }
+  .chip.active { background: var(--orange); color: var(--paper); }
+  .chip-sep { width: var(--border-w); height: 22px; background: var(--ink); margin: 0 6px; }
+  .chip-dropdown::after {
+    content: ''; display: inline-block;
+    border-left: 5px solid transparent; border-right: 5px solid transparent;
+    border-top: 6px solid currentColor; margin-left: 8px; vertical-align: middle;
+  }
+
+  /* ============================= SECTIONS ================================ */
+  .section { padding: 48px 0 16px; }
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 24px; gap: 16px; flex-wrap: wrap;
+  }
+  .section-head h2 {
+    font-family: var(--display);
+    font-size: 38px; letter-spacing: -0.5px;
+  }
+  .section-head h2 .accent { color: var(--orange); }
+  .section-head .meta {
+    color: var(--muted); font-size: 14px; font-weight: 500;
+    margin-top: 4px;
+  }
+  .section-head a.see-all {
+    color: var(--orange); font-weight: 700; font-size: 14px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .section-head a.see-all:hover { color: var(--orange-hover); }
+
+  /* ===================== SHARED CARD STYLE (sticker) ===================== */
+  .card-base {
+    background: var(--paper);
+    border: var(--border-w) solid var(--ink);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .card-base:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+
+  .type-pill {
+    display: inline-block;
+    padding: 5px 12px; border-radius: 100px;
+    border: var(--border-w) solid var(--ink); background: var(--paper);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+  .price-pill {
+    display: inline-block;
+    padding: 7px 14px; border-radius: 100px;
+    border: var(--border-w) solid var(--ink); background: var(--paper);
+    font-size: 14px; font-weight: 700;
+  }
+  .price-pill.featured { background: var(--orange); color: var(--paper); }
+
+  /* =========================== TONIGHT HERO CARD ========================= */
+  .tonight-card {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    background: var(--paper);
+    border: var(--border-w) solid var(--ink);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .tonight-card:hover { transform: translate(2px,2px); box-shadow: 5px 5px 0 var(--ink); }
+  .tonight-body {
+    padding: 32px 36px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 380px;
+  }
+  .tonight-topline {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .tonight-topline .date {
+    font-family: var(--display);
+    color: var(--orange); font-size: 17px;
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .tonight-topline .time {
+    font-family: var(--display);
+    font-size: 17px; letter-spacing: 0.5px;
+  }
+  .tonight-topline .tonight-badge {
+    margin-left: auto;
+    padding: 5px 12px; border-radius: 100px;
+    background: var(--orange); color: var(--paper);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+  .tonight-topline .tonight-badge::before {
+    content: ''; display: inline-block; width: 7px; height: 7px;
+    border-radius: 50%; background: var(--paper); margin-right: 6px;
+    animation: pulse 2s infinite; vertical-align: middle;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .tonight-card h3 {
+    font-family: var(--display);
+    font-size: clamp(32px, 3.2vw, 44px); line-height: 1; letter-spacing: -0.5px;
+    text-transform: uppercase;
+    margin: 14px 0 10px;
+  }
+  .tonight-venue {
+    font-size: 16px; color: var(--venue); font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .tonight-genre {
+    font-family: var(--display);
+    font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .tonight-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+  .btn-primary {
+    background: var(--orange); color: var(--paper);
+    border: var(--border-w) solid var(--ink);
+    box-shadow: var(--shadow-sm);
+    padding: 14px 22px; border-radius: 10px;
+    font-family: var(--display); font-size: 15px; letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: all 0.12s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { background: var(--orange-hover); transform: translate(1px,1px); box-shadow: 3px 3px 0 var(--ink); }
+  .btn-secondary {
+    background: var(--paper); color: var(--ink);
+    border: var(--border-w) solid var(--ink);
+    box-shadow: var(--shadow-sm);
+    padding: 14px 18px; border-radius: 10px;
+    font-family: var(--display); font-size: 15px; letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: all 0.12s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-secondary:hover { background: var(--cream-soft); transform: translate(1px,1px); box-shadow: 3px 3px 0 var(--ink); }
+
+  /* image for hero card */
+  .tonight-img {
+    position: relative;
+    background:
+      radial-gradient(ellipse at 35% 45%, #C9352E 0%, transparent 55%),
+      radial-gradient(ellipse at 65% 55%, #E6B53F 0%, transparent 55%),
+      linear-gradient(135deg, #3A2818 0%, #1F1410 100%);
+    border-left: var(--border-w) solid var(--ink);
+    min-height: 380px;
+  }
+  .tonight-img::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 25% 70%, rgba(255,255,255,0.06) 2px, transparent 3px),
+      radial-gradient(circle at 75% 30%, rgba(255,255,255,0.04) 2px, transparent 3px);
+    background-size: 50px 50px;
+  }
+  .tonight-img-label {
+    position: absolute; top: 16px; right: 16px;
+    background: var(--paper);
+    border: var(--border-w) solid var(--ink);
+    padding: 6px 12px; border-radius: 100px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  /* ============================ STANDARD CARD ============================ */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 22px;
+    padding: 8px 0 16px;       /* room for the offset shadows */
+  }
+  .ev-card {
+    background: var(--paper);
+    border: var(--border-w) solid var(--ink);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+  }
+  .ev-card:hover { transform: translate(2px,2px); box-shadow: 5px 5px 0 var(--ink); }
+  .ev-head {
+    padding: 18px 20px 14px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .ev-topline {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 6px;
+  }
+  .ev-date {
+    font-family: var(--display);
+    color: var(--orange); font-size: 14px;
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .ev-time {
+    font-family: var(--display);
+    font-size: 14px; letter-spacing: 0.5px;
+  }
+  .ev-type {
+    margin-left: auto;
+  }
+  .ev-title {
+    font-family: var(--display);
+    font-size: 22px; line-height: 1.05; letter-spacing: -0.2px;
+    text-transform: uppercase;
+    margin: 10px 0 8px;
+  }
+  .ev-venue { font-size: 14px; color: var(--venue); font-weight: 600; }
+  .ev-genre {
+    font-family: var(--display);
+    font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .ev-img {
+    margin-top: auto;
+    aspect-ratio: 16/10;
+    position: relative;
+    border-top: var(--border-w) solid var(--ink);
+  }
+  .ev-img .price-pill {
+    position: absolute; bottom: 12px; right: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  /* Different gradient fills as placeholders for event photos */
+  .ev-img.a { background: linear-gradient(135deg, #2C1810 0%, #5A2818 50%, #C9352E 100%); }
+  .ev-img.b { background: radial-gradient(ellipse at 35% 50%, var(--orange) 0%, transparent 55%), var(--cream-soft); }
+  .ev-img.c { background: linear-gradient(135deg, #1A1A2E 0%, #4A1942 100%); }
+  .ev-img.d { background: linear-gradient(135deg, #1F3A2E 0%, #2C5A40 100%); }
+  .ev-img.e { background: linear-gradient(135deg, #1A1A1A 0%, #2D0D0D 100%); }
+  .ev-img.f { background: linear-gradient(135deg, #1E3A5F 0%, #0F2942 100%); }
+  .ev-img.g { background: linear-gradient(135deg, #5C2418 0%, #8B2E1B 100%); }
+  .ev-img.h { background: linear-gradient(135deg, #5C3D18 0%, #8B5E1B 100%); }
+  .ev-img::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 25% 35%, rgba(255,255,255,0.07) 1px, transparent 2px),
+      radial-gradient(circle at 75% 65%, rgba(255,255,255,0.05) 1px, transparent 2px);
+    background-size: 36px 36px;
+  }
+
+  /* ============================ FESTIVAL BANNER ========================== */
+  .festival-banner {
+    margin-top: 24px;
+    background: var(--orange); color: var(--paper);
+    border: var(--border-w) solid var(--ink);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 32px;
+    display: flex; align-items: center; gap: 28px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+  }
+  .festival-banner:hover { transform: translate(2px,2px); box-shadow: 5px 5px 0 var(--ink); }
+  .festival-meta {
+    font-family: var(--display);
+    font-size: 12px; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 6px;
+    opacity: 0.85;
+  }
+  .festival-banner h3 {
+    font-family: var(--display);
+    font-size: 36px; letter-spacing: -0.5px;
+    text-transform: uppercase;
+  }
+  .festival-banner p { font-size: 15px; margin-top: 4px; opacity: 0.9; }
+  .festival-banner .btn-secondary { margin-left: auto; background: var(--paper); }
+
+  /* ============================= UPCOMING LIST =========================== */
+  .upcoming-list {
+    background: var(--paper);
+    border: var(--border-w) solid var(--ink);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .row-event {
+    display: grid;
+    grid-template-columns: 110px 80px 1fr auto 110px;
+    gap: 24px;
+    align-items: center;
+    padding: 18px 24px;
+    border-bottom: var(--border-w) solid var(--ink);
+    transition: background 0.12s;
+    cursor: pointer;
+  }
+  .row-event:last-child { border-bottom: 0; }
+  .row-event:hover { background: var(--cream-soft); }
+  .row-date {
+    font-family: var(--display);
+    color: var(--orange);
+    font-size: 13px; letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .row-date .day-num {
+    color: var(--ink); font-size: 26px; display: block; line-height: 0.9;
+    margin-bottom: 4px;
+  }
+  .row-time {
+    font-family: var(--display);
+    font-size: 14px; letter-spacing: 0.5px;
+  }
+  .row-main h4 {
+    font-family: var(--display);
+    font-size: 20px; letter-spacing: -0.2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .row-main .row-venue { color: var(--venue); font-size: 13px; font-weight: 600; }
+  .row-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .row-tags .type-pill { font-size: 10px; padding: 3px 8px; box-shadow: none; }
+  .row-price {
+    text-align: right; font-family: var(--display);
+    font-size: 16px; letter-spacing: 0.3px;
+  }
+  .row-price.free { color: var(--orange); }
+
+  /* ================================ FOOTER =============================== */
+  footer {
+    margin-top: 96px;
+    padding: 56px 0 36px;
+    border-top: var(--border-w) solid var(--ink);
+    background: var(--cream-soft);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px; margin-bottom: 40px;
+  }
+  .footer-brand-block { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; }
+  .footer-grid h5 {
+    font-family: var(--display); font-size: 16px;
+    letter-spacing: 0.5px; margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .footer-grid ul { list-style: none; }
+  .footer-grid li { margin-bottom: 8px; font-size: 14px; }
+  .footer-grid a:hover { color: var(--orange); }
+  .footer-legal {
+    display: flex; justify-content: space-between;
+    padding-top: 24px; border-top: var(--border-w) solid var(--ink);
+    font-size: 13px;
+  }
+
+  /* ============================ ANNOTATION TOAST ========================= */
+  .annotation {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--paper); color: var(--ink);
+    border: var(--border-w) solid var(--ink);
+    border-radius: 12px; box-shadow: var(--shadow);
+    padding: 16px 18px;
+    max-width: 320px; font-size: 13px; line-height: 1.5;
+    z-index: 100;
+  }
+  .annotation strong {
+    display: block; font-family: var(--display);
+    font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .annotation button {
+    position: absolute; top: 8px; right: 10px;
+    color: var(--ink); font-size: 18px; line-height: 1;
+  }
+
+  /* ================================ RESPONSIVE =========================== */
+  @media (max-width: 980px) {
+    .topbar-inner { height: auto; padding: 16px 0; flex-wrap: wrap; }
+    .nav-main { order: 3; flex-basis: 100%; justify-content: flex-start; }
+    .tonight-card { grid-template-columns: 1fr; }
+    .tonight-img { border-left: 0; border-top: var(--border-w) solid var(--ink); min-height: 240px; }
+    .row-event { grid-template-columns: 90px 1fr 90px; gap: 16px; }
+    .row-time, .row-tags { display: none; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .filter-bar { overflow-x: auto; }
+    .filter-row { flex-wrap: nowrap; }
+    .chip-sep { display: none; }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 0 20px; }
+    .brand-wordmark { font-size: 36px; }
+    .brand-mascot { width: 64px; height: 64px; }
+    .nav-main { gap: 18px; }
+    .nav-main a { font-size: 15px; }
+    .nav-link-orange { display: none; }
+    .hero-section h1 { font-size: 30px; }
+    .section { padding: 36px 0 8px; }
+    .section-head h2 { font-size: 28px; }
+    .tonight-body { padding: 22px; min-height: auto; }
+    .tonight-card h3 { font-size: 28px; }
+    .festival-banner { flex-direction: column; align-items: flex-start; padding: 22px; }
+    .festival-banner h3 { font-size: 26px; }
+    .festival-banner .btn-secondary { margin-left: 0; }
+    .ev-title { font-size: 20px; }
+    .annotation { left: 16px; right: 16px; max-width: none; bottom: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================================ HEADER =============================== -->
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a href="#" class="brand">
+      <div class="brand-mascot" aria-hidden="true">
+        <!-- Inline placeholder for the actual mascot illustration.
+             You'd replace this <svg> with the real GOAZEN_MASCOTTES.png -->
+        <svg viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="58" r="26" stroke="#EA5C1F" stroke-width="3.5"/>
+          <circle cx="50" cy="58" r="6" fill="#EA5C1F"/>
+          <circle cx="42" cy="52" r="2" fill="#EA5C1F"/>
+          <circle cx="58" cy="52" r="2" fill="#EA5C1F"/>
+          <path d="M40 66 Q50 72 60 66" stroke="#EA5C1F" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <path d="M28 38 Q34 26 46 28 Q48 18 60 24 Q72 22 70 38" stroke="#EA5C1F" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+          <path d="M50 84 Q42 92 38 88 M50 84 Q58 92 62 88" stroke="#EA5C1F" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="brand-wordmark">GOAZEN!</div>
+    </a>
+    <nav class="nav-main">
+      <a href="#" class="active">PAYS BASQUE</a>
+      <a href="#">LANDES</a>
+    </nav>
+    <div class="nav-right">
+      <a href="#" class="nav-link-orange"><span class="ico">♪</span>Les salles<br/>de concert</a>
+      <a href="#" class="btn-share"><span class="ico">📅</span>Partage<br/>ton event</a>
+      <a href="#" class="nav-pro">Espace Pro</a>
+    </div>
+  </div>
+</header>
+
+<!-- ================================ HERO ================================= -->
+<section class="hero-section">
+  <div class="wrap hero-flex">
+    <div class="hero-text">
+      <h1>Tous les concerts au <span class="accent">Pays Basque</span> et dans les <span class="accent">Landes</span></h1>
+      <p>Retrouve tous les concerts, DJ sets, festivals et soirées près de chez toi.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FILTER BAR =============================== -->
+<div class="filter-bar">
+  <div class="wrap filter-row">
+    <button class="chip active">Ce soir</button>
+    <button class="chip">Ce week-end</button>
+    <button class="chip">Cette semaine</button>
+    <button class="chip">Gratuit</button>
+    <span class="chip-sep"></span>
+    <button class="chip">Pays Basque</button>
+    <button class="chip">Landes</button>
+    <span class="chip-sep"></span>
+    <button class="chip chip-dropdown">Tous les genres</button>
+    <button class="chip chip-dropdown">Tous types</button>
+    <button class="chip chip-dropdown">Quand ?</button>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- ============================= CE SOIR =============================== -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>Ce soir <span class="accent">·</span> Mardi 12 mai</h2>
+        <div class="meta">3 events à Biarritz, Bayonne et Anglet</div>
+      </div>
+      <a href="#" class="see-all">Voir tout →</a>
+    </div>
+
+    <article class="tonight-card">
+      <div class="tonight-body">
+        <div>
+          <div class="tonight-topline">
+            <span class="date">Mardi 12 mai</span>
+            <span class="time">19h30</span>
+            <span class="tonight-badge">Ce soir</span>
+          </div>
+          <h3>The Abyssinians<br/>&amp; Big Youth</h3>
+          <div class="tonight-venue">Atabal · Biarritz</div>
+          <div class="tonight-genre">Reggae · Dub · Roots &amp; Culture #5</div>
+        </div>
+        <div class="tonight-actions">
+          <a href="#" class="btn-primary">Réserver · 25 €</a>
+          <a href="#" class="btn-secondary">Détails</a>
+        </div>
+      </div>
+      <div class="tonight-img">
+        <span class="tonight-img-label">Tête d'affiche</span>
+      </div>
+    </article>
+  </section>
+
+  <!-- =========================== CETTE SEMAINE =========================== -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>Cette semaine</h2>
+        <div class="meta">Du 13 au 18 mai · 24 events</div>
+      </div>
+      <a href="#" class="see-all">Voir tout →</a>
+    </div>
+
+    <div class="card-grid">
+
+      <article class="ev-card">
+        <div class="ev-head">
+          <div class="ev-topline">
+            <span class="ev-date">Mercredi 13 mai</span>
+            <span class="ev-time">18h–22h</span>
+            <span class="ev-type"><span class="type-pill">DJ Set</span></span>
+          </div>
+          <div class="ev-title">Rosy invite le mA3</div>
+          <div class="ev-venue">Rosy · Bayonne</div>
+          <div class="ev-genre">Hard Disco</div>
+        </div>
+        <div class="ev-img b">
+          <span class="price-pill">Gratuit</span>
+        </div>
+      </article>
+
+      <article class="ev-card">
+        <div class="ev-head">
+          <div class="ev-topline">
+            <span class="ev-date">Mercredi 13 mai</span>
+            <span class="ev-time">23h–6h</span>
+            <span class="ev-type"><span class="type-pill">DJ Set</span></span>
+          </div>
+          <div class="ev-title">Dr Yaro · Kalabass<br/>· Wavy Amy · Nasti</div>
+          <div class="ev-venue">La Rhapsodie · Biarritz</div>
+          <div class="ev-genre">Urban Pop · RnB</div>
+        </div>
+        <div class="ev-img c">
+          <span class="price-pill">18 €</span>
+        </div>
+      </article>
+
+      <article class="ev-card">
+        <div class="ev-head">
+          <div class="ev-topline">
+            <span class="ev-date">Jeudi 14 mai</span>
+            <span class="ev-time">19h30</span>
+            <span class="ev-type"><span class="type-pill">Live show</span></span>
+          </div>
+          <div class="ev-title">Tropical Jazz Club</div>
+          <div class="ev-venue">Ahoy · Capbreton</div>
+          <div class="ev-genre">Jazz · Tropical</div>
+        </div>
+        <div class="ev-img f">
+          <span class="price-pill">Gratuit</span>
+        </div>
+      </article>
+
+      <article class="ev-card">
+        <div class="ev-head">
+          <div class="ev-topline">
+            <span class="ev-date">Jeudi 14 mai</span>
+            <span class="ev-time">18h00</span>
+            <span class="ev-type"><span class="type-pill">Listening party</span></span>
+          </div>
+          <div class="ev-title">Kevin Morby · New album</div>
+          <div class="ev-venue">Aberdeen Records · Biarritz</div>
+          <div class="ev-genre">Indie rock · Folk rock</div>
+        </div>
+        <div class="ev-img d">
+          <span class="price-pill">Gratuit</span>
+        </div>
+      </article>
+
+      <article class="ev-card">
+        <div class="ev-head">
+          <div class="ev-topline">
+            <span class="ev-date">Vendredi 15 mai</span>
+            <span class="ev-time">19h30</span>
+            <span class="ev-type"><span class="type-pill">Live show</span></span>
+          </div>
+          <div class="ev-title">Black Flag Evil Night</div>
+          <div class="ev-venue">Black Flag · Seignosse</div>
+          <div class="ev-genre">Black · Death · Thrash</div>
+        </div>
+        <div class="ev-img e">
+          <span class="price-pill">Gratuit</span>
+        </div>
+      </article>
+
+      <article class="ev-card">
+        <div class="ev-head">
+          <div class="ev-topline">
+            <span class="ev-date">Vendredi 15 mai</span>
+            <span class="ev-time">22h–1h30</span>
+            <span class="ev-type"><span class="type-pill">DJ Set</span></span>
+          </div>
+          <div class="ev-title">Ferderico</div>
+          <div class="ev-venue">Kubata · Bayonne</div>
+          <div class="ev-genre">House · UKG</div>
+        </div>
+        <div class="ev-img f">
+          <span class="price-pill">Gratuit</span>
+        </div>
+      </article>
+
+      <article class="ev-card">
+        <div class="ev-head">
+          <div class="ev-topline">
+            <span class="ev-date">Samedi 16 mai</span>
+            <span class="ev-time">21h00</span>
+            <span class="ev-type"><span class="type-pill">Live show</span></span>
+          </div>
+          <div class="ev-title">Circus Live · Zehtra + DT3R</div>
+          <div class="ev-venue">Le Circus · Capbreton</div>
+          <div class="ev-genre">Rap · Rock français</div>
+        </div>
+        <div class="ev-img g">
+          <span class="price-pill">10 €</span>
+        </div>
+      </article>
+
+      <article class="ev-card">
+        <div class="ev-head">
+          <div class="ev-topline">
+            <span class="ev-date">Dimanche 17 mai</span>
+            <span class="ev-time">18h00</span>
+            <span class="ev-type"><span class="type-pill">Live show</span></span>
+          </div>
+          <div class="ev-title">Aperock Session</div>
+          <div class="ev-venue">Aperock · Anglet</div>
+          <div class="ev-genre">Pop rock</div>
+        </div>
+        <div class="ev-img h">
+          <span class="price-pill">Gratuit</span>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Festival banner — third visual format for festivals/specials -->
+    <div class="festival-banner">
+      <div>
+        <div class="festival-meta">★ Festival · 15 → 17 mai</div>
+        <h3>Good Food Good Mood 2026</h3>
+        <p>Trois jours, vingt artistes, une plage · Hossegor</p>
+      </div>
+      <a href="#" class="btn-secondary">Découvrir la prog</a>
+    </div>
+  </section>
+
+  <!-- ============================== À VENIR ============================== -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>À venir</h2>
+        <div class="meta">À partir du 21 mai</div>
+      </div>
+      <a href="#" class="see-all">Voir tout →</a>
+    </div>
+
+    <div class="upcoming-list">
+
+      <a href="#" class="row-event">
+        <div class="row-date"><span class="day-num">21</span>Mai · Jeu</div>
+        <div class="row-time">20h00</div>
+        <div class="row-main">
+          <h4>Casablanca · Mosees</h4>
+          <div class="row-venue">Atabal · Biarritz</div>
+        </div>
+        <div class="row-tags"><span class="type-pill">TX Live</span></div>
+        <div class="row-price free">Gratuit</div>
+      </a>
+
+      <a href="#" class="row-event">
+        <div class="row-date"><span class="day-num">22</span>Mai · Ven</div>
+        <div class="row-time">20h30</div>
+        <div class="row-main">
+          <h4>Atabal Dub Club · Open Air</h4>
+          <div class="row-venue">Atabal · Biarritz</div>
+        </div>
+        <div class="row-tags"><span class="type-pill">Dub · Sound system</span></div>
+        <div class="row-price free">Gratuit</div>
+      </a>
+
+      <a href="#" class="row-event">
+        <div class="row-date"><span class="day-num">28</span>Mai · Jeu</div>
+        <div class="row-time">19h30</div>
+        <div class="row-main">
+          <h4>Uli Jon Roth · Virgin Killer 50</h4>
+          <div class="row-venue">Atabal · Biarritz</div>
+        </div>
+        <div class="row-tags"><span class="type-pill">Rock · Heavy</span></div>
+        <div class="row-price">32 €</div>
+      </a>
+
+      <a href="#" class="row-event">
+        <div class="row-date"><span class="day-num">30</span>Mai · Sam</div>
+        <div class="row-time">20h30</div>
+        <div class="row-main">
+          <h4>Clinton Fearon</h4>
+          <div class="row-venue">Atabal · Biarritz</div>
+        </div>
+        <div class="row-tags"><span class="type-pill">Reggae</span></div>
+        <div class="row-price">25 €</div>
+      </a>
+
+      <a href="#" class="row-event">
+        <div class="row-date"><span class="day-num">08</span>Juin · Lun</div>
+        <div class="row-time">19h30</div>
+        <div class="row-main">
+          <h4>CocoRosie</h4>
+          <div class="row-venue">Atabal · Biarritz</div>
+        </div>
+        <div class="row-tags"><span class="type-pill">Folk · Experimental</span></div>
+        <div class="row-price">28 €</div>
+      </a>
+
+      <a href="#" class="row-event">
+        <div class="row-date"><span class="day-num">13</span>Juin · Sam</div>
+        <div class="row-time">20h30</div>
+        <div class="row-main">
+          <h4>Ky-Mani Marley · David Cairol</h4>
+          <div class="row-venue">Atabal · Biarritz</div>
+        </div>
+        <div class="row-tags"><span class="type-pill">Reggae</span></div>
+        <div class="row-price">30 €</div>
+      </a>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ================================ FOOTER =============================== -->
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-block">
+          <div class="brand-mascot" style="width:56px;height:56px" aria-hidden="true">
+            <svg viewBox="0 0 100 100" fill="none">
+              <circle cx="50" cy="58" r="26" stroke="#EA5C1F" stroke-width="3.5"/>
+              <circle cx="50" cy="58" r="6" fill="#EA5C1F"/>
+              <path d="M28 38 Q34 26 46 28 Q48 18 60 24 Q72 22 70 38" stroke="#EA5C1F" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+          <div class="brand-wordmark" style="font-size:30px">GOAZEN!</div>
+        </div>
+        <p style="max-width:36ch; font-size:14px; color:var(--muted)">L'agenda des concerts et soirées au Pays Basque et dans les Landes. Fait par des passionnés, gratuit pour tous.</p>
+      </div>
+      <div>
+        <h5>Découvrir</h5>
+        <ul>
+          <li><a href="#">Pays Basque</a></li>
+          <li><a href="#">Landes</a></li>
+          <li><a href="#">Salles de concert</a></li>
+          <li><a href="#">Genres</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Participer</h5>
+        <ul>
+          <li><a href="#">Partage ton event</a></li>
+          <li><a href="#">Espace Pro</a></li>
+          <li><a href="#">Devenir partenaire</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Suivre</h5>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Newsletter</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-legal">
+      <div>© 2026 Goazen!</div>
+      <div><a href="#">Mentions légales</a> · <a href="#">CGU</a> · <a href="#">Cookies</a></div>
+    </div>
+  </div>
+</footer>
+
+<div class="annotation" id="annotation">
+  <button onclick="document.getElementById('annotation').remove()" aria-label="Close">×</button>
+  <strong>Mockup v2 — identity preserved</strong>
+  Same cream + orange + chunky cards. Added: tiered hierarchy (Ce soir / Cette semaine / À venir), sticky chip filters, normalized data, festival banner.
+</div>
+
+</body>
+</html>

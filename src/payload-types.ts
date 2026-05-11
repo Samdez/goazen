@@ -287,6 +287,9 @@ export interface SpecialEvent {
   id: string;
   name: string;
   subtitle?: string | null;
+  featured?: boolean | null;
+  start_date?: string | null;
+  end_date?: string | null;
   description?: {
     root: {
       type: string;
@@ -560,6 +563,9 @@ export interface CitiesSelect<T extends boolean = true> {
 export interface SpecialEventsSelect<T extends boolean = true> {
   name?: T;
   subtitle?: T;
+  featured?: T;
+  start_date?: T;
+  end_date?: T;
   description?: T;
   place_id?: T;
   'city V2'?: T;

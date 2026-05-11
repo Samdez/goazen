@@ -15,8 +15,26 @@ const config = {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        brand: 'var(--brand-radius)',
+      },
+      borderWidth: {
+        brand: 'var(--brand-border-w)',
+      },
+      boxShadow: {
+        brand: 'var(--brand-shadow)',
+        'brand-sm': 'var(--brand-shadow-sm)',
       },
       colors: {
+        brand: {
+          cream: 'var(--brand-cream)',
+          'cream-soft': 'var(--brand-cream-soft)',
+          paper: 'var(--brand-paper)',
+          ink: 'var(--brand-ink)',
+          orange: 'var(--brand-orange)',
+          'orange-hover': 'var(--brand-orange-hover)',
+          venue: 'var(--brand-venue)',
+          muted: 'var(--brand-text-muted)',
+        },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {

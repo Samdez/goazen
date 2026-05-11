@@ -1,7 +1,7 @@
 'use client'
 
 import { Event } from '@/payload-types'
-import EventThumbnail from './EventThumbnail'
+import EventCard from './EventCard'
 import {
   Carousel,
   CarouselContent,
@@ -23,7 +23,7 @@ function EventsCarousel({
         {events.map((event) => {
           return (
             <CarouselItem key={event.id} className="md:basis-1/2">
-              <EventThumbnail event={event} placeholderImageUrl={placeholderImageUrl} />
+              <EventCard event={event} placeholderImageUrl={placeholderImageUrl} />
             </CarouselItem>
           )
         })}

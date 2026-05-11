@@ -90,18 +90,6 @@ export default function FormClient({
       {/* Bandeau modèle économique — style "données contre service" */}
       <div className="w-full lg:w-2/3 px-6 mb-6">
         <div className="rounded-lg border border-black/20 bg-black/5 p-4 flex flex-col gap-2">
-          <p className="font-text">
-            Si tu souhaites voir ton évènement sur Goazen!, il te suffit de remplir ce formulaire.
-            Une fois validé par notre équipe, ton évènement sera visible sur ce site et dans notre
-            agenda Instagram.
-          </p>
-          <p className="font-text">
-            Pour nous envoyer un mail c&apos;est{' '}
-            <a href="mailto:goazen.info@gmail.com" className="underline">
-              ici
-            </a>
-            <> !</>
-          </p>
           <p className="font-text text-sm">L&apos;agenda Goazen! est 100&nbsp;% gratuit.</p>
           <p className="text-sm font-text">
             En contrepartie, ton adresse email sera partagée avec nos partenaires commerciaux
