@@ -34,7 +34,6 @@ import type { Event } from '@/payload-types'
 
 const searchParamsSchema = z.object({
   when: z.enum(['tonight', 'weekend', 'week']).optional(),
-  free: z.string().optional(),
   region: z.enum(['pays-basque', 'landes']).optional(),
   city: z.string().optional(),
   genres: z.string().optional(),
@@ -49,8 +48,7 @@ export default async function Page({
 }) {
   const sp = await searchParams
   const parsed = searchParamsSchema.parse(sp)
-  const { when, region, city: cityRaw, free } = parsed
-  const freeBool = free === '1' || free === 'true'
+  const { when, region, city: cityRaw } = parsed
   const genres = parsed.genres ? parsed.genres.split(',').filter(Boolean) : []
 
   // Validate city only when its region matches
@@ -62,7 +60,6 @@ export default async function Page({
   const filterOpts: WindowOpts = {
     region,
     city,
-    free: freeBool,
     genres: genres.length > 0 ? genres : undefined,
   }
 
@@ -75,7 +72,7 @@ export default async function Page({
   const allCategories = await getCategories()
   const categories = allCategories.filter((c) => c.name !== AUTRE_CATEGORY_NAME)
 
-  const activeFilters = buildActiveFilters(parsed, freeBool, genres, categories)
+  const activeFilters = buildActiveFilters(parsed, genres, categories)
 
   return (
     <>
@@ -262,7 +259,7 @@ function CeSoirSection({
         }`
 
   const showSeeAll = events.length > 7
-  const seeAll = showSeeAll ? { href: '/?when=tonight', label: 'Voir tous →' } : undefined
+  const seeAll = showSeeAll ? { href: '/?when=tonight', label: 'Voir plus →' } : undefined
   const heroEventId = hero?.event.id
   const others = heroEventId ? events.filter((e) => e.id !== heroEventId) : events
 
@@ -343,7 +340,7 @@ function CetteSemaineSection({
       <SectionHead
         title="Cette semaine"
         meta={weekMeta(events)}
-        seeAll={{ href: '/?when=week', label: 'Voir tous →' }}
+        seeAll={{ href: '/?when=week', label: 'Voir plus →' }}
       />
       {events.length > 0 && (
         <div className="grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(310px,1fr))]">
@@ -364,7 +361,7 @@ function AVenirSection({ events, region }: { events: Event[]; region?: string })
   const month = MONTHS_FR[firstDate.getUTCMonth()]
   const seeAll = {
     href: region ? `/concerts/${region}` : '/concerts/pays-basque',
-    label: 'Voir tous →',
+    label: 'Voir plus →',
   }
   return (
     <section id="a-venir" className="py-10">
@@ -555,7 +552,6 @@ function weekMeta(events: Array<{ date: string }>): string {
 
 function buildActiveFilters(
   sp: SP,
-  freeBool: boolean,
   genres: string[],
   categories: Array<{ slug?: string | null; name: string }>,
 ): ActiveFilter[] {
@@ -563,7 +559,6 @@ function buildActiveFilters(
   if (sp.when) params.set('when', sp.when)
   if (sp.region) params.set('region', sp.region)
   if (sp.city) params.set('city', sp.city)
-  if (freeBool) params.set('free', '1')
   if (genres.length) params.set('genres', genres.join(','))
 
   const withoutParam = (key: string, value?: string): string => {
@@ -596,10 +591,6 @@ function buildActiveFilters(
       ? CITY_CHIPS[region].find((c) => c.slug === sp.city)?.label ?? sp.city
       : sp.city
     out.push({ paramKey: 'city', label: cityLabel, href: withoutParam('city') })
-  }
-
-  if (freeBool) {
-    out.push({ paramKey: 'free', label: 'Gratuit', href: withoutParam('free') })
   }
 
   if (sp.region) {

@@ -5,7 +5,7 @@ import { bebas, darkerGrotesque } from '../fonts'
 
 export interface ActiveFilter {
   /** Key shown in URL (`when`, `region`, etc.) */
-  paramKey: 'genres' | 'city' | 'free' | 'region' | 'when'
+  paramKey: 'genres' | 'city' | 'region' | 'when'
   /** Human label for the chip being dropped */
   label: string
   /** URL the user lands on when they drop this filter */
@@ -77,4 +77,4 @@ export default function BroadenSuggestions({
   )
 }
 
-const RANK: ActiveFilter['paramKey'][] = ['genres', 'city', 'free', 'region', 'when']
+const RANK: ActiveFilter['paramKey'][] = ['genres', 'city', 'region', 'when']

@@ -13,9 +13,8 @@ import type { Category } from '@/payload-types'
  *   ?region=pays-basque|landes
  *   ?city=<slug>          (only valid when region is set)
  *   ?genres=rock,techno   (comma-separated category slugs, OR semantics)
- *   ?free=1
  *
- * Row 1 (sticky) — scope: time + region + city (cascade) + free.
+ * Row 1 (sticky) — scope: time + region + city (cascade).
  * Row 2 (non-sticky) — taste: genre chips.
  */
 export default function FilterBar({ categories }: { categories: Category[] }) {
@@ -28,7 +27,6 @@ export default function FilterBar({ categories }: { categories: Category[] }) {
     const when = searchParams.get('when') ?? ''
     const region = searchParams.get('region') ?? ''
     const city = searchParams.get('city') ?? ''
-    const free = searchParams.get('free')
     const genresRaw = searchParams.get('genres') ?? ''
     const genres = new Set(genresRaw.split(',').filter(Boolean))
     return {
@@ -36,7 +34,6 @@ export default function FilterBar({ categories }: { categories: Category[] }) {
       region,
       city,
       genres,
-      free: free === '1',
     }
   }, [searchParams])
 
@@ -76,12 +73,6 @@ export default function FilterBar({ categories }: { categories: Category[] }) {
       else p.set('city', slug)
     })
 
-  const toggleFree = () =>
-    setParam((p) => {
-      if (active.free) p.delete('free')
-      else p.set('free', '1')
-    })
-
   const toggleGenre = (slug: string) =>
     setParam((p) => {
       const next = new Set(active.genres)
@@ -117,9 +108,6 @@ export default function FilterBar({ categories }: { categories: Category[] }) {
           </Chip>
           <Chip active={active.when === 'week'} onClick={() => toggleWhen('week')}>
             Cette semaine
-          </Chip>
-          <Chip active={active.free} onClick={toggleFree}>
-            Gratuit
           </Chip>
           <Separator />
           <Chip

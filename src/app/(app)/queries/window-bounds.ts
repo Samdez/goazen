@@ -6,7 +6,6 @@ export interface WindowOpts {
   region?: Region
   city?: string
   genres?: string[]
-  free?: boolean
   limit?: number
 }
 
@@ -25,9 +24,6 @@ export function commonFilters(opts: WindowOpts): Where[] {
   }
   if (opts.genres && opts.genres.length > 0) {
     out.push({ 'category.slug': { in: opts.genres } })
-  }
-  if (opts.free) {
-    out.push({ or: [{ price: { equals: '0' } }, { price: { equals: 'Gratuit' } }] })
   }
   return out
 }
