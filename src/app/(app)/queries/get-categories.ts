@@ -13,6 +13,7 @@ async function ensureAutreCategoryExists(): Promise<void> {
     collection: 'categories',
     where: { name: { equals: AUTRE_CATEGORY_NAME } },
     limit: 1,
+    overrideAccess: true,
   })
   if (found.docs.length > 0) {
     return
@@ -34,6 +35,7 @@ export async function getCategories() {
     collection: 'categories',
     sort: 'name',
     limit: 500,
+    overrideAccess: true,
   })
   return categories.docs
 }
