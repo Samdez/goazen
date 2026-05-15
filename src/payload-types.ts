@@ -244,6 +244,7 @@ export interface Event {
   id: string;
   title: string;
   event_kind?: ('dj_set' | 'live_show' | 'other') | null;
+  highlighted?: boolean | null;
   description?: string | null;
   date: string;
   time?: string | null;
@@ -484,6 +485,7 @@ export interface MediasSelect<T extends boolean = true> {
 export interface EventsSelect<T extends boolean = true> {
   title?: T;
   event_kind?: T;
+  highlighted?: T;
   description?: T;
   date?: T;
   time?: T;

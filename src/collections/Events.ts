@@ -2,6 +2,7 @@ import { isAdminOrHasLocationAccess } from '@/app/(payload)/access/isAdminOrHasL
 import { APIError, type CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
 import { REGIONS } from '@/app/(app)/constants'
+import { clearOtherHighlightsOnSameDay } from './hooks/clear-other-highlights'
 
 const Events: CollectionConfig = {
   slug: 'events',
@@ -11,6 +12,9 @@ const Events: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
+  },
+  hooks: {
+    beforeChange: [clearOtherHighlightsOnSameDay],
   },
   fields: [
     { name: 'title', type: 'text', required: true },
@@ -24,6 +28,17 @@ const Events: CollectionConfig = {
         { label: 'Autre', value: 'other' },
       ],
       index: true,
+    },
+    {
+      name: 'highlighted',
+      type: 'checkbox',
+      label: 'Tête d’affiche du jour',
+      defaultValue: false,
+      index: true,
+      admin: {
+        description:
+          'Cocher pour faire de cet événement la tête d’affiche de sa journée sur la home. Cocher cette case décoche automatiquement tout autre événement déjà mis en avant le même jour (heure de Paris).',
+      },
     },
     {
       name: 'description',
