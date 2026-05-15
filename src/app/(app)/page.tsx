@@ -119,7 +119,7 @@ async function BrowseMode({
     getEventsTonight({ ...filterOpts, limit: 8 }),
     getEventsThisWeek({ ...filterOpts, limit: 12 }),
     getEventsUpcoming({ ...filterOpts, limit: 6 }),
-    getBrowseHero(),
+    getBrowseHero(filterOpts),
     getFeaturedFestival(),
   ])
 
@@ -186,7 +186,7 @@ async function FocusedMode({
     getFeaturedFestival(
       when === 'tonight' ? tonightBounds() : when === 'weekend' ? weekendBounds() : thisWeekBounds(),
     ),
-    when === 'tonight' ? getTonightHero() : Promise.resolve(null),
+    when === 'tonight' ? getTonightHero(filterOpts) : Promise.resolve(null),
   ])
 
   const seoEvents = events.slice(0, 20)

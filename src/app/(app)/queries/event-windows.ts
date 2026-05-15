@@ -8,43 +8,10 @@ import {
   thisWeekBounds,
   weekendBounds,
   upcomingBounds,
-  type Region,
+  commonFilters,
   type WindowBounds,
   type WindowOpts,
 } from './window-bounds'
-
-function regionFilter(region?: Region): Where[] {
-  if (!region) return []
-  return [
-    {
-      or: [{ 'location.city V2.region': { equals: region } }, { region: { equals: region } }],
-    },
-  ]
-}
-
-function cityFilter(city?: string): Where[] {
-  if (!city) return []
-  return [{ 'location.city V2.slug': { equals: city } }]
-}
-
-function genreFilter(genres?: string[]): Where[] {
-  if (!genres || genres.length === 0) return []
-  return [{ 'category.slug': { in: genres } }]
-}
-
-function freeFilter(free?: boolean): Where[] {
-  if (!free) return []
-  return [{ or: [{ price: { equals: '0' } }, { price: { equals: 'Gratuit' } }] }]
-}
-
-function commonFilters(opts: WindowOpts): Where[] {
-  return [
-    ...regionFilter(opts.region),
-    ...cityFilter(opts.city),
-    ...genreFilter(opts.genres),
-    ...freeFilter(opts.free),
-  ]
-}
 
 async function findInWindow(bounds: WindowBounds, opts: WindowOpts): Promise<Event[]> {
   const res = await payload.find({
