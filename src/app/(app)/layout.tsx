@@ -8,6 +8,7 @@ import NextTopLoader from 'nextjs-toploader'
 
 import './globals.css'
 import Navbar from './components/Navbar'
+import SiteFooter from './components/SiteFooter'
 import { Toaster } from '@/components/ui/toaster'
 import { bebas } from './fonts'
 
@@ -50,13 +51,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr">
       <body className={bebas.className} suppressHydrationWarning>
+        <NextTopLoader color="var(--brand-orange)" showSpinner={false} />
         <Navbar />
-        <main className="mt-32 min-h-screen bg-[#FFF2DD] py-8">
-          <NextTopLoader color="#E45110" showSpinner={false} />
-          {children}
-          <Analytics />
-          <SpeedInsights />
-        </main>
+        <main className="min-h-screen bg-brand-cream">{children}</main>
+        <SiteFooter />
+        <Analytics />
+        <SpeedInsights />
         <Toaster />
       </body>
     </html>

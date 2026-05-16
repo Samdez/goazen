@@ -244,6 +244,7 @@ export interface Event {
   id: string;
   title: string;
   event_kind?: ('dj_set' | 'live_show' | 'other') | null;
+  highlighted?: boolean | null;
   description?: string | null;
   date: string;
   time?: string | null;
@@ -287,6 +288,9 @@ export interface SpecialEvent {
   id: string;
   name: string;
   subtitle?: string | null;
+  featured?: boolean | null;
+  start_date?: string | null;
+  end_date?: string | null;
   description?: {
     root: {
       type: string;
@@ -481,6 +485,7 @@ export interface MediasSelect<T extends boolean = true> {
 export interface EventsSelect<T extends boolean = true> {
   title?: T;
   event_kind?: T;
+  highlighted?: T;
   description?: T;
   date?: T;
   time?: T;
@@ -560,6 +565,9 @@ export interface CitiesSelect<T extends boolean = true> {
 export interface SpecialEventsSelect<T extends boolean = true> {
   name?: T;
   subtitle?: T;
+  featured?: T;
+  start_date?: T;
+  end_date?: T;
   description?: T;
   place_id?: T;
   'city V2'?: T;

@@ -22,6 +22,29 @@ const SpecialEvents: CollectionConfig = {
       type: 'text',
     },
     {
+      name: 'featured',
+      type: 'checkbox',
+      label: 'Mettre en avant sur la home',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description:
+          'Affiche cet événement en bannière sur la home, si la date du jour est dans la fenêtre.',
+      },
+    },
+    {
+      name: 'start_date',
+      type: 'date',
+      label: 'Date de début',
+      admin: { position: 'sidebar', date: { pickerAppearance: 'dayOnly' } },
+    },
+    {
+      name: 'end_date',
+      type: 'date',
+      label: 'Date de fin',
+      admin: { position: 'sidebar', date: { pickerAppearance: 'dayOnly' } },
+    },
+    {
       name: 'description',
       type: 'richText',
     },

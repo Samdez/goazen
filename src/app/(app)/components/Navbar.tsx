@@ -1,181 +1,177 @@
 'use client'
+
 import Link from 'next/link'
-import { MouseEventHandler, useState } from 'react'
-import { cn } from '@/lib/utils'
-import Burger from './icons/burger'
 import Image from 'next/image'
-import { CalendarDays, MusicIcon } from 'lucide-react'
+import { useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { CalendarDays, Menu, MusicIcon, X } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { bebas, darkerGrotesque } from '../fonts'
 
-function Navbar() {
-  const [activePage, setActivePage] = useState('/')
+export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-
-  function handleClickHome() {
-    setActivePage('/')
-    setIsOpen(false)
-  }
+  const pathname = usePathname()
+  const isPaysBasque = pathname.startsWith('/concerts/pays-basque')
+  const isLandes = pathname.startsWith('/concerts/landes')
 
   return (
     <>
-      {<SideBar onClick={() => setIsOpen(false)} isOpen={isOpen} />}
-      <div className="fixed top-0 z-50 grid h-32 w-full grid-cols-4 text-[#E45110] md:hidden">
-        <Link
-          href={'/'}
-          onClick={handleClickHome}
-          className={cn(
-            'col-span-1 h-32 items-center justify-center text-4xl bg-[#FFF2DD] border-b-2 border-black',
-          )}
-        >
-          <Image src="/GOAZEN_MASCOTTES.png" alt="Goazen!" width={100} height={100} unoptimized />
-        </Link>
-        <Link
-          href={'/formulaire'}
-          className="col-span-2 bg-[#FFF2DD] border-b-2 border-black flex flex-col justify-center items-center text-2xl pl-4"
-        >
-          <CalendarDays className="w-10 h-10" />
-          <p className="text-xl text-center">Partage ton event</p>
-        </Link>
-        <div
-          className="flex w-full items-center justify-center bg-[#FFF2DD] border-b-2 border-black text-black"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <div className="text-4xl">X</div> : <Burger />}
-        </div>
-      </div>
-      <div className="fixed top-0 z-50 hidden h-32 w-full grid-cols-3 gap-24 items-center justify-end bg-[#FFF2DD] text-black md:grid border-b-2 border-black px-32">
-        <div className="col-span-2 flex justify-between">
-          <Link
-            href={'/'}
-            onClick={() => setActivePage('/')}
-            className={cn(
-              'group flex items-center text-2xl transition-all duration-300 ease-in-out hover:bg-[#E45110] hover:text-[#FFF2DD] text-[#E45110] h-32 relative overflow-hidden w-1/3',
-            )}
-          >
+      <header className="sticky top-0 z-50 border-b-brand border-brand-ink bg-brand-cream">
+        <div className="mx-auto flex h-20 max-w-[1280px] items-center gap-7 px-5 md:h-24 md:px-8">
+          <Link href="/" className="flex shrink-0 items-center gap-3.5 py-2">
             <Image
               src="/GOAZEN_MASCOTTES.png"
               alt="Goazen!"
-              width={100}
-              height={100}
-              className="group-hover:opacity-0 transition-all duration-300 ease-in-out"
+              width={70}
+              height={99}
+              className="h-14 w-auto md:h-[88px]"
               unoptimized
+              priority
             />
-            <p className="text-5xl font-bold transition-all duration-300 ease-in-out absolute w-full text-center translate-x-12 group-hover:translate-x-0">
-              Goazen!
-            </p>
+            <span
+              className={cn(
+                bebas.className,
+                'text-[36px] leading-[0.85] tracking-tight text-brand-orange md:text-[44px]',
+              )}
+            >
+              GOAZEN!
+            </span>
           </Link>
-          <NavBlock
-            href={'/concerts/pays-basque'}
-            text="Pays Basque"
-            onClick={() => setActivePage('pays-basque')}
-            className={activePage === 'pays-basque' ? 'bg-black text-[#FFF2DD] w-1/3' : 'w-1/3'}
-          />
-          <NavBlock
-            href={'/concerts/landes'}
-            onClick={() => setActivePage('landes')}
-            text="Landes"
-            className={activePage === 'landes' ? 'bg-black text-[#FFF2DD] w-1/3' : 'w-1/3'}
-          />
+
+          <nav className="hidden flex-1 justify-center gap-9 md:flex">
+            <NavLink href="/concerts/pays-basque" active={isPaysBasque}>
+              Pays Basque
+            </NavLink>
+            <NavLink href="/concerts/landes" active={isLandes}>
+              Landes
+            </NavLink>
+          </nav>
+
+          <div className="ml-auto hidden items-center gap-5 md:flex">
+            <Link
+              href="/salles-de-concert?city=biarritz"
+              className={cn(
+                darkerGrotesque.className,
+                'flex items-center gap-1.5 text-sm font-semibold leading-tight text-brand-orange hover:text-brand-orange-hover',
+              )}
+            >
+              <MusicIcon className="h-4 w-4" />
+              Les salles
+              <br className="hidden lg:inline" />
+              de concert
+            </Link>
+            <Link
+              href="/formulaire"
+              className={cn(
+                darkerGrotesque.className,
+                'flex items-center gap-2 rounded-md border-brand border-brand-ink bg-brand-orange px-4 py-2.5 text-sm font-bold leading-tight text-brand-paper shadow-brand-sm transition-transform hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-brand-orange-hover',
+              )}
+            >
+              <CalendarDays className="h-4 w-4" />
+              Partage
+              <br className="hidden lg:inline" />
+              ton event
+            </Link>
+            <Link
+              href="/pro"
+              className={cn(
+                darkerGrotesque.className,
+                'text-sm font-semibold text-brand-orange hover:text-brand-orange-hover',
+              )}
+            >
+              Espace Pro
+            </Link>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsOpen((v) => !v)}
+            className="ml-auto rounded-md border-brand border-brand-ink bg-brand-paper p-2 shadow-brand-sm md:hidden"
+            aria-label={isOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+          >
+            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
-        <div className="flex col-span-1 justify-between">
-          <NavBlock
-            href={'/salles-de-concert?city=biarritz'}
-            text="Les salles de concert"
-            className=" text-[#E45110] h-16 w-36 justify-self-end gap-2 font-text border-none hover:bg-[#E45110] hover:text-[#FFF2DD]"
-            icon={<MusicIcon className="w-10 h-10" />}
-            textSize="text-lg text-left leading-none"
-            onClick={() => setActivePage('/')}
-          />
-          <NavBlock
-            href={'/formulaire'}
-            text="Partage nous ton event!"
-            className="bg-[#E45110] text-white h-16 w-36  justify-self-end px-2 gap-2 font-text border-none hover:bg-[#FFF2DD] hover:text-[#E45110]"
-            onClick={() => setActivePage('/')}
-            icon={<CalendarDays className="w-10 h-10" />}
-            textSize="text-lg text-left leading-none"
-          />
-          <NavBlock
-            href={'/pro'}
-            text="Espace Pro"
-            className=" text-[#E45110] h-16 w-36 justify-self-end gap-2 font-text border-none hover:bg-[#E45110] hover:text-[#FFF2DD]"
-            // icon={<MusicIcon className="w-10 h-10" />}
-            textSize="text-lg text-left leading-none"
-            onClick={() => setActivePage('/')}
-          />
+      </header>
+
+      {isOpen && (
+        <div
+          className="fixed inset-x-0 bottom-0 top-[80px] z-[60] overflow-y-auto bg-brand-cream md:hidden"
+          role="dialog"
+          aria-modal="true"
+        >
+          <nav className="mx-auto flex max-w-[1280px] flex-col gap-1 px-5 py-4">
+            <MobileLink href="/concerts/pays-basque" onClick={() => setIsOpen(false)}>
+              Pays Basque
+            </MobileLink>
+            <MobileLink href="/concerts/landes" onClick={() => setIsOpen(false)}>
+              Landes
+            </MobileLink>
+            <MobileLink href="/salles-de-concert?city=biarritz" onClick={() => setIsOpen(false)}>
+              Les salles de concert
+            </MobileLink>
+            <MobileLink href="/formulaire" onClick={() => setIsOpen(false)} variant="primary">
+              Partage ton event
+            </MobileLink>
+            <MobileLink href="/pro" onClick={() => setIsOpen(false)}>
+              Espace Pro
+            </MobileLink>
+          </nav>
         </div>
-      </div>
+      )}
     </>
   )
 }
 
-function NavBlock({
+function NavLink({
   href,
-  onClick,
-  text,
-  className,
-  secondaryText,
-  icon,
-  textSize,
+  children,
+  active,
 }: {
   href: string
-  text: string
-  className?: string
-  secondaryText?: string
-  onClick?: MouseEventHandler<HTMLAnchorElement>
-  icon?: any
-  textSize?: string
+  children: React.ReactNode
+  active?: boolean
 }) {
   return (
     <Link
-      onClick={onClick}
       href={href}
       className={cn(
-        'flex h-32 items-center justify-center rounded-none bg-[#FFF2DD] px-0 text-black transition-colors hover:bg-black hover:text-[#FFF2DD] border-b-2 border-black',
-        className,
+        bebas.className,
+        'relative text-[18px] uppercase tracking-wide text-brand-ink hover:text-brand-orange',
       )}
     >
-      {icon}
-      <div className="flex flex-col text-center">
-        <p className={cn('text-3xl', textSize)}>{text}</p>
-        <p className="text-md">{secondaryText}</p>
-      </div>
+      {children}
+      {active && (
+        <span className="absolute -bottom-2 left-0 right-0 h-[3px] bg-brand-orange" aria-hidden />
+      )}
     </Link>
   )
 }
 
-function SideBar({
+function MobileLink({
+  href,
   onClick,
-  isOpen,
+  children,
+  variant,
 }: {
-  onClick: MouseEventHandler<HTMLAnchorElement>
-  isOpen: boolean
+  href: string
+  onClick: () => void
+  children: React.ReactNode
+  variant?: 'primary'
 }) {
   return (
-    <div
+    <Link
+      href={href}
+      onClick={onClick}
       className={cn(
-        'fixed right-0 z-50 flex min-h-[86vh] w-full flex-col items-center justify-evenly bg-[#FFF2DD] py-2 text-black duration-300 ease-in-out sm:hidden pb-8',
-        {
-          'translate-x-0 ': isOpen,
-          'translate-x-full': !isOpen,
-        },
+        bebas.className,
+        'rounded-md border-brand border-brand-ink px-4 py-3 text-[18px] uppercase tracking-wide',
+        variant === 'primary'
+          ? 'bg-brand-orange text-brand-paper shadow-brand-sm'
+          : 'bg-brand-paper text-brand-ink',
       )}
     >
-      <NavBlock
-        href={'/concerts/pays-basque'}
-        text="Pays Basque"
-        onClick={onClick}
-        className="border-none"
-      />
-      <NavBlock href={'/concerts/landes'} text="Landes" onClick={onClick} className="border-none" />
-      <NavBlock
-        href={'/salles-de-concert?city=biarritz'}
-        text="Les salles de concert"
-        onClick={onClick}
-        className="border-none"
-      />
-      <NavBlock href={'/pro'} text="Espace Pro" onClick={onClick} className="border-none" />
-      {/* <NavBlock href={'/contact'} text="Contact" onClick={onClick} /> */}
-    </div>
+      {children}
+    </Link>
   )
 }
-
-export default Navbar

@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { PacmanLoader } from 'react-spinners'
 import { getCachedEvents } from '../queries/get-events'
-import EventThumbnail from './EventThumbnail'
+import EventCard from './EventCard'
 import EmptyEventsSection from './EmptyEventsSection'
 import { useCategory } from '../hooks/useGenre'
 import { useParams, useSearchParams } from 'next/navigation'
@@ -111,9 +111,15 @@ export default function EventsGrid({
           selectionOnly,
           city: cityParam,
         })
-        setEvents(eventsData.docs)
-        setNextPage(eventsData.nextPage)
-        setHasNextPage(eventsData.hasNextPage)
+        if (!eventsData) {
+          setEvents([])
+          setNextPage(null)
+          setHasNextPage(false)
+          return
+        }
+        setEvents(eventsData.docs ?? [])
+        setNextPage(eventsData.nextPage ?? null)
+        setHasNextPage(Boolean(eventsData.hasNextPage))
       } catch (error) {
         console.error('Error loading initial events:', error)
         // On error, reset to initial state
@@ -145,9 +151,13 @@ export default function EventsGrid({
         specialEvent,
         selectionOnly,
       })
-      setEvents((prev) => [...prev, ...newEvents.docs])
-      setNextPage(newEvents.nextPage)
-      setHasNextPage(newEvents.hasNextPage)
+      if (!newEvents) {
+        setHasNextPage(false)
+        return
+      }
+      setEvents((prev) => [...prev, ...(newEvents.docs ?? [])])
+      setNextPage(newEvents.nextPage ?? null)
+      setHasNextPage(Boolean(newEvents.hasNextPage))
     } catch (error) {
       console.error('Error loading more events:', error)
     } finally {
@@ -169,11 +179,7 @@ export default function EventsGrid({
     <div className="grid grid-cols-1 md:grid-cols-3 px-12 md:px-32 gap-24 pb-32">
       {events.map((event) => (
         <div key={event.id} className="flex justify-center w-full">
-          <EventThumbnail
-            event={event}
-            placeholderImageUrl={placeholderImageUrl}
-            className="w-full"
-          />
+          <EventCard event={event} placeholderImageUrl={placeholderImageUrl} className="w-full" />
         </div>
       ))}
       {(hasNextPage || isLoading) && (
