@@ -20,9 +20,9 @@ const PILL_LABELS: Record<HeroLabel, string> = {
 }
 
 const HEADLINER_LABELS: Record<HeroLabel, string> = {
-  tonight: 'Tête d’affiche ce soir',
-  weekend: 'Tête d’affiche ce week-end',
-  thisWeek: 'Tête d’affiche cette semaine',
+  tonight: 'Sélection Goazen !',
+  weekend: 'Sélection Goazen !',
+  thisWeek: 'Sélection Goazen !',
 }
 
 export default function TonightHeroCard({
@@ -53,7 +53,7 @@ export default function TonightHeroCard({
   const headlinerLabel = HEADLINER_LABELS[labelKey]
 
   return (
-    <article className="grid grid-cols-1 overflow-hidden rounded-brand border-brand border-brand-ink bg-brand-paper shadow-brand transition-transform hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brand-sm md:grid-cols-[1.05fr_1fr]">
+    <article className="relative grid grid-cols-1 overflow-hidden rounded-brand border-brand border-brand-ink bg-brand-paper shadow-brand transition-transform hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brand-sm md:grid-cols-[1.05fr_1fr]">
       <div className="flex min-h-[280px] flex-col justify-between gap-6 p-8 md:min-h-[380px] md:p-9">
         <div>
           <div className="mb-2 flex flex-wrap items-center gap-3">
@@ -143,7 +143,7 @@ export default function TonightHeroCard({
               rel="noopener"
               className={cn(
                 bebas.className,
-                'inline-flex items-center gap-2 rounded-[10px] border-brand border-brand-ink bg-brand-orange px-5 py-3.5 text-[15px] uppercase tracking-wide text-brand-paper shadow-brand-sm transition-transform hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-brand-orange-hover',
+                'relative z-20 inline-flex items-center gap-2 rounded-[10px] border-brand border-brand-ink bg-brand-orange px-5 py-3.5 text-[15px] uppercase tracking-wide text-brand-paper shadow-brand-sm transition-transform hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-brand-orange-hover',
               )}
             >
               Réserver
@@ -156,7 +156,7 @@ export default function TonightHeroCard({
               title={price}
               className={cn(
                 bebas.className,
-                'inline-flex max-w-[260px] items-center gap-2 truncate rounded-[10px] border-brand border-brand-ink bg-brand-orange px-5 py-3.5 text-[15px] uppercase tracking-wide text-brand-paper shadow-brand-sm',
+                'relative z-20 inline-flex max-w-[260px] items-center gap-2 truncate rounded-[10px] border-brand border-brand-ink bg-brand-orange px-5 py-3.5 text-[15px] uppercase tracking-wide text-brand-paper shadow-brand-sm',
               )}
             >
               {price}
@@ -166,7 +166,7 @@ export default function TonightHeroCard({
             href={eventUrl}
             className={cn(
               bebas.className,
-              'inline-flex items-center gap-2 rounded-[10px] border-brand border-brand-ink bg-brand-paper px-4 py-3.5 text-[15px] uppercase tracking-wide shadow-brand-sm transition-transform hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-brand-cream-soft',
+              'relative z-20 inline-flex items-center gap-2 rounded-[10px] border-brand border-brand-ink bg-brand-paper px-4 py-3.5 text-[15px] uppercase tracking-wide shadow-brand-sm transition-transform hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-brand-cream-soft',
             )}
           >
             Détails
@@ -174,10 +174,7 @@ export default function TonightHeroCard({
         </div>
       </div>
 
-      <Link
-        href={eventUrl}
-        className="relative min-h-[240px] border-t-brand border-brand-ink md:min-h-[380px] md:border-l-brand md:border-t-0"
-      >
+      <div className="relative min-h-[240px] border-t-brand border-brand-ink md:min-h-[380px] md:border-l-brand md:border-t-0">
         {imageUrl && (
           <Image
             alt={event.title}
@@ -192,11 +189,15 @@ export default function TonightHeroCard({
         <span
           className={cn(
             bebas.className,
-            'absolute right-4 top-4 rounded-full border-brand border-brand-ink bg-brand-paper px-3 py-1.5 text-[11px] uppercase tracking-widest',
+            'absolute right-4 top-4 z-20 rounded-full border-brand border-brand-ink bg-brand-orange px-3 py-1.5 text-[11px] uppercase tracking-widest text-brand-paper',
           )}
         >
           {headlinerLabel}
         </span>
+      </div>
+
+      <Link href={eventUrl} aria-label={event.title} className="absolute inset-0 z-10">
+        <span className="sr-only">Voir les détails</span>
       </Link>
     </article>
   )
