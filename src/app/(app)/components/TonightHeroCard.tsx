@@ -5,19 +5,34 @@ import Link from 'next/link'
 import { bebas, darkerGrotesque } from '../fonts'
 import {
   formatDateLong,
-  formatEventType,
   formatGenre,
   formatPrice,
   formatTime,
   formatVenue,
 } from '@/lib/format-event'
+import { getEventKindBadgeClassName, hasEventKind, getEventKindLabel } from '@/utils/event-kind'
+import type { HeroLabel } from '../queries/get-hero-event'
+
+const PILL_LABELS: Record<HeroLabel, string> = {
+  tonight: 'Ce soir',
+  weekend: 'Ce week-end',
+  thisWeek: 'Cette semaine',
+}
+
+const HEADLINER_LABELS: Record<HeroLabel, string> = {
+  tonight: 'Tête d’affiche ce soir',
+  weekend: 'Tête d’affiche ce week-end',
+  thisWeek: 'Tête d’affiche cette semaine',
+}
 
 export default function TonightHeroCard({
   event,
   placeholderImageUrl,
+  labelKey = 'tonight',
 }: {
   event: Event
   placeholderImageUrl: string
+  labelKey?: HeroLabel
 }) {
   const imageUrl =
     !(typeof event.image === 'string') && event.image
@@ -27,11 +42,13 @@ export default function TonightHeroCard({
   const eventUrl = buildEventUrl(event)
   const date = formatDateLong(event.date)
   const time = formatTime(event.time)
-  const type = formatEventType(event.event_kind)
   const venue = formatVenue(event)
   const genre = formatGenre(event.genres)
   const price = formatPrice({ price: event.price, sold_out: event.sold_out })
   const ticketingUrl = event.ticketing_url
+
+  const pillLabel = PILL_LABELS[labelKey]
+  const headlinerLabel = HEADLINER_LABELS[labelKey]
 
   return (
     <article className="grid grid-cols-1 overflow-hidden rounded-brand border-brand border-brand-ink bg-brand-paper shadow-brand transition-transform hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brand-sm md:grid-cols-[1.05fr_1fr]">
@@ -51,15 +68,40 @@ export default function TonightHeroCard({
                 {time}
               </span>
             )}
-            <span
-              className={cn(
-                bebas.className,
-                'ml-auto inline-flex items-center gap-1.5 rounded-full bg-brand-orange px-3 py-[5px] text-[11px] font-bold uppercase tracking-widest text-brand-paper',
+            <div className="ml-auto flex flex-wrap items-center gap-2">
+              {hasEventKind(event) && (
+                <span
+                  className={cn(
+                    bebas.className,
+                    'inline-flex items-center rounded-full border-brand px-3 py-[5px] text-[11px] font-bold uppercase tracking-widest',
+                    getEventKindBadgeClassName(event.event_kind),
+                  )}
+                >
+                  {getEventKindLabel(event.event_kind)}
+                </span>
               )}
-            >
-              <span className="inline-block h-[7px] w-[7px] animate-brand-pulse rounded-full bg-brand-paper" />
-              Ce soir
-            </span>
+              {labelKey === 'tonight' && (
+                <span
+                  className={cn(
+                    bebas.className,
+                    'inline-flex items-center gap-1.5 rounded-full bg-brand-orange px-3 py-[5px] text-[11px] font-bold uppercase tracking-widest text-brand-paper',
+                  )}
+                >
+                  <span className="inline-block h-[7px] w-[7px] animate-brand-pulse rounded-full bg-brand-paper" />
+                  {pillLabel}
+                </span>
+              )}
+              {labelKey !== 'tonight' && (
+                <span
+                  className={cn(
+                    bebas.className,
+                    'inline-flex items-center rounded-full bg-brand-orange px-3 py-[5px] text-[11px] font-bold uppercase tracking-widest text-brand-paper',
+                  )}
+                >
+                  {pillLabel}
+                </span>
+              )}
+            </div>
           </div>
           <h3
             className={cn(
@@ -87,11 +129,6 @@ export default function TonightHeroCard({
               )}
             >
               {genre}
-            </div>
-          )}
-          {type && !genre && (
-            <div className={cn(bebas.className, 'mb-6 text-[13px] uppercase tracking-wide')}>
-              {type}
             </div>
           )}
         </div>
@@ -156,7 +193,7 @@ export default function TonightHeroCard({
             'absolute right-4 top-4 rounded-full border-brand border-brand-ink bg-brand-paper px-3 py-1.5 text-[11px] uppercase tracking-widest',
           )}
         >
-          Tête d&rsquo;affiche
+          {headlinerLabel}
         </span>
       </Link>
     </article>
