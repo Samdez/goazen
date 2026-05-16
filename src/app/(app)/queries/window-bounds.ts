@@ -55,13 +55,17 @@ export function thisWeekBounds(now: Date = new Date()): WindowBounds {
 }
 
 export function weekendBounds(now: Date = new Date()): WindowBounds {
-  const start = new Date(now)
-  const dow = start.getUTCDay()
-  const daysUntilFriday = (5 - dow + 7) % 7
-  start.setUTCDate(start.getUTCDate() + daysUntilFriday)
-  start.setUTCHours(16, 0, 0, 0)
+  const dow = now.getUTCDay()
+  // Sun: -2, Mon: 4, Tue: 3, Wed: 2, Thu: 1, Fri: 0, Sat: -1
+  const fridayDelta = dow === 0 ? -2 : dow === 6 ? -1 : 5 - dow
 
-  const end = new Date(start)
+  const friday = new Date(now)
+  friday.setUTCDate(friday.getUTCDate() + fridayDelta)
+  friday.setUTCHours(16, 0, 0, 0)
+
+  const start = now > friday ? new Date(now) : friday
+
+  const end = new Date(friday)
   end.setUTCDate(end.getUTCDate() + 2)
   end.setUTCHours(22, 0, 0, 0)
 
