@@ -15,6 +15,9 @@ details, no decisions (those live in `docs/adr/`).
   has two modes (browse / focused), driven by `?when=…`.
 - [ADR-0002](docs/adr/0002-hero-card-editorial-highlight-model.md) — Hero
   is driven by an editorial `highlighted` flag, one per day.
+- [ADR-0003](docs/adr/0003-client-side-image-compression.md) — Image
+  uploads are resized and re-encoded in the browser before submit (Vercel
+  serverless 4.5MB body cap).
 
 ## Terms
 
@@ -122,3 +125,22 @@ The link from a section header (e.g. *Ce soir · Voir tous →*) into focused
 mode for that window. Always navigates to the same homepage with the
 appropriate `?when=…` set — never to a separate route. The URL is the source
 of truth for which list the user is viewing.
+
+### Event image
+The optional photo attached to an Event. Rendered at retina resolution via
+two Payload variants: `hero` (1920×1200) for *TonightHeroCard*, `eventCard`
+(1280×800) for the card grids, carousel, and *EventsGrid*. The event detail
+page currently bypasses variants and serves the original.
+_Avoid_: photo, picture, cover.
+
+### Location image
+The optional photo attached to a Location. Distinct from *Event image* —
+different Payload variant (`card`, 640×360), different render path
+(`LocationCard`), different display contexts (venue lists, not event lists).
+The two should never share a render path.
+
+### Event submission form
+The public-facing form at `/formulaire`. Distinct from the Payload admin UI,
+which curators use. Submissions are created as drafts and reviewed before
+publication. Image uploads here go through client-side compression before
+the server action (see [ADR-0003](docs/adr/0003-client-side-image-compression.md)).

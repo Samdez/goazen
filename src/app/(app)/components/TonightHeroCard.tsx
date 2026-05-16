@@ -36,7 +36,9 @@ export default function TonightHeroCard({
 }) {
   const imageUrl =
     !(typeof event.image === 'string') && event.image
-      ? event.image.sizes?.eventCard?.url || event.image?.url
+      ? event.image.sizes?.hero?.url ||
+        event.image.sizes?.eventCard?.url ||
+        event.image?.url
       : placeholderImageUrl
 
   const eventUrl = buildEventUrl(event)

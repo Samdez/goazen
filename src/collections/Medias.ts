@@ -15,14 +15,11 @@ const Medias: CollectionConfig = {
     formatOptions: {
       format: 'webp',
     },
+    resizeOptions: {
+      width: 1920,
+      withoutEnlargement: true,
+    },
     imageSizes: [
-      {
-        name: 'thumbnail',
-        width: 326,
-        height: 215,
-        position: 'centre',
-        formatOptions: { format: 'webp' },
-      },
       {
         name: 'card',
         width: 640,
@@ -32,9 +29,16 @@ const Medias: CollectionConfig = {
       },
       {
         name: 'eventCard',
-        width: 640,
-        height: 360,
-        position: 'centre',
+        width: 1280,
+        height: 800,
+        position: 'attention',
+        formatOptions: { format: 'webp' },
+      },
+      {
+        name: 'hero',
+        width: 1920,
+        height: 1200,
+        position: 'attention',
         formatOptions: { format: 'webp' },
       },
     ],

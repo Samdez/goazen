@@ -1,5 +1,4 @@
 import { createUniqueFieldSchema } from '@ts-react/form'
-import type { File } from 'payload'
 import { z } from 'zod'
 import { EventKindSchema } from './event-kind-schema'
 
@@ -23,7 +22,18 @@ export const RegionSchema = z.object({
 })
 
 export const TextAreaSchema = createUniqueFieldSchema(z.string(), 'description')
-export const ImageInputSchema = createUniqueFieldSchema(z.custom<File>().brand('image'), 'image')
+
+const MAX_UPLOAD_BYTES = 4_500_000
+const imageFileSchema = z
+  .custom<File>((f) => typeof f === 'object' && f !== null && 'size' in f && 'type' in f, {
+    message: 'Fichier invalide',
+  })
+  .refine((f) => f.type.startsWith('image/'), { message: "Le fichier doit être une image" })
+  .refine((f) => f.size <= MAX_UPLOAD_BYTES, {
+    message: 'Image trop lourde, merci de réessayer avec une image plus légère',
+  })
+  .brand('image')
+export const ImageInputSchema = createUniqueFieldSchema(imageFileSchema, 'image')
 export const PriceSchema = createUniqueFieldSchema(z.string().min(1).max(20), 'price')
 
 /** Champs communs à tous les schémas (sans cguAccepted). */
@@ -35,7 +45,7 @@ const baseEventFields = {
   description: TextAreaSchema.optional().describe(
     "Description // Description de l'event ou line-up (optionnel)",
   ),
-  image: ImageInputSchema.optional().describe("Image (optionnel - 20mb max) // Image de l'event"),
+  image: ImageInputSchema.optional().describe("Image (optionnel) // Image de l'event"),
   location: LocationSchema.optional(),
   location_alt: z
     .string()
