@@ -41,6 +41,12 @@ const searchParamsSchema = z.object({
 
 type SP = z.infer<typeof searchParamsSchema>
 
+export const metadata = {
+  alternates: {
+    canonical: 'https://goazen.info',
+  },
+}
+
 export default async function Page({
   searchParams,
 }: {
@@ -181,7 +187,11 @@ async function FocusedMode({
         ? getEventsWeekend({ ...filterOpts, limit })
         : getEventsThisWeek({ ...filterOpts, limit }),
     getFeaturedFestival(
-      when === 'tonight' ? tonightBounds() : when === 'weekend' ? weekendBounds() : thisWeekBounds(),
+      when === 'tonight'
+        ? tonightBounds()
+        : when === 'weekend'
+          ? weekendBounds()
+          : thisWeekBounds(),
     ),
     when === 'tonight' ? getTonightHero(filterOpts) : Promise.resolve(null),
   ])
@@ -210,8 +220,15 @@ async function FocusedMode({
     <>
       <SeoJsonLd events={seoEvents} />
       <section className="py-10">
-        <SectionHead title={title} meta={`${events.length} événement${events.length > 1 ? 's' : ''}`} />
-        {festival && <div className="mb-6"><FestivalBanner event={festival} /></div>}
+        <SectionHead
+          title={title}
+          meta={`${events.length} événement${events.length > 1 ? 's' : ''}`}
+        />
+        {festival && (
+          <div className="mb-6">
+            <FestivalBanner event={festival} />
+          </div>
+        )}
         {tonightHero && (
           <div className="mb-6">
             <TonightHeroCard
@@ -389,7 +406,9 @@ function PageIntro() {
         Tous les concerts au <span className="text-brand-orange">Pays Basque</span> et dans les{' '}
         <span className="text-brand-orange">Landes</span>
       </h1>
-      <p className={cn(darkerGrotesque.className, 'mt-3 max-w-[64ch] text-[17px] text-brand-muted')}>
+      <p
+        className={cn(darkerGrotesque.className, 'mt-3 max-w-[64ch] text-[17px] text-brand-muted')}
+      >
         Retrouve tous les concerts, DJ sets, festivals et soirées près de chez toi.
       </p>
     </section>
@@ -588,7 +607,7 @@ function buildActiveFilters(
   if (sp.city) {
     const region = sp.region
     const cityLabel = region
-      ? CITY_CHIPS[region].find((c) => c.slug === sp.city)?.label ?? sp.city
+      ? (CITY_CHIPS[region].find((c) => c.slug === sp.city)?.label ?? sp.city)
       : sp.city
     out.push({ paramKey: 'city', label: cityLabel, href: withoutParam('city') })
   }
@@ -606,4 +625,3 @@ function buildActiveFilters(
 
   return out
 }
-

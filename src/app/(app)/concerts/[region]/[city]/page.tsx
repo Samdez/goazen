@@ -165,7 +165,10 @@ export default async function CityPage({
         }
       >
         <UnifiedFilterSections
-          titleWithEffect
+          title={`Concerts, soirées et DJ sets à ${cityData.name}`}
+          subTitle={`Tous les concerts et soirées à venir à ${cityData.name}${
+            region === 'pays-basque' ? ' (Pays Basque)' : ' (Landes)'
+          }`}
           buttons={[
             <CityFilterCombobox
               key="city-filter"

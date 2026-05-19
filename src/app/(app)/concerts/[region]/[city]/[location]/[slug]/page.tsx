@@ -30,7 +30,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       timeZone: 'Europe/Paris',
     })
 
-    const isPastEvent = new Date(event.date) < new Date()
+    const eventDate = new Date(event.date)
+    const isPastEvent = eventDate < new Date()
+    const isStaleEvent = eventDate.getTime() < Date.now() - 30 * 24 * 60 * 60 * 1000
 
     const title =
       event.meta?.title ||
@@ -90,10 +92,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         images: fullImageUrl ? [fullImageUrl] : undefined,
       },
       robots: {
-        index: true,
+        index: !isStaleEvent,
         follow: true,
         googleBot: {
-          index: true,
+          index: !isStaleEvent,
           follow: true,
           'max-video-preview': -1,
           'max-image-preview': 'large',
