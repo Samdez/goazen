@@ -1,6 +1,5 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import Script from 'next/script'
 import { z } from 'zod'
 
 import EventCard from './components/EventCard'
@@ -30,6 +29,8 @@ import {
 } from './queries/window-bounds'
 import { getBrowseHero, getTonightHero } from './queries/get-hero-event'
 import { AUTRE_CATEGORY_NAME, CITY_CHIPS } from './constants'
+import { JsonLd } from './components/JsonLd'
+import { eventsItemListJsonLd } from '@/lib/structured-data'
 import type { Event } from '@/payload-types'
 
 const searchParamsSchema = z.object({
@@ -96,7 +97,6 @@ export default async function Page({
           <BrowseMode
             filterOpts={filterOpts}
             placeholderImage={placeholderImage}
-            region={region}
             activeFilters={activeFilters}
           />
         )}
@@ -110,12 +110,10 @@ export default async function Page({
 async function BrowseMode({
   filterOpts,
   placeholderImage,
-  region,
   activeFilters,
 }: {
   filterOpts: WindowOpts
   placeholderImage: string
-  region?: 'pays-basque' | 'landes'
   activeFilters: ActiveFilter[]
 }) {
   const [tonight, thisWeek, upcoming, hero, featuredFestival] = await Promise.all([
@@ -132,7 +130,7 @@ async function BrowseMode({
   if (everythingEmpty && activeFilters.length > 0) {
     return (
       <>
-        <SeoJsonLd events={seoEvents} />
+        <SeoJsonLd events={seoEvents} placeholderImage={placeholderImage} />
         <div className="py-10">
           <BroadenSuggestions active={activeFilters} clearAllHref="/" />
         </div>
@@ -144,7 +142,7 @@ async function BrowseMode({
 
   return (
     <>
-      <SeoJsonLd events={seoEvents} />
+      <SeoJsonLd events={seoEvents} placeholderImage={placeholderImage} />
 
       <CeSoirSection
         events={tonight}
@@ -161,7 +159,7 @@ async function BrowseMode({
         placeholderImage={placeholderImage}
       />
 
-      <AVenirSection events={upcoming} region={region} />
+      <AVenirSection events={upcoming} />
     </>
   )
 }
@@ -201,7 +199,7 @@ async function FocusedMode({
   if (events.length === 0) {
     return (
       <>
-        <SeoJsonLd events={seoEvents} />
+        <SeoJsonLd events={seoEvents} placeholderImage={placeholderImage} />
         <div className="py-10">
           <BroadenSuggestions
             active={activeFilters.filter((f) => f.paramKey !== 'when' || activeFilters.length > 1)}
@@ -218,7 +216,7 @@ async function FocusedMode({
 
   return (
     <>
-      <SeoJsonLd events={seoEvents} />
+      <SeoJsonLd events={seoEvents} placeholderImage={placeholderImage} />
       <section className="py-10">
         <SectionHead
           title={title}
@@ -276,7 +274,7 @@ function CeSoirSection({
         }`
 
   const showSeeAll = events.length > 7
-  const seeAll = showSeeAll ? { href: '/?when=tonight', label: 'Voir plus →' } : undefined
+  const seeAll = showSeeAll ? { href: '/concerts', label: 'Voir plus →' } : undefined
   const heroEventId = hero?.event.id
   const others = heroEventId ? events.filter((e) => e.id !== heroEventId) : events
 
@@ -357,7 +355,7 @@ function CetteSemaineSection({
       <SectionHead
         title="Cette semaine"
         meta={weekMeta(events)}
-        seeAll={{ href: '/?when=week', label: 'Voir plus →' }}
+        seeAll={{ href: '/concerts', label: 'Voir plus →' }}
       />
       {events.length > 0 && (
         <div className="grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(310px,1fr))]">
@@ -371,13 +369,13 @@ function CetteSemaineSection({
   )
 }
 
-function AVenirSection({ events, region }: { events: Event[]; region?: string }) {
+function AVenirSection({ events }: { events: Event[] }) {
   if (events.length === 0) return null
   const firstDate = new Date(events[0].date)
   const day = firstDate.getUTCDate()
   const month = MONTHS_FR[firstDate.getUTCMonth()]
   const seeAll = {
-    href: region ? `/concerts/${region}` : '/concerts/pays-basque',
+    href: '/concerts',
     label: 'Voir plus →',
   }
   return (
@@ -477,8 +475,8 @@ function MascotEmpty({ title, subtitle }: { title: string; subtitle: string }) {
   )
 }
 
-function SeoJsonLd({ events }: { events: Event[] }) {
-  const structuredData = {
+function SeoJsonLd({ events, placeholderImage }: { events: Event[]; placeholderImage: string }) {
+  const organization = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Goazen!',
@@ -486,50 +484,12 @@ function SeoJsonLd({ events }: { events: Event[] }) {
       'Découvrez tous les concerts, DJ sets, festivals et soirées au Pays Basque et dans les Landes',
     url: 'https://goazen.info',
     logo: 'https://goazen.info/GOAZEN_MASCOTTES.png',
-    event: events.map((event) => {
-      const loc = event.location && typeof event.location === 'object' ? event.location : null
-      const cityData =
-        loc?.['city V2'] && typeof loc['city V2'] === 'object' ? loc['city V2'] : null
-      return {
-        '@type': 'Event',
-        name: event.title,
-        startDate: event.date,
-        endDate: event.date,
-        description: event.description,
-        image:
-          typeof event.image === 'object' && event.image
-            ? event.image.url?.startsWith('http')
-              ? event.image.url
-              : `https://goazen.info${event.image.url}`
-            : undefined,
-        location: loc
-          ? {
-              '@type': 'Place',
-              name: loc.name,
-              address: {
-                '@type': 'PostalAddress',
-                addressLocality: cityData?.name,
-                addressRegion: cityData?.region === 'pays-basque' ? 'Pays Basque' : 'Landes',
-                addressCountry: 'FR',
-              },
-            }
-          : undefined,
-        offers: event.ticketing_url
-          ? {
-              '@type': 'Offer',
-              url: event.ticketing_url,
-              availability: event.sold_out
-                ? 'https://schema.org/SoldOut'
-                : 'https://schema.org/InStock',
-            }
-          : undefined,
-      }
-    }),
   }
   return (
-    <Script id="organization-structured-data" type="application/ld+json">
-      {JSON.stringify(structuredData)}
-    </Script>
+    <>
+      <JsonLd id="organization-structured-data" data={organization} />
+      <JsonLd id="home-events" data={eventsItemListJsonLd(events, { placeholderImage })} />
+    </>
   )
 }
 

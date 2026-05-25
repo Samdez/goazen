@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils'
 import { darkerGrotesque } from '../../fonts'
 import Link from 'next/link'
 import { REGIONS } from '../../constants'
+import { JsonLd } from '../../components/JsonLd'
+import { breadcrumbJsonLd, eventsItemListJsonLd } from '@/lib/structured-data'
 
 export async function generateStaticParams() {
   return REGIONS.map((region) => ({
@@ -70,8 +72,22 @@ export default async function RegionPage({ params }: { params: Promise<{ region:
     return
   }
 
+  const regionName = region === 'pays-basque' ? 'Pays Basque' : 'Landes'
+
   return (
     <>
+      <JsonLd
+        id="region-breadcrumb"
+        data={breadcrumbJsonLd([
+          { name: 'Accueil', path: '/' },
+          { name: 'Concerts', path: '/concerts' },
+          { name: regionName, path: `/concerts/${region}` },
+        ])}
+      />
+      <JsonLd
+        id="region-events"
+        data={eventsItemListJsonLd(events.docs, { placeholderImage })}
+      />
       <Suspense
         key={region}
         fallback={

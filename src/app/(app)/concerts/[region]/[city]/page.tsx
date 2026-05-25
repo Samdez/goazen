@@ -15,7 +15,8 @@ import RelatedLocationsAndCities from '@/app/(app)/components/RelatedLocationsAn
 import type { City } from '@/payload-types'
 import type { PaginatedDocs } from 'payload'
 import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
-import Script from 'next/script'
+import { JsonLd } from '@/app/(app)/components/JsonLd'
+import { breadcrumbJsonLd, eventsItemListJsonLd } from '@/lib/structured-data'
 
 export async function generateStaticParams() {
   const cities = await getCities()
@@ -96,66 +97,31 @@ export default async function CityPage({
     return
   }
 
-  // Create structured data for the city and its events
-  const cityStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'City',
-    name: cityData.name,
-    description: cityData['rich text description'],
-    containedInPlace: {
-      '@type': 'AdministrativeArea',
-      name: region === 'pays-basque' ? 'Pays Basque' : 'Landes',
-      containedInPlace: {
-        '@type': 'Country',
-        name: 'France',
-      },
-    },
-    event: events.docs.map((event) => {
-      const eventLocation =
-        event.location && typeof event.location === 'object' ? event.location : null
-
-      return {
-        '@type': 'Event',
-        name: event.title,
-        startDate: event.date,
-        endDate: event.date,
-        description: event.description,
-        image:
-          typeof event.image === 'object' && event.image
-            ? event.image.url?.startsWith('http')
-              ? event.image.url
-              : `https://goazen.info${event.image.url}`
-            : `https://goazen.info${placeholderImage}`,
-        location: eventLocation
-          ? {
-              '@type': 'Place',
-              name: eventLocation.name,
-              address: {
-                '@type': 'PostalAddress',
-                addressLocality: cityData.name,
-                addressRegion: region === 'pays-basque' ? 'Pays Basque' : 'Landes',
-                addressCountry: 'FR',
-              },
-            }
-          : undefined,
-        offers: event.ticketing_url
-          ? {
-              '@type': 'Offer',
-              url: event.ticketing_url,
-              availability: event.sold_out
-                ? 'https://schema.org/SoldOut'
-                : 'https://schema.org/InStock',
-            }
-          : undefined,
-      }
-    }),
-  }
+  const regionName = region === 'pays-basque' ? 'Pays Basque' : 'Landes'
+  const hasDescription = Boolean(cityData['rich text description'])
+  const venueNames = Array.from(
+    new Set(
+      events.docs
+        .map((event) =>
+          typeof event.location === 'object' && event.location ? event.location.name : null,
+        )
+        .filter((name): name is string => Boolean(name)),
+    ),
+  ).slice(0, 6)
+  const venueList = new Intl.ListFormat('fr', { type: 'conjunction' }).format(venueNames)
 
   return (
     <>
-      <Script id="city-structured-data" type="application/ld+json">
-        {JSON.stringify(cityStructuredData)}
-      </Script>
+      <JsonLd
+        id="city-breadcrumb"
+        data={breadcrumbJsonLd([
+          { name: 'Accueil', path: '/' },
+          { name: 'Concerts', path: '/concerts' },
+          { name: regionName, path: `/concerts/${region}` },
+          { name: cityData.name, path: `/concerts/${region}/${city}` },
+        ])}
+      />
+      <JsonLd id="city-events" data={eventsItemListJsonLd(events.docs, { placeholderImage })} />
 
       <Suspense
         fallback={
@@ -202,7 +168,18 @@ export default async function CityPage({
           region === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'
         }`}
       />
-      <RichTextWrapper data={cityData['rich text description']} className="px-6" />
+      {hasDescription ? (
+        <RichTextWrapper data={cityData['rich text description']} className="px-6" />
+      ) : (
+        <section className={cn(darkerGrotesque.className, 'px-6 pb-8 text-lg text-gray-800')}>
+          <p className="max-w-[70ch]">
+            Retrouve tous les concerts, DJ sets et soirées à {cityData.name} ({regionName}).{' '}
+            {venueNames.length > 0
+              ? `Découvre la programmation des salles et lieux comme ${venueList}, mise à jour tous les jours.`
+              : 'La programmation est mise à jour tous les jours pour ne rien manquer des prochaines sorties.'}
+          </p>
+        </section>
+      )}
     </>
   )
 }

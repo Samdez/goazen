@@ -6,26 +6,49 @@ import { getCategories } from '../../queries/get-categories'
 import { getCachedEvents } from '../../queries/get-events'
 import { getPlaceholderImage } from '../../queries/get-placeholder-image'
 import { searchParamsSchema } from '../../schemas/searchParams'
+import { AUTRE_CATEGORY_NAME } from '../../constants'
+
+function humanizeSlug(slug: string) {
+  return slug.replace(/-/g, ' ')
+}
+
+async function getGenreName(slug: string) {
+  const categories = await getCategories()
+  const match = categories.find((c) => c.slug === slug)
+  return match?.name ?? humanizeSlug(slug)
+}
+
+export async function generateStaticParams() {
+  const categories = await getCategories()
+  return categories
+    .filter((c) => c.slug && c.name !== AUTRE_CATEGORY_NAME)
+    .map((c) => ({ genre: c.slug as string }))
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ genre: string }> }) {
   const { genre } = await params
-  const categories = await getCategories()
-  const category = categories.find((c) => c.slug === genre)
-  const genreLabel = category?.name || genre
+  const name = await getGenreName(genre)
+  const title = `Concerts ${name} au Pays Basque et dans les Landes | Goazen!`
+  const description = `Agenda des concerts ${name} au Pays Basque et dans les Landes. Tous les événements ${name} à venir près de chez toi.`
 
   return {
-    title: `Concerts ${genreLabel} au Pays Basque et dans les Landes | Goazen!`,
-    description: `Agenda des concerts ${genreLabel} au Pays Basque et dans les Landes. Découvrez tous les événements musicaux à venir.`,
+    title,
+    description,
     alternates: {
       canonical: `https://goazen.info/genres/${genre}`,
     },
     openGraph: {
-      title: `Concerts ${genreLabel} au Pays Basque et dans les Landes | Goazen!`,
-      description: `Agenda des concerts ${genreLabel} au Pays Basque et dans les Landes.`,
+      title,
+      description,
       url: `https://goazen.info/genres/${genre}`,
       siteName: 'Goazen!',
       locale: 'fr_FR',
       type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Concerts ${name} au Pays Basque et dans les Landes`,
+      description,
     },
     robots: {
       index: true,
@@ -56,6 +79,7 @@ async function Genre({
   } = searchParamsSchema.parse(await searchParams)
 
   const categories = await getCategories()
+  const name = categories.find((c) => c.slug === genre)?.name ?? humanizeSlug(genre)
   const placeholderImageUrl = await getPlaceholderImage()
   const initialEvents = await getCachedEvents({
     category: genre,
@@ -63,20 +87,15 @@ async function Genre({
     endDate,
   })
 
-  const category = categories.find((c) => c.slug === genre)
-  const genreLabel = category?.name || genre
-
   return (
     <>
       <UnifiedFilterSections
-        activeTime={activeTime}
-        title={`Concerts ${genreLabel} au Pays Basque et dans les Landes`}
+        title={`Concerts ${name} au Pays Basque et dans les Landes`}
         buttons={[
           <GenreFilterComboBox key="genre-filter" categories={categories} />,
           <DateFilterComboBox key="date-filter" days={['day', 'week']} />,
         ]}
         subTitle="Retrouve tous les concerts, DJ sets, festivals et soirées près de chez toi"
-        categoryParam={genre}
       />
       <EventsGrid
         initialEvents={initialEvents.docs}
@@ -87,7 +106,6 @@ async function Genre({
         activeTime={activeTime}
         placeholderImageUrl={placeholderImageUrl || ''}
       />
-      ;
     </>
   )
 }
