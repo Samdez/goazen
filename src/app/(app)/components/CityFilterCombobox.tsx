@@ -90,9 +90,10 @@ function CitiesList({
     if (isLocationsPage) {
       return `/salles-de-concert/${city.slug}`
     }
-    return city.id === 'all'
-      ? `/concerts/${params.region}`
-      : `/concerts/${city.region}/${city.slug}`
+    if (city.id === 'all') {
+      return params.region ? `/concerts/${params.region}` : '/concerts'
+    }
+    return `/concerts/${city.region}/${city.slug}`
   }
   return (
     <Command>

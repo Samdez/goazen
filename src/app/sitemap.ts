@@ -2,9 +2,10 @@ import type { MetadataRoute } from 'next'
 import { getLocations } from './(app)/queries/get-locations'
 import { buildEventUrl } from '@/utils'
 import { getCachedEvents } from './(app)/queries/get-events'
-import { REGIONS } from './(app)/constants'
+import { AUTRE_CATEGORY_NAME, REGIONS } from './(app)/constants'
 import { getCities } from './(app)/queries/get-cities'
 import { getSpecialEvents } from './(app)/queries/get-special-events'
+import { getCategories } from './(app)/queries/get-categories'
 
 function toDate(value: string | Date | undefined): Date {
   if (!value) return new Date(0)
@@ -15,6 +16,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const events = await getCachedEvents({ limit: 1000, startDate: new Date().toISOString() })
   const cities = await getCities()
   const specialEvents = await getSpecialEvents()
+  const categories = await getCategories()
+  const genresUrls = categories
+    .filter((category) => category.slug && category.name !== AUTRE_CATEGORY_NAME)
+    .map((category) => ({
+      url: `https://goazen.info/genres/${category.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }))
   const locations = await getLocations({ limit: 1000 })
 
   const latestEventUpdate = events.docs.reduce<Date>((acc, e) => {
@@ -72,9 +82,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 1,
     },
+    {
+      url: 'https://goazen.info/concerts',
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
     ...specialEventsUrls,
     ...regionsUrls,
     ...citiesUrls,
+    ...genresUrls,
     ...locationsUrls,
     ...eventsUrls,
   ]

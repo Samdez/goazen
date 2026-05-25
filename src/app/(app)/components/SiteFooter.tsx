@@ -2,6 +2,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { bebas, darkerGrotesque } from '../fonts'
 import { cn } from '@/lib/utils'
+import { CITY_CHIPS } from '../constants'
+
+const FOOTER_CITIES = [
+  ...CITY_CHIPS['pays-basque'].map((c) => ({ ...c, region: 'pays-basque' })),
+  ...CITY_CHIPS['landes'].map((c) => ({ ...c, region: 'landes' })),
+]
 
 export default function SiteFooter() {
   return (
@@ -86,6 +92,33 @@ export default function SiteFooter() {
               </Link>
             </li>
           </FooterCol>
+        </div>
+
+        <div className="mb-10 border-t-brand border-brand-ink pt-8">
+          <h5
+            className={cn(
+              bebas.className,
+              'mb-3.5 text-base uppercase tracking-wide text-brand-ink',
+            )}
+          >
+            Concerts par ville
+          </h5>
+          <div
+            className={cn(
+              darkerGrotesque.className,
+              'flex flex-wrap gap-x-5 gap-y-2 text-sm text-brand-ink',
+            )}
+          >
+            {FOOTER_CITIES.map((city) => (
+              <Link
+                key={`${city.region}-${city.slug}`}
+                href={`/concerts/${city.region}/${city.slug}`}
+                className="hover:text-brand-orange"
+              >
+                Concerts à {city.label}
+              </Link>
+            ))}
+          </div>
         </div>
 
         <div
