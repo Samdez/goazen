@@ -49,6 +49,16 @@ const SpecialEvents: CollectionConfig = {
       type: 'richText',
     },
     {
+      name: 'meta_description',
+      type: 'textarea',
+      label: 'Description SEO (Google)',
+      maxLength: 200,
+      admin: {
+        description:
+          'Texte du snippet Google (~155 caractères). Si vide, déduit de la description.',
+      },
+    },
+    {
       name: 'place_id',
       label: 'place id',
       type: 'text',
@@ -63,8 +73,21 @@ const SpecialEvents: CollectionConfig = {
       name: 'image',
       type: 'upload',
       relationTo: 'medias',
+      label: 'Image (bannière desktop)',
       admin: {
         position: 'sidebar',
+        description: 'Image large pour la bannière sur grand écran (~2400×280, ratio ~8:1).',
+      },
+    },
+    {
+      name: 'image_mobile',
+      type: 'upload',
+      relationTo: 'medias',
+      label: 'Image (bannière mobile)',
+      admin: {
+        position: 'sidebar',
+        description:
+          'Cadrage resserré pour mobile (~800×320, ratio ~2.5:1). Si vide, l’image desktop est utilisée.',
       },
     },
     {

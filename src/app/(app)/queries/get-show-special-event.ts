@@ -1,19 +1,19 @@
 'use server'
+import type { SpecialEvent } from '@/payload-types'
 import { payload } from '../(client)/payload-client'
 
-export async function getShowSpecialEvent() {
-  const showSpecialEvent = await payload.findGlobal({
+// Returns the special event to feature on the home, or null when the CMS
+// toggle is off / no event is selected. Never throws so the home can't 500.
+export async function getShowSpecialEvent(): Promise<SpecialEvent | null> {
+  const global = await payload.findGlobal({
     slug: 'show-special-event',
   })
   if (
-    typeof showSpecialEvent.show_special_event !== 'boolean' ||
-    !showSpecialEvent.special_event ||
-    typeof showSpecialEvent.special_event !== 'object'
+    global.show_special_event !== true ||
+    !global.special_event ||
+    typeof global.special_event !== 'object'
   ) {
-    throw new Error('Something went wrong with the special event')
+    return null
   }
-  return {
-    showSpecialEvent: showSpecialEvent.show_special_event,
-    specialEvent: showSpecialEvent.special_event,
-  }
+  return global.special_event
 }

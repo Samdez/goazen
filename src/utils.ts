@@ -11,6 +11,22 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+type LexicalNode = { text?: string; children?: LexicalNode[] }
+
+// Flattens a Payload Lexical richText value to a single plain-text string.
+// Used for meta descriptions (the raw value is a JSON object, not a string).
+export function lexicalToPlainText(
+  data?: { root?: { children?: LexicalNode[] } } | null,
+): string {
+  const walk = (nodes?: LexicalNode[]): string =>
+    (nodes ?? [])
+      .map((n) => (typeof n.text === 'string' ? n.text : walk(n.children)))
+      .join('')
+  return walk(data?.root?.children)
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 export function formatDate(date: string) {
   const options: Intl.DateTimeFormatOptions = {
     weekday: 'long',

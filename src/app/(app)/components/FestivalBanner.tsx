@@ -18,7 +18,7 @@ function formatFestivalRange(start?: string | null, end?: string | null): string
 }
 
 export default function FestivalBanner({ event }: { event: SpecialEvent }) {
-  const href = event.slug ? `/concerts/special-event/${event.slug}` : '#'
+  const href = event.slug ? `/concerts/evenement/${event.slug}` : '#'
   const range = formatFestivalRange(event.start_date, event.end_date)
   const cityName =
     event['city V2'] && typeof event['city V2'] === 'object' ? event['city V2'].name : null

@@ -306,9 +306,11 @@ export interface SpecialEvent {
     };
     [k: string]: unknown;
   } | null;
+  meta_description?: string | null;
   place_id?: string | null;
   'city V2'?: (string | null) | City;
   image?: (string | null) | Media;
+  image_mobile?: (string | null) | Media;
   slug?: string | null;
   events?: {
     docs?: (string | Event)[] | null;
@@ -569,9 +571,11 @@ export interface SpecialEventsSelect<T extends boolean = true> {
   start_date?: T;
   end_date?: T;
   description?: T;
+  meta_description?: T;
   place_id?: T;
   'city V2'?: T;
   image?: T;
+  image_mobile?: T;
   slug?: T;
   events?: T;
   updatedAt?: T;

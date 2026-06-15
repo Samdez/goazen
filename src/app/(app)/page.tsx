@@ -6,6 +6,7 @@ import EventCard from './components/EventCard'
 import FestivalBanner from './components/FestivalBanner'
 import FilterBar from './components/FilterBar'
 import RowEvent from './components/RowEvent'
+import SpecialEventBanner from './components/SpecialEventBanner'
 import TonightHeroCard from './components/TonightHeroCard'
 import SectionTeaser from './components/SectionTeaser'
 import BroadenSuggestions, { type ActiveFilter } from './components/BroadenSuggestions'
@@ -28,6 +29,7 @@ import {
   type WindowOpts,
 } from './queries/window-bounds'
 import { getBrowseHero, getTonightHero } from './queries/get-hero-event'
+import { getShowSpecialEvent } from './queries/get-show-special-event'
 import { AUTRE_CATEGORY_NAME, CITY_CHIPS } from './constants'
 import { JsonLd } from './components/JsonLd'
 import { eventsItemListJsonLd } from '@/lib/structured-data'
@@ -76,7 +78,10 @@ export default async function Page({
     return null
   }
 
-  const allCategories = await getCategories()
+  const [allCategories, specialEvent] = await Promise.all([
+    getCategories(),
+    getShowSpecialEvent(),
+  ])
   const categories = allCategories.filter((c) => c.name !== AUTRE_CATEGORY_NAME)
 
   const activeFilters = buildActiveFilters(parsed, genres, categories)
@@ -86,6 +91,11 @@ export default async function Page({
       <PageIntro />
       <FilterBar categories={categories} />
       <main className="mx-auto max-w-[1280px] px-5 md:px-8">
+        {specialEvent && (
+          <div className="pt-6">
+            <SpecialEventBanner event={specialEvent} />
+          </div>
+        )}
         {when ? (
           <FocusedMode
             when={when}
