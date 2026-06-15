@@ -88,14 +88,14 @@ export default async function Page({
 
   return (
     <>
+      {specialEvent && (
+        <div className="mx-auto max-w-[1280px] px-5 pt-6 md:px-8">
+          <SpecialEventBanner event={specialEvent} />
+        </div>
+      )}
       <PageIntro />
       <FilterBar categories={categories} />
       <main className="mx-auto max-w-[1280px] px-5 md:px-8">
-        {specialEvent && (
-          <div className="pt-6">
-            <SpecialEventBanner event={specialEvent} />
-          </div>
-        )}
         {when ? (
           <FocusedMode
             when={when}

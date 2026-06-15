@@ -52,8 +52,8 @@ export default async function SpecialEventBanner({ event }: { event: SpecialEven
         )}
         <div className="relative p-2 text-center">
           <p className="text-white text-lg font-bold">Le bon plan Goazen! : </p>
-          <h1 className="text-2xl font-bold">{event.name}</h1>
-          <h2 className="text-lg font-bold text-center underline">{event.subtitle}</h2>
+          <p className="text-2xl font-bold">{event.name}</p>
+          <p className="text-lg font-bold text-center underline">{event.subtitle}</p>
           {isSingleEvent && (
             <p className="text-white text-lg font-bold">
               {formatDate(singleEvent?.date as string)}
