@@ -11,16 +11,21 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-type LexicalNode = { text?: string; children?: LexicalNode[] }
+type LexicalNode = { text?: string; children?: unknown[] }
 
 // Flattens a Payload Lexical richText value to a single plain-text string.
 // Used for meta descriptions (the raw value is a JSON object, not a string).
+// `children` is typed loosely (unknown[]) so the generated payload-types
+// richText shape is assignable without a cast at the call site.
 export function lexicalToPlainText(
-  data?: { root?: { children?: LexicalNode[] } } | null,
+  data?: { root?: { children?: unknown[] } } | null,
 ): string {
-  const walk = (nodes?: LexicalNode[]): string =>
+  const walk = (nodes?: unknown[]): string =>
     (nodes ?? [])
-      .map((n) => (typeof n.text === 'string' ? n.text : walk(n.children)))
+      .map((n) => {
+        const node = (n ?? {}) as LexicalNode
+        return typeof node.text === 'string' ? node.text : walk(node.children)
+      })
       .join('')
   return walk(data?.root?.children)
     .replace(/\s+/g, ' ')
