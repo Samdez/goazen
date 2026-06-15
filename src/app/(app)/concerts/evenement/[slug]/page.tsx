@@ -130,9 +130,6 @@ export default async function SpecialEventPage({
             <p className="mt-2 text-lg font-medium text-brand-muted">{specialEvent.subtitle}</p>
           )}
         </header>
-        <div className="md:col-span-2 flex gap-4 justify-center">
-          <RichTextWrapper data={specialEvent.description} />
-        </div>
         <div className="flex items-center justify-center gap-2 py-8">
           <SelectionSwitch
             selectionOnly={selectionOnly === 'true' ? true : false}
@@ -158,6 +155,13 @@ export default async function SpecialEventPage({
           selectionOnly={selectionOnly === 'true'}
         />
       </Suspense>
+      {/* SEO body below the events: users see the concerts first, crawlers
+          still get the full description + H2s in the DOM. */}
+      {specialEvent.description && (
+        <section className="px-12 py-12 md:px-32">
+          <RichTextWrapper data={specialEvent.description} />
+        </section>
+      )}
     </>
   )
 }
