@@ -3,6 +3,7 @@ import { getCachedEvents } from '@/app/(app)/queries/get-events'
 import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
 import { Suspense } from 'react'
 import { PacmanLoader } from 'react-spinners'
+import Link from 'next/link'
 import Script from 'next/script'
 import EventsGrid from '@/app/(app)/components/EventsGrid'
 import { notFound } from 'next/navigation'
@@ -110,6 +111,7 @@ export default async function SpecialEventPage({
   }
 
   const jsonLd = buildSpecialEventJsonLd(specialEvent, events.docs, slug)
+  const cityLinks = uniqueEventCities(events.docs)
 
   return (
     <>
@@ -155,6 +157,29 @@ export default async function SpecialEventPage({
           selectionOnly={selectionOnly === 'true'}
         />
       </Suspense>
+      {/* Internal links to the city pages that actually have tagged concerts —
+          descriptive anchors, derived from the events (not hardcoded). */}
+      {cityLinks.length > 0 && (
+        <nav aria-label="Concerts par ville" className="px-12 pt-10 md:px-32">
+          <h2
+            className={cn(bebas.className, 'mb-4 text-2xl uppercase tracking-tight text-brand-ink')}
+          >
+            Concerts par ville
+          </h2>
+          <ul className="flex flex-wrap gap-3">
+            {cityLinks.map((c) => (
+              <li key={c.slug}>
+                <Link
+                  href={`/concerts/${c.region}/${c.slug}`}
+                  className="inline-block rounded-full border-2 border-brand-ink px-4 py-1.5 text-sm font-bold text-brand-ink transition-colors hover:bg-brand-ink hover:text-brand-paper"
+                >
+                  Concerts à {c.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
       {/* SEO body below the events: users see the concerts first, crawlers
           still get the full description + H2s in the DOM. */}
       {specialEvent.description && (
@@ -164,6 +189,20 @@ export default async function SpecialEventPage({
       )}
     </>
   )
+}
+
+// Unique cities (region + slug + name) that have a tagged concert, in first-seen
+// order. Source of the "Concerts par ville" internal links.
+function uniqueEventCities(events: Event[]): Array<{ region: string; slug: string; name: string }> {
+  const map = new Map<string, { region: string; slug: string; name: string }>()
+  for (const e of events) {
+    const loc = e.location && typeof e.location === 'object' ? e.location : null
+    const city = loc?.['city V2']
+    if (city && typeof city === 'object' && city.slug && city.region && city.name) {
+      map.set(city.slug, { region: city.region, slug: city.slug, name: city.name })
+    }
+  }
+  return Array.from(map.values())
 }
 
 function buildSpecialEventJsonLd(specialEvent: SpecialEvent, events: Event[], slug: string) {

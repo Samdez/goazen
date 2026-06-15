@@ -56,8 +56,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const fullImageUrl = imageUrl?.startsWith('http')
       ? imageUrl
       : imageUrl
-        ? `https://goazen.info${imageUrl}`
-        : undefined
+      ? `https://goazen.info${imageUrl}`
+      : undefined
 
     return {
       title,
@@ -316,6 +316,18 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
         )}
 
         <div className="flex flex-wrap items-center justify-center gap-4 px-4 pb-8 text-white">
+          {event.special_event &&
+            typeof event.special_event === 'object' &&
+            event.special_event.slug && (
+              <Button className="rounded-lg border-4 border-black bg-[#E45110] p-2 text-2xl text-black">
+                <Link
+                  href={`/concerts/evenement/${event.special_event.slug}`}
+                  className="text-2xl text-black"
+                >
+                  Voir tous les concerts de la {event.special_event.name}
+                </Link>
+              </Button>
+            )}
           {event.category && event.category.length > 0 && (
             <Button className="rounded-lg border-4 border-black bg-[#E45110] p-2 text-2xl text-black">
               <Link
