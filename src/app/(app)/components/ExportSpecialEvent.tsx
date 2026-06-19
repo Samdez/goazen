@@ -1,27 +1,14 @@
-'use client'
-import * as React from 'react'
-import { _getEvents } from '../queries/get-events'
-import { convertEventsToCSV, downloadCSV } from './csv-export'
+import { getShowSpecialEvent } from '../queries/get-show-special-event'
+import ExportSpecialEventButton from './ExportSpecialEventButton'
 
-const ExportSpecialEvent = () => {
-  const fetchOptions = async () => {
-    try {
-      const events = await _getEvents({ limit: 1000, specialEvent: 'nouvel-an-2026' })
-      if (events.docs) {
-        downloadCSV('events-nouvel-an-2026.csv', convertEventsToCSV(events.docs))
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    }
+const ExportSpecialEvent = async () => {
+  try {
+    const { specialEvent } = await getShowSpecialEvent()
+    if (typeof specialEvent === 'string' || !specialEvent.slug) return null
+    return <ExportSpecialEventButton slug={specialEvent.slug} name={specialEvent.name} />
+  } catch {
+    return null
   }
-
-  return (
-    <div>
-      <button onClick={fetchOptions} type="button">
-        Tous les concerts du Nouvel An 2026
-      </button>
-    </div>
-  )
 }
 
 export default ExportSpecialEvent
