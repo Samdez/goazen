@@ -6,6 +6,7 @@ import { clearOtherHighlightsOnSameDay } from './hooks/clear-other-highlights'
 
 const Events: CollectionConfig = {
   slug: 'events',
+  trash: true,
   versions: { drafts: true },
   access: {
     read: isAdminOrHasLocationAccess('location.id'),
@@ -15,6 +16,17 @@ const Events: CollectionConfig = {
   },
   hooks: {
     beforeChange: [clearOtherHighlightsOnSameDay],
+    afterDelete: [
+      async () => {
+        try {
+          await fetch(`${process.env.NEXT_PUBLIC_URL}/api/revalidate?tag=events`, {
+            method: 'POST',
+          })
+        } catch (err) {
+          console.error('Error revalidating:', err)
+        }
+      },
+    ],
   },
   fields: [
     { name: 'title', type: 'text', required: true },

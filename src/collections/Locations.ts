@@ -5,6 +5,7 @@ import { isAdmin } from '@/app/(payload)/access/isAdmin'
 
 const Locations: CollectionConfig = {
   slug: 'locations',
+  trash: true,
   access: {
     read: isAdminOrHasLocationAccess('id'),
     update: isAdminOrHasLocationAccess('id'),
