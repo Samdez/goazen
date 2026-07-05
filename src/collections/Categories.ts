@@ -4,6 +4,7 @@ import { isAdmin } from '@/app/(payload)/access/isAdmin'
 
 const Categories: CollectionConfig = {
   slug: 'categories',
+  trash: true,
   access: {
     read: isAdmin,
     create: isAdmin,

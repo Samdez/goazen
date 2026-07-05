@@ -5,6 +5,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
 const Cities: CollectionConfig = {
   slug: 'cities',
+  trash: true,
   access: {
     read: isAdmin,
     create: isAdmin,

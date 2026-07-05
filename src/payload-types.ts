@@ -6,10 +6,66 @@
  * and re-run `payload generate:types` to regenerate this file.
  */
 
+/**
+ * Supported timezones in IANA format.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "supportedTimezones".
+ */
+export type SupportedTimezones =
+  | 'Pacific/Midway'
+  | 'Pacific/Niue'
+  | 'Pacific/Honolulu'
+  | 'Pacific/Rarotonga'
+  | 'America/Anchorage'
+  | 'Pacific/Gambier'
+  | 'America/Los_Angeles'
+  | 'America/Tijuana'
+  | 'America/Denver'
+  | 'America/Phoenix'
+  | 'America/Chicago'
+  | 'America/Guatemala'
+  | 'America/New_York'
+  | 'America/Bogota'
+  | 'America/Caracas'
+  | 'America/Santiago'
+  | 'America/Buenos_Aires'
+  | 'America/Sao_Paulo'
+  | 'Atlantic/South_Georgia'
+  | 'Atlantic/Azores'
+  | 'Atlantic/Cape_Verde'
+  | 'Europe/London'
+  | 'Europe/Berlin'
+  | 'Africa/Lagos'
+  | 'Europe/Athens'
+  | 'Africa/Cairo'
+  | 'Europe/Moscow'
+  | 'Asia/Riyadh'
+  | 'Asia/Dubai'
+  | 'Asia/Baku'
+  | 'Asia/Karachi'
+  | 'Asia/Tashkent'
+  | 'Asia/Calcutta'
+  | 'Asia/Dhaka'
+  | 'Asia/Almaty'
+  | 'Asia/Jakarta'
+  | 'Asia/Bangkok'
+  | 'Asia/Shanghai'
+  | 'Asia/Singapore'
+  | 'Asia/Tokyo'
+  | 'Asia/Seoul'
+  | 'Australia/Brisbane'
+  | 'Australia/Sydney'
+  | 'Pacific/Guam'
+  | 'Pacific/Noumea'
+  | 'Pacific/Auckland'
+  | 'Pacific/Fiji';
+
 export interface Config {
   auth: {
     users: UserAuthOperations;
   };
+  blocks: {};
   collections: {
     users: User;
     medias: Media;
@@ -19,6 +75,7 @@ export interface Config {
     cities: City;
     'special-events': SpecialEvent;
     'email-consents': EmailConsent;
+    'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -37,6 +94,7 @@ export interface Config {
     cities: CitiesSelect<false> | CitiesSelect<true>;
     'special-events': SpecialEventsSelect<false> | SpecialEventsSelect<true>;
     'email-consents': EmailConsentsSelect<false> | EmailConsentsSelect<true>;
+    'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -44,6 +102,7 @@ export interface Config {
   db: {
     defaultIDType: string;
   };
+  fallbackLocale: null;
   globals: {
     'image-placeholder': ImagePlaceholder;
     'show-special-event': ShowSpecialEvent;
@@ -53,9 +112,10 @@ export interface Config {
     'show-special-event': ShowSpecialEventSelect<false> | ShowSpecialEventSelect<true>;
   };
   locale: null;
-  user: User & {
-    collection: 'users';
+  widgets: {
+    collections: CollectionsWidget;
   };
+  user: User;
   jobs: {
     tasks: unknown;
     workflows: unknown;
@@ -86,6 +146,9 @@ export interface UserAuthOperations {
 export interface User {
   id: string;
   roles?: ('admin' | 'editor')[] | null;
+  /**
+   * This field sets which sites that this user has access to.
+   */
   locations?: (string | Location)[] | null;
   updatedAt: string;
   createdAt: string;
@@ -96,7 +159,15 @@ export interface User {
   hash?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
   password?: string | null;
+  collection: 'users';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -109,7 +180,7 @@ export interface Location {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -124,7 +195,7 @@ export interface Location {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -162,6 +233,7 @@ export interface Location {
   };
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -177,7 +249,7 @@ export interface City {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -191,6 +263,7 @@ export interface City {
   cities_related?: (string | City)[] | null;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -244,6 +317,9 @@ export interface Event {
   id: string;
   title: string;
   event_kind?: ('dj_set' | 'live_show' | 'other') | null;
+  /**
+   * Cocher pour faire de cet événement la tête d’affiche de sa journée sur la home. Cocher cette case décoche automatiquement tout autre événement déjà mis en avant le même jour (heure de Paris).
+   */
   highlighted?: boolean | null;
   description?: string | null;
   date: string;
@@ -267,6 +343,7 @@ export interface Event {
   };
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
   _status?: ('draft' | 'published') | null;
 }
 /**
@@ -279,6 +356,7 @@ export interface Category {
   slug?: string | null;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -288,6 +366,9 @@ export interface SpecialEvent {
   id: string;
   name: string;
   subtitle?: string | null;
+  /**
+   * Affiche cet événement en bannière sur la home, si la date du jour est dans la fenêtre.
+   */
   featured?: boolean | null;
   start_date?: string | null;
   end_date?: string | null;
@@ -295,7 +376,7 @@ export interface SpecialEvent {
     root: {
       type: string;
       children: {
-        type: string;
+        type: any;
         version: number;
         [k: string]: unknown;
       }[];
@@ -306,30 +387,69 @@ export interface SpecialEvent {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Texte du snippet Google (~155 caractères). Si vide, déduit de la description.
+   */
   meta_description?: string | null;
   place_id?: string | null;
   'city V2'?: (string | null) | City;
+  /**
+   * Image large pour la bannière sur grand écran (~2400×280, ratio ~8:1).
+   */
   image?: (string | null) | Media;
+  /**
+   * Cadrage resserré pour mobile (~800×320, ratio ~2.5:1). Si vide, l’image desktop est utilisée.
+   */
   image_mobile?: (string | null) | Media;
   slug?: string | null;
   events?: {
-    docs?: (string | Event)[] | null;
-    hasNextPage?: boolean | null;
-  } | null;
+    docs?: (string | Event)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
 }
 /**
+ * Emails des organisateurs ayant accepté les CGU (partage partenaires commerciaux)
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "email-consents".
  */
 export interface EmailConsent {
   id: string;
+  /**
+   * Adresse email de l'organisateur
+   */
   email: string;
+  /**
+   * Date du premier consentement
+   */
   consentedAt: string;
+  /**
+   * Événements soumis par cet organisateur
+   */
   events?: (string | Event)[] | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv".
+ */
+export interface PayloadKv {
+  id: string;
+  key: string;
+  data:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -428,6 +548,13 @@ export interface UsersSelect<T extends boolean = true> {
   hash?: T;
   loginAttempts?: T;
   lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -512,6 +639,7 @@ export interface EventsSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
   _status?: T;
 }
 /**
@@ -523,6 +651,7 @@ export interface CategoriesSelect<T extends boolean = true> {
   slug?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -545,6 +674,7 @@ export interface LocationsSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -559,6 +689,7 @@ export interface CitiesSelect<T extends boolean = true> {
   cities_related?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -580,6 +711,7 @@ export interface SpecialEventsSelect<T extends boolean = true> {
   events?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -591,6 +723,14 @@ export interface EmailConsentsSelect<T extends boolean = true> {
   events?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv_select".
+ */
+export interface PayloadKvSelect<T extends boolean = true> {
+  key?: T;
+  data?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -665,6 +805,16 @@ export interface ShowSpecialEventSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections_widget".
+ */
+export interface CollectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

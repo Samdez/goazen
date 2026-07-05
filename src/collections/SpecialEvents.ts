@@ -4,6 +4,7 @@ import { slugifyString } from '../utils'
 
 const SpecialEvents: CollectionConfig = {
   slug: 'special-events',
+  trash: true,
   access: {
     read: isAdminOrHasLocationAccess('id'),
     update: isAdminOrHasLocationAccess('id'),
