@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { getLocations } from './(app)/queries/get-locations'
+import { getLocationsForSitemap } from './(app)/queries/get-locations'
 import { buildEventUrl } from '@/utils'
 import { getCachedEvents } from './(app)/queries/get-events'
 import { AUTRE_CATEGORY_NAME, REGIONS } from './(app)/constants'
@@ -25,7 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     }))
-  const locations = await getLocations({ limit: 1000 })
+  const locations = await getLocationsForSitemap()
 
   const latestEventUpdate = events.docs.reduce<Date>((acc, e) => {
     const t = toDate(e.updatedAt)
@@ -60,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  const locationsUrls = locations.docs
+  const locationsUrls = locations
     .map((location) => {
       const cityV2 = location['city V2']
       const region = typeof cityV2 !== 'string' ? cityV2?.region : undefined
