@@ -1,6 +1,7 @@
 'use client'
 
-import type { Category, Location } from '@/payload-types'
+import type { Category } from '@/payload-types'
+import type { LocationOption } from '../queries/get-locations'
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -60,7 +61,7 @@ export default function FormClient({
   locations,
   categories,
 }: {
-  locations: Location[]
+  locations: LocationOption[]
   categories: Category[]
 }) {
   const [isLoading, setIsLoading] = useState(false)

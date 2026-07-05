@@ -13,6 +13,30 @@ const Locations: CollectionConfig = {
     delete: isAdmin,
   },
   admin: { useAsTitle: 'name' },
+  hooks: {
+    afterChange: [
+      async () => {
+        try {
+          await fetch(`${process.env.NEXT_PUBLIC_URL}/api/revalidate?tag=locations`, {
+            method: 'POST',
+          })
+        } catch (err) {
+          console.error('Error revalidating:', err)
+        }
+      },
+    ],
+    afterDelete: [
+      async () => {
+        try {
+          await fetch(`${process.env.NEXT_PUBLIC_URL}/api/revalidate?tag=locations`, {
+            method: 'POST',
+          })
+        } catch (err) {
+          console.error('Error revalidating:', err)
+        }
+      },
+    ],
+  },
   fields: [
     {
       name: 'name',

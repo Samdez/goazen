@@ -13,10 +13,10 @@ import { ChevronsUpDown, Check } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
 import { LocationSchema } from '../form.client'
-import { Location } from '@/payload-types'
+import type { LocationOption } from '../../queries/get-locations'
 import { useTsController } from '@ts-react/form'
 
-export function LocationsCommand({ locations }: { locations: Location[] }) {
+export function LocationsCommand({ locations }: { locations: LocationOption[] }) {
   const {
     field: { onChange, value },
     error,
