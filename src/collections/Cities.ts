@@ -2,6 +2,7 @@ import { CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
 import { isAdmin } from '@/app/(payload)/access/isAdmin'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { revalidateCacheTag } from '@/lib/revalidate-cache'
 
 const Cities: CollectionConfig = {
   slug: 'cities',
@@ -11,6 +12,15 @@ const Cities: CollectionConfig = {
     create: isAdmin,
     update: isAdmin,
     delete: isAdmin,
+  },
+  hooks: {
+    afterChange: [
+      async ({ doc }) => {
+        await revalidateCacheTag('cities')
+        return doc
+      },
+    ],
+    afterDelete: [async () => revalidateCacheTag('cities')],
   },
   admin: { useAsTitle: 'name' },
   fields: [

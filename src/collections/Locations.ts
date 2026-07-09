@@ -2,6 +2,7 @@ import { isAdminOrHasLocationAccess } from '@/app/(payload)/access/isAdminOrHasL
 import type { CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
 import { isAdmin } from '@/app/(payload)/access/isAdmin'
+import { revalidateCacheTag } from '@/lib/revalidate-cache'
 
 const Locations: CollectionConfig = {
   slug: 'locations',
@@ -12,31 +13,16 @@ const Locations: CollectionConfig = {
     create: isAdmin,
     delete: isAdmin,
   },
-  admin: { useAsTitle: 'name' },
   hooks: {
     afterChange: [
-      async () => {
-        try {
-          await fetch(`${process.env.NEXT_PUBLIC_URL}/api/revalidate?tag=locations`, {
-            method: 'POST',
-          })
-        } catch (err) {
-          console.error('Error revalidating:', err)
-        }
+      async ({ doc }) => {
+        await revalidateCacheTag('locations')
+        return doc
       },
     ],
-    afterDelete: [
-      async () => {
-        try {
-          await fetch(`${process.env.NEXT_PUBLIC_URL}/api/revalidate?tag=locations`, {
-            method: 'POST',
-          })
-        } catch (err) {
-          console.error('Error revalidating:', err)
-        }
-      },
-    ],
+    afterDelete: [async () => revalidateCacheTag('locations')],
   },
+  admin: { useAsTitle: 'name' },
   fields: [
     {
       name: 'name',
