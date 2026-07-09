@@ -1,5 +1,6 @@
 'use server'
 
+import { unstable_cache } from 'next/cache'
 import { payload } from '../(client)/payload-client'
 
 const AUTRE_CATEGORY_NAME = 'Autre'
@@ -30,12 +31,18 @@ async function ensureAutreCategoryExists(): Promise<void> {
 }
 
 export async function getCategories() {
-  await ensureAutreCategoryExists()
-  const categories = await payload.find({
-    collection: 'categories',
-    sort: 'name',
-    limit: 500,
-    overrideAccess: true,
-  })
-  return categories.docs
+  return unstable_cache(
+    async () => {
+      await ensureAutreCategoryExists()
+      const categories = await payload.find({
+        collection: 'categories',
+        sort: 'name',
+        limit: 500,
+        overrideAccess: true,
+      })
+      return categories.docs
+    },
+    ['categories'],
+    { tags: ['categories'], revalidate: 60 * 60 * 24 },
+  )()
 }

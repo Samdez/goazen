@@ -1,9 +1,18 @@
 import { GlobalConfig } from 'payload'
 import { isAdmin } from '../(payload)/access/isAdmin'
+import { revalidateCacheTag } from '@/lib/revalidate-cache'
 
 export const ShowSpecialEvent: GlobalConfig = {
   access: {
     read: isAdmin,
+  },
+  hooks: {
+    afterChange: [
+      async ({ doc }) => {
+        await revalidateCacheTag('show-special-event')
+        return doc
+      },
+    ],
   },
   fields: [
     {

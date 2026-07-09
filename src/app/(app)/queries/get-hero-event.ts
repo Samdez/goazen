@@ -1,5 +1,6 @@
 'use server'
 
+import { unstable_cache } from 'next/cache'
 import type { Where } from 'payload'
 import type { Event } from '@/payload-types'
 import { payload } from '../(client)/payload-client'
@@ -19,33 +20,49 @@ export interface HeroResult {
   label: HeroLabel
 }
 
+// Bounds are day-granular (see window-bounds.ts), so cache keys stay stable
+// within a day.
 async function pickInWindow(bounds: WindowBounds, opts: WindowOpts): Promise<Event | null> {
-  const baseAnd: Where[] = [
-    { _status: { equals: 'published' } },
-    { date: { greater_than_equal: bounds.start.toISOString() } },
-    { date: { less_than: bounds.end.toISOString() } },
-    ...commonFilters(opts),
-  ]
-
-  const highlighted = await payload.find({
-    collection: 'events',
-    where: { and: [...baseAnd, { highlighted: { equals: true } }] },
-    sort: 'date',
-    limit: 1,
-    depth: 2,
-    draft: false,
+  const cacheKey = JSON.stringify({
+    start: bounds.start.toISOString(),
+    end: bounds.end.toISOString(),
+    region: opts.region || '',
+    city: opts.city || '',
+    genres: opts.genres || [],
   })
-  if (highlighted.docs[0]) return highlighted.docs[0]
 
-  const fallback = await payload.find({
-    collection: 'events',
-    where: { and: baseAnd },
-    sort: 'date',
-    limit: 1,
-    depth: 2,
-    draft: false,
-  })
-  return fallback.docs[0] ?? null
+  return unstable_cache(
+    async () => {
+      const baseAnd: Where[] = [
+        { _status: { equals: 'published' } },
+        { date: { greater_than_equal: bounds.start.toISOString() } },
+        { date: { less_than: bounds.end.toISOString() } },
+        ...commonFilters(opts),
+      ]
+
+      const highlighted = await payload.find({
+        collection: 'events',
+        where: { and: [...baseAnd, { highlighted: { equals: true } }] },
+        sort: 'date',
+        limit: 1,
+        depth: 2,
+        draft: false,
+      })
+      if (highlighted.docs[0]) return highlighted.docs[0]
+
+      const fallback = await payload.find({
+        collection: 'events',
+        where: { and: baseAnd },
+        sort: 'date',
+        limit: 1,
+        depth: 2,
+        draft: false,
+      })
+      return fallback.docs[0] ?? null
+    },
+    ['hero-event', cacheKey],
+    { tags: ['events'], revalidate: 60 * 60 * 24 },
+  )()
 }
 
 export async function getBrowseHero(

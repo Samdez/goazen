@@ -1,6 +1,7 @@
 import { CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
 import { isAdmin } from '@/app/(payload)/access/isAdmin'
+import { revalidateCacheTag } from '@/lib/revalidate-cache'
 
 const Categories: CollectionConfig = {
   slug: 'categories',
@@ -10,6 +11,15 @@ const Categories: CollectionConfig = {
     create: isAdmin,
     update: isAdmin,
     delete: isAdmin,
+  },
+  hooks: {
+    afterChange: [
+      async ({ doc }) => {
+        await revalidateCacheTag('categories')
+        return doc
+      },
+    ],
+    afterDelete: [async () => revalidateCacheTag('categories')],
   },
   admin: { useAsTitle: 'name' },
   fields: [

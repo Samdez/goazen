@@ -1,6 +1,7 @@
 import { isAdminOrHasLocationAccess } from '@/app/(payload)/access/isAdminOrHasLocationAccess'
 import type { CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
+import { revalidateCacheTag } from '@/lib/revalidate-cache'
 
 const SpecialEvents: CollectionConfig = {
   slug: 'special-events',
@@ -10,6 +11,15 @@ const SpecialEvents: CollectionConfig = {
     update: isAdminOrHasLocationAccess('id'),
     delete: isAdminOrHasLocationAccess('id'),
     create: isAdminOrHasLocationAccess('id'),
+  },
+  hooks: {
+    afterChange: [
+      async ({ doc }) => {
+        await revalidateCacheTag('special-events')
+        return doc
+      },
+    ],
+    afterDelete: [async () => revalidateCacheTag('special-events')],
   },
   admin: { useAsTitle: 'name' },
   fields: [
