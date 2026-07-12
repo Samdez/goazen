@@ -18,7 +18,6 @@ import { buildEventSEODescription, buildEventSEOTitle } from './config-utils'
 import Cities from './collections/Cities'
 import SpecialEvents from './collections/SpecialEvents'
 import EmailConsents from './collections/EmailConsents'
-import { ShowSpecialEvent } from './app/globals/ShowSpecialEvent'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -40,7 +39,7 @@ const config = buildConfig({
   },
   collections: [Users, Medias, Events, Categories, Locations, Cities, SpecialEvents, EmailConsents],
   editor: lexicalEditor(),
-  globals: [ImagePlaceholder, ShowSpecialEvent],
+  globals: [ImagePlaceholder],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

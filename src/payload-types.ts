@@ -105,11 +105,9 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'image-placeholder': ImagePlaceholder;
-    'show-special-event': ShowSpecialEvent;
   };
   globalsSelect: {
     'image-placeholder': ImagePlaceholderSelect<false> | ImagePlaceholderSelect<true>;
-    'show-special-event': ShowSpecialEventSelect<false> | ShowSpecialEventSelect<true>;
   };
   locale: null;
   widgets: {
@@ -372,6 +370,14 @@ export interface SpecialEvent {
   featured?: boolean | null;
   start_date?: string | null;
   end_date?: string | null;
+  /**
+   * Premier jour d’affichage de la bannière « bon plan » en haut de la home. Laisser vide pour ne pas programmer de bannière.
+   */
+  banner_start_date?: string | null;
+  /**
+   * La bannière reste affichée ce jour-là et disparaît le lendemain. Deux événements ne peuvent pas avoir des fenêtres de bannière qui se chevauchent.
+   */
+  banner_end_date?: string | null;
   description?: {
     root: {
       type: string;
@@ -701,6 +707,8 @@ export interface SpecialEventsSelect<T extends boolean = true> {
   featured?: T;
   start_date?: T;
   end_date?: T;
+  banner_start_date?: T;
+  banner_end_date?: T;
   description?: T;
   meta_description?: T;
   place_id?: T;
@@ -776,32 +784,10 @@ export interface ImagePlaceholder {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "show-special-event".
- */
-export interface ShowSpecialEvent {
-  id: string;
-  show_special_event?: boolean | null;
-  special_event?: (string | null) | SpecialEvent;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "image-placeholder_select".
  */
 export interface ImagePlaceholderSelect<T extends boolean = true> {
   ImagePlaceholder?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "show-special-event_select".
- */
-export interface ShowSpecialEventSelect<T extends boolean = true> {
-  show_special_event?: T;
-  special_event?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
