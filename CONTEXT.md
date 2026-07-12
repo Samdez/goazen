@@ -18,6 +18,9 @@ details, no decisions (those live in `docs/adr/`).
 - [ADR-0003](docs/adr/0003-client-side-image-compression.md) — Image
   uploads are resized and re-encoded in the browser before submit (Vercel
   serverless 4.5MB body cap).
+- [ADR-0004](docs/adr/0004-date-scheduled-bon-plan-banner.md) — Bon plan
+  banner is date-scheduled via *Banner window*; manual global deleted,
+  overlaps blocked at save.
 
 ## Terms
 
@@ -100,6 +103,26 @@ by a Payload `beforeChange` hook).
 A Highlight is the editorial signal that drives the *Hero* card. If no event
 on the relevant day is highlighted, the hero silently falls back to the
 chronologically first event of the window.
+
+### Banner window
+The date range (`banner_start_date` → `banner_end_date`) during which a
+special event's *Bon plan banner* is shown on the homepage. Both bounds are
+**inclusive**, day-granular, Paris-local in intent: the banner is still up on
+the end date and disappears at the following midnight. Two windows sharing
+even one day conflict. Both dates set together or not at all; empty is the
+normal state. Distinct from the
+event's own `start_date`/`end_date` (when the event *happens*): the banner
+window typically opens before the event starts, for pre-event promotion.
+Invariant: **banner windows never overlap across special events** — at most
+one window covers any given day, enforced by a blocking validation at save
+time (same write-time philosophy as the *Highlight* invariant).
+_Avoid_: conflating with the event dates, which drive *Featured festival*.
+
+### Bon plan banner
+The "Le bon plan Goazen!" banner at the very top of the homepage
+(`SpecialEventBanner`), promoting one special event. Shown when today falls
+inside that event's *Banner window*. There is a single banner slot — two
+special events with overlapping banner windows are in conflict.
 
 ### Featured festival
 A `special-events` document flagged `featured: true` and whose date range

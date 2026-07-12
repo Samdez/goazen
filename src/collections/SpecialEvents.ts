@@ -1,7 +1,70 @@
 import { isAdminOrHasLocationAccess } from '@/app/(payload)/access/isAdminOrHasLocationAccess'
-import type { CollectionConfig } from 'payload'
+import { isAdminFieldLevel } from '@/app/(payload)/access/isAdmin'
+import type { CollectionBeforeValidateHook, CollectionConfig } from 'payload'
+import { ValidationError } from 'payload'
 import { slugifyString } from '../utils'
 import { revalidateCacheTag } from '@/lib/revalidate-cache'
+import {
+  bannerOverlapQueryBounds,
+  bannerWindowFieldError,
+  formatDayFR,
+} from '@/lib/banner-window'
+
+// Banner windows may never overlap: the home has a single "bon plan" slot,
+// so at most one window covers any given day (ADR-0004). Blocking here at
+// save time keeps the home query trivially deterministic.
+const validateBannerWindow: CollectionBeforeValidateHook = async ({ data, originalDoc, req }) => {
+  if (!data) return data
+  // PATCH payloads may omit unchanged fields — fall back to the stored doc,
+  // but respect explicit nulls (field cleared).
+  const merged = (key: 'banner_start_date' | 'banner_end_date'): Date | null => {
+    const raw = key in data ? data[key] : originalDoc?.[key]
+    return raw ? new Date(raw) : null
+  }
+  const start = merged('banner_start_date')
+  const end = merged('banner_end_date')
+
+  const fieldError = bannerWindowFieldError(start, end)
+  if (fieldError) {
+    throw new ValidationError({
+      collection: 'special-events',
+      errors: [{ path: 'banner_end_date', message: fieldError }],
+    })
+  }
+  if (!start || !end) return data
+
+  const { startBefore, endOnOrAfter } = bannerOverlapQueryBounds(start, end)
+  const conflict = await req.payload.find({
+    collection: 'special-events',
+    where: {
+      and: [
+        ...(originalDoc?.id ? [{ id: { not_equals: originalDoc.id } }] : []),
+        { banner_start_date: { less_than: startBefore.toISOString() } },
+        { banner_end_date: { greater_than_equal: endOnOrAfter.toISOString() } },
+      ],
+    },
+    limit: 1,
+    depth: 0,
+    req,
+  })
+  const other = conflict.docs[0]
+  if (other) {
+    const range =
+      other.banner_start_date && other.banner_end_date
+        ? ` (${formatDayFR(new Date(other.banner_start_date))} → ${formatDayFR(new Date(other.banner_end_date))})`
+        : ''
+    throw new ValidationError({
+      collection: 'special-events',
+      errors: [
+        {
+          path: 'banner_start_date',
+          message: `La fenêtre de bannière chevauche celle de « ${other.name} »${range}. Une seule bannière à la fois sur la home.`,
+        },
+      ],
+    })
+  }
+  return data
+}
 
 const SpecialEvents: CollectionConfig = {
   slug: 'special-events',
@@ -13,6 +76,7 @@ const SpecialEvents: CollectionConfig = {
     create: isAdminOrHasLocationAccess('id'),
   },
   hooks: {
+    beforeValidate: [validateBannerWindow],
     afterChange: [
       async ({ doc }) => {
         await revalidateCacheTag('special-events')
@@ -54,6 +118,30 @@ const SpecialEvents: CollectionConfig = {
       type: 'date',
       label: 'Date de fin',
       admin: { position: 'sidebar', date: { pickerAppearance: 'dayOnly' } },
+    },
+    {
+      name: 'banner_start_date',
+      type: 'date',
+      label: 'Bannière home : premier jour',
+      access: { create: isAdminFieldLevel, update: isAdminFieldLevel },
+      admin: {
+        position: 'sidebar',
+        date: { pickerAppearance: 'dayOnly' },
+        description:
+          'Premier jour d’affichage de la bannière « bon plan » en haut de la home. Laisser vide pour ne pas programmer de bannière.',
+      },
+    },
+    {
+      name: 'banner_end_date',
+      type: 'date',
+      label: 'Bannière home : dernier jour (inclus)',
+      access: { create: isAdminFieldLevel, update: isAdminFieldLevel },
+      admin: {
+        position: 'sidebar',
+        date: { pickerAppearance: 'dayOnly' },
+        description:
+          'La bannière reste affichée ce jour-là et disparaît le lendemain. Deux événements ne peuvent pas avoir des fenêtres de bannière qui se chevauchent.',
+      },
     },
     {
       name: 'description',
