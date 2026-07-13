@@ -89,18 +89,54 @@ export default async function SpecialEventPage({
 }) {
   const { slug } = await params
   const { selectionOnly } = await searchParams
-  const [specialEventData, placeholderImage, events] = await Promise.all([
+  const showSelectionOnly = selectionOnly === 'true'
+  const now = new Date().toISOString()
+  let gridStartDate = now
+  let gridEndDate: string | undefined
+
+  const [specialEventData, placeholderImage, upcomingEvents] = await Promise.all([
     getSpecialEvent(slug),
     getPlaceholderImage(),
     getCachedEvents({
       specialEvent: slug,
-      startDate: new Date().toISOString(),
-      selectionOnly: selectionOnly === 'true' ? true : false,
+      startDate: now,
+      selectionOnly: showSelectionOnly,
     }),
   ])
 
   if (!specialEventData.docs.length) {
     notFound()
+  }
+
+  // Fallback: no upcoming events (edition over, next one not announced yet) →
+  // show the latest past edition instead of an empty page, on the same URL.
+  let events = upcomingEvents
+  let pastEditionYear: number | null = null
+  if (!events.docs.length) {
+    const latest = await getCachedEvents({
+      specialEvent: slug,
+      startDate: '2000-01-01',
+      endDate: now,
+      sort: '-date',
+      limit: 1,
+      selectionOnly: showSelectionOnly,
+    })
+    const lastDate = latest.docs[0]?.date
+    if (lastDate) {
+      const windowStart = new Date(lastDate)
+      windowStart.setDate(windowStart.getDate() - 30)
+      gridStartDate = windowStart.toISOString()
+      gridEndDate = lastDate
+      events = await getCachedEvents({
+        specialEvent: slug,
+        startDate: gridStartDate,
+        endDate: gridEndDate,
+        selectionOnly: showSelectionOnly,
+      })
+      if (events.docs.length) {
+        pastEditionYear = new Date(lastDate).getFullYear()
+      }
+    }
   }
 
   const specialEvent = specialEventData.docs[0]
@@ -134,11 +170,19 @@ export default async function SpecialEventPage({
         </header>
         <div className="flex items-center justify-center gap-2 py-8">
           <SelectionSwitch
-            selectionOnly={selectionOnly === 'true' ? true : false}
+            selectionOnly={showSelectionOnly}
             // onSelectionOnlyChange={}
             slug={slug}
           />
         </div>
+        {pastEditionYear && (
+          <div className="pb-8 text-center">
+            <p className="inline-block rounded-full border-2 border-brand-ink px-5 py-2 text-sm font-bold text-brand-ink">
+              L&apos;édition {pastEditionYear} est terminée — revivez les concerts en attendant la
+              prochaine édition !
+            </p>
+          </div>
+        )}
       </div>
       <Suspense
         fallback={
@@ -151,10 +195,11 @@ export default async function SpecialEventPage({
           initialEvents={events.docs}
           initialNextPage={events.nextPage}
           hasNextPageProps={events.hasNextPage}
-          startDate={new Date().toISOString()}
+          startDate={gridStartDate}
+          endDate={gridEndDate}
           placeholderImageUrl={placeholderImage}
           specialEvent={slug}
-          selectionOnly={selectionOnly === 'true'}
+          selectionOnly={showSelectionOnly}
         />
       </Suspense>
       {/* Internal links to the city pages that actually have tagged concerts —

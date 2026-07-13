@@ -25,6 +25,7 @@ export type GetEventsParams = {
   city?: string
   specialEvent?: string
   selectionOnly?: boolean
+  sort?: string
 }
 
 export async function _getEvents({
@@ -38,6 +39,7 @@ export async function _getEvents({
   city,
   specialEvent,
   selectionOnly,
+  sort = 'date',
 }: GetEventsParams) {
   const adjustedStartDate = startDate ? new Date(startDate) : new Date()
   adjustedStartDate.setDate(adjustedStartDate.getDate() - 1)
@@ -84,7 +86,7 @@ export async function _getEvents({
         { _status: { equals: 'published' } },
       ],
     },
-    sort: 'date',
+    sort,
     page,
     limit,
     draft: false,
@@ -112,6 +114,7 @@ export async function getCachedEvents(params: GetEventsParams) {
     city: params.city || '',
     specialEvent: params.specialEvent || '',
     selectionOnly: params.selectionOnly || false,
+    sort: params.sort || 'date',
   })
 
   return unstable_cache(async () => await _getEvents(params), ['events', cacheKey], {
