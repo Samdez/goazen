@@ -1,5 +1,5 @@
 'use client'
-import { endOfWeek, startOfWeek } from 'date-fns'
+import { addDays, endOfWeek, startOfWeek } from 'date-fns'
 import * as React from 'react'
 import { _getEvents } from '../queries/get-events'
 import { convertEventsToCSV, downloadCSV } from './csv-export'
@@ -7,7 +7,10 @@ import { convertEventsToCSV, downloadCSV } from './csv-export'
 const ExportComponent = ({ region }: { region: 'pays-basque' | 'landes' }) => {
   const fetchOptions = async () => {
     try {
-      const startDate = startOfWeek(new Date(), { weekStartsOn: 2 }).toISOString()
+      // _getEvents widens any startDate by one day (Paris-midnight handling),
+      // which used to pull in the previous week's Monday. Passing Tuesday+1
+      // makes the effective lower bound land exactly on Tuesday 00:00 Paris.
+      const startDate = addDays(startOfWeek(new Date(), { weekStartsOn: 2 }), 1).toISOString()
       const endDate = endOfWeek(new Date(), { weekStartsOn: 2 }).toISOString()
 
       const events = await _getEvents({ startDate, endDate, limit: 1000, region })
