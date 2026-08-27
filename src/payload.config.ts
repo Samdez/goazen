@@ -144,6 +144,10 @@ const config = buildConfig({
           description: 'Cities in the Pays Basque and Landes areas.',
           enabled: { create: true, find: true, update: true },
         },
+        pages: {
+          description: 'SEO landing pages created by the weekly SEO pipeline.',
+          enabled: { create: true, find: true, update: true, delete: true },
+        },
         'special-events': {
           description: 'Special one-off events on Goazen.',
           enabled: { create: true, find: true, update: true },
