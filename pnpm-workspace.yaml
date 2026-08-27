@@ -3,6 +3,11 @@ allowBuilds:
   esbuild: true
   sharp: true
 
+onlyBuiltDependencies:
+  - '@vercel/speed-insights'
+  - esbuild
+  - sharp
+
 overrides:
   '@types/react': ^19.2.0
   '@types/react-dom': ^19.2.0
