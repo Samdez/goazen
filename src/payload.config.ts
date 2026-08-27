@@ -18,6 +18,7 @@ import { buildEventSEODescription, buildEventSEOTitle } from './config-utils'
 import Cities from './collections/Cities'
 import SpecialEvents from './collections/SpecialEvents'
 import EmailConsents from './collections/EmailConsents'
+import { mcpPlugin } from '@payloadcms/plugin-mcp'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -104,6 +105,43 @@ const config = buildConfig({
         return ''
       },
       tabbedUI: true,
+    }),
+    mcpPlugin({
+      collections: {
+        events: {
+          description:
+            'Musical events and soirées (concerts, DJ sets) with title, date, price, region (pays-basque or landes), category and location.',
+          enabled: { create: true, find: true, update: true },
+        },
+        locations: {
+          description: 'Venues / concert halls where events take place.',
+          enabled: { create: true, find: true, update: true },
+        },
+        categories: {
+          description: 'Music genre / event type categories.',
+          enabled: { create: true, find: true, update: true },
+        },
+        cities: {
+          description: 'Cities in the Pays Basque and Landes areas.',
+          enabled: { create: true, find: true, update: true },
+        },
+        'special-events': {
+          description: 'Special one-off events on Goazen.',
+          enabled: { create: true, find: true, update: true },
+        },
+        medias: {
+          description: 'Uploaded media files (images) used by events.',
+          enabled: { create: true, find: true, update: true },
+        },
+        'email-consents': {
+          description: 'Email consent records — read-only.',
+          enabled: { find: true },
+        },
+        users: {
+          description: 'User accounts — read-only.',
+          enabled: { find: true },
+        },
+      },
     }),
   ],
 })
