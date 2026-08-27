@@ -35,6 +35,18 @@ const Pages: CollectionConfig = {
       type: 'richText',
     },
     {
+      name: 'city',
+      type: 'relationship',
+      relationTo: 'cities',
+      label: 'Ville',
+    },
+    {
+      name: 'genre',
+      type: 'relationship',
+      relationTo: 'categories',
+      label: 'Genre',
+    },
+    {
       name: 'published',
       type: 'checkbox',
       label: 'Publié',
