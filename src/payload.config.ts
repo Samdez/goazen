@@ -11,6 +11,7 @@ import Medias from './collections/Medias'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { ImagePlaceholder } from './app/globals/ImagePlaceholder'
 import Events from './collections/Events'
+import Pages from './collections/Pages'
 import Categories from './collections/Categories'
 import Locations from './collections/Locations'
 import { seoPlugin } from '@payloadcms/plugin-seo'
@@ -38,7 +39,17 @@ const config = buildConfig({
       ],
     },
   },
-  collections: [Users, Medias, Events, Categories, Locations, Cities, SpecialEvents, EmailConsents],
+  collections: [
+    Users,
+    Medias,
+    Events,
+    Pages,
+    Categories,
+    Locations,
+    Cities,
+    SpecialEvents,
+    EmailConsents,
+  ],
   editor: lexicalEditor(),
   globals: [ImagePlaceholder],
   secret: process.env.PAYLOAD_SECRET || '',
@@ -75,8 +86,12 @@ const config = buildConfig({
       },
     }),
     seoPlugin({
-      collections: ['events', 'locations'],
+      collections: ['events', 'locations', 'pages'],
       generateTitle: async ({ doc }) => {
+        //Pages collection: no auto-generation logic, fall back to the page title
+        if ('content' in doc && 'published' in doc) {
+          return doc.title ?? ''
+        }
         //if the doc is an event, we use the buildEventSEOMetadata function
         if ('price' in doc || 'title' in doc) {
           return buildEventSEOTitle(doc)
@@ -91,6 +106,10 @@ const config = buildConfig({
         return ''
       },
       generateDescription: async ({ doc }) => {
+        //Pages collection: no auto-generation logic
+        if ('content' in doc && 'published' in doc) {
+          return ''
+        }
         //if the doc is an event, we use the buildEventSEOMetadata function
         if ('price' in doc || 'title' in doc) {
           return buildEventSEODescription(doc)

@@ -1,6 +1,7 @@
 import LocationsGrid from '../../components/LocationsGrid'
 import { getCities } from '../../queries/get-cities'
 import { getLocations } from '../../queries/get-locations'
+import { getCity } from '../../queries/get-city'
 import { getPlaceholderImage } from '../../queries/get-placeholder-image'
 import { CityFilterCombobox } from '../../components/CityFilterCombobox'
 import UnifiedFilterSections from '../../components/UnifiedFilterSection'
@@ -12,6 +13,29 @@ export async function generateStaticParams() {
   return cities.docs.map((city) => ({
     city: city.slug,
   }))
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ city: string }> }) {
+  const cityParam = (await params).city
+  const cityData = await getCity(cityParam)
+  const cityName = cityData?.name || cityParam.charAt(0).toUpperCase() + cityParam.slice(1)
+  const title = `Salles de concert à ${cityName} — bars & lives | Goazen`
+  const description = `Tous les bars et salles de concert à ${cityName} : où écouter de la musique live, des DJ sets et sortir ce soir au Pays Basque et dans les Landes.`
+  const canonical = `https://goazen.info/salles-de-concert/${cityParam}`
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      siteName: 'Goazen!',
+      locale: 'fr_FR',
+      type: 'website',
+    },
+  }
 }
 
 async function LocationsPage({ params }: { params: Promise<{ city: string }> }) {

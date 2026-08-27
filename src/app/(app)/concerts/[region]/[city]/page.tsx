@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import type { Metadata } from 'next'
 import { getCachedEvents } from '../../../queries/get-events'
 import { getLocations } from '../../../queries/get-locations'
 import { getPlaceholderImage } from '../../../queries/get-placeholder-image'
@@ -31,29 +32,29 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ city: string; region: string }>
-}) {
+}): Promise<Metadata> {
   const { city: cityParam, region: regionParam } = await params
-  const cityName = cityParam.charAt(0).toUpperCase() + cityParam.slice(1)
-  const formattedCityName = cityName.charAt(0).toUpperCase() + cityName.slice(1)
-  const formattedRegionName = regionParam === 'pays-basque' ? 'Pays Basque' : 'Landes'
+  const cityData = await getCity(cityParam)
+  const cityName = cityData?.name || cityParam.charAt(0).toUpperCase() + cityParam.slice(1)
+
+  const title = `Concerts & soirées à ${cityName} — agenda | Goazen!`
+  const description = `Agenda des concerts, DJ sets et soirées à venir à ${cityName}. Toute la programmation musicale de la ville sur Goazen!`.slice(
+    0,
+    155,
+  )
+  const canonical = `https://goazen.info/concerts/${regionParam}/${cityParam}`
+
   return {
-    title: `Concerts et Soirées à ${formattedCityName} | Où Sortir ce Soir - Goazen!`,
-    description: `Agenda des concerts et soirées à ${formattedCityName} : rock, électro, DJ sets. Découvrez la programmation des salles de concert au Pays Basque et dans les Landes.`,
-    alternates: {
-      canonical: `https://goazen.info/concerts/${regionParam}/${cityParam}`,
-    },
+    title,
+    description,
+    alternates: { canonical },
     openGraph: {
-      title: `Concerts et Soirées à ${formattedCityName} | Agenda Complet - Goazen!`,
-      description: `Agenda des concerts et soirées à ${formattedCityName}. Découvrez tous les événements musicaux et trouvez votre prochaine sortie au Pays Basque ce soir !`,
-      url: `https://goazen.info/concerts/${regionParam}/${cityParam}`,
+      title,
+      description,
+      url: canonical,
       siteName: 'Goazen!',
       locale: 'fr_FR',
       type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `Concerts à ${formattedCityName} | Agenda Complet`,
-      description: `Agenda des concerts et soirées à ${formattedCityName}. Trouvez votre prochaine sortie au Pays Basque !`,
     },
     robots: {
       index: true,

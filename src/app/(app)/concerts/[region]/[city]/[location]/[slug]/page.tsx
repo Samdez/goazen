@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { cn, formatDate, getLocationInfo, slugifyString } from '@/utils'
+import { buildEventSEODescription, buildEventSEOTitle } from '@/config-utils'
 import { getEventKindBadgeClassName, getEventKindLabel, hasEventKind } from '@/utils/event-kind'
 import { Button } from '@/components/ui/button'
 import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
@@ -11,43 +13,47 @@ import { getCachedEvents } from '@/app/(app)/queries/get-events'
 import EventsCarousel from '@/app/(app)/components/EventsCarousel'
 import Script from 'next/script'
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const slugParam = (await params).slug
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ region: string; city: string; location: string; slug: string }>
+}): Promise<Metadata> {
+  const { region, city, location, slug } = await params
+  const canonical = `https://goazen.info/concerts/${region}/${city}/${location}/${slug}`
+
   try {
-    const event = await getEvent(slugParam.split('_').reverse()[0])
-    const locationInfo = getLocationInfo(event)
+    const event = await getEvent(slug.split('_').reverse()[0])
     if (!event) {
       return {
-        title: 'Not found',
-        description: 'The page you are looking for does not exist',
+        title: 'Événement introuvable | Goazen!',
+        description: "L'événement que vous recherchez n'existe pas.",
+        robots: { index: false, follow: false },
       }
     }
 
-    const date = new Date(event.date).toLocaleDateString('fr-FR', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      timeZone: 'Europe/Paris',
-    })
+    // plugin-seo meta wins only when both fields are filled; otherwise fall back
+    // to the shared builders used by payload.config.ts.
+    const metaTitle = event.meta?.title?.trim()
+    const metaDescription = event.meta?.description?.trim()
+    const hasSeoMeta = Boolean(metaTitle && metaDescription)
+
+    // buildEventSEO* expect location as an id (payload.findByID), but getEvent
+    // populates it — normalise before delegating.
+    const seoDoc = {
+      ...event,
+      location:
+        typeof event.location === 'object' && event.location
+          ? event.location.id
+          : event.location,
+    }
+
+    const title = hasSeoMeta ? (metaTitle as string) : await buildEventSEOTitle(seoDoc)
+    const description = (
+      hasSeoMeta ? (metaDescription as string) : await buildEventSEODescription(seoDoc)
+    ).slice(0, 155)
 
     const eventDate = new Date(event.date)
-    const isPastEvent = eventDate < new Date()
     const isStaleEvent = eventDate.getTime() < Date.now() - 30 * 24 * 60 * 60 * 1000
-
-    const title =
-      event.meta?.title ||
-      `${event.title} ${isPastEvent ? '(Archive) ' : ''}en Concert à ${
-        locationInfo?.cityName && locationInfo?.cityName
-      } le ${date} | Goazen!`
-    const description =
-      event.meta?.description ||
-      `${event.title} ${isPastEvent ? '(Archive) ' : ''}en concert à ${
-        locationInfo?.cityName && locationInfo?.cityName
-      } le ${date}. ${event.description || ''} ${
-        isPastEvent
-          ? 'Retrouvez les archives des concerts passés à ' + locationInfo?.locationName
-          : 'Réservez vos places pour ce concert live au Pays Basque.'
-      }`
 
     const imageUrl =
       !(typeof event.image === 'string') && event.image ? event.image?.url : undefined
@@ -56,40 +62,23 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const fullImageUrl = imageUrl?.startsWith('http')
       ? imageUrl
       : imageUrl
-      ? `https://goazen.info${imageUrl}`
-      : undefined
+        ? `https://goazen.info${imageUrl}`
+        : undefined
 
     return {
       title,
       description,
-      alternates: {
-        canonical: `https://goazen.info/concerts/${locationInfo?.region}/${locationInfo?.citySlug}/${locationInfo?.locationSlug}/${event.slug}_${event.id}`,
-      },
+      alternates: { canonical },
       openGraph: {
         title,
         description,
-        url: `https://goazen.info/concerts/${locationInfo?.region}/${locationInfo?.citySlug}/${locationInfo?.locationSlug}/${event.slug}_${event.id}`,
+        url: canonical,
         siteName: 'Goazen!',
         images: fullImageUrl
-          ? [
-              {
-                url: fullImageUrl,
-                width: 1200,
-                height: 630,
-                alt: `${event.title} ${isPastEvent ? '(Archive) ' : ''}en concert à ${
-                  locationInfo?.cityName && locationInfo?.cityName
-                } ${locationInfo?.locationName && locationInfo?.locationName}`,
-              },
-            ]
+          ? [{ url: fullImageUrl, width: 1200, height: 630, alt: event.title }]
           : undefined,
         locale: 'fr_FR',
         type: 'website',
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title,
-        description,
-        images: fullImageUrl ? [fullImageUrl] : undefined,
       },
       robots: {
         index: !isStaleEvent,
@@ -105,12 +94,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
   } catch (error) {
     return {
-      title: 'Not found',
-      description: 'The page you are looking for does not exist',
-      robots: {
-        index: false,
-        follow: false,
-      },
+      title: 'Événement introuvable | Goazen!',
+      description: "L'événement que vous recherchez n'existe pas.",
+      robots: { index: false, follow: false },
     }
   }
 }
