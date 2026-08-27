@@ -50,7 +50,9 @@ const Pages: CollectionConfig = {
       hooks: {
         beforeValidate: [
           ({ req: { payload }, data }) => {
-            if (payload && data && data.title) {
+            // Auto-generate from the title ONLY when no slug was provided
+            // (explicit slugs from the admin or the agent API are kept as-is).
+            if (payload && data && data.title && !data.slug) {
               return slugifyString(data.title)
             }
           },

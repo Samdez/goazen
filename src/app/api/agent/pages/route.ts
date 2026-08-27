@@ -47,6 +47,35 @@ export async function GET(req: NextRequest) {
   }
 }
 
+export async function DELETE(req: NextRequest) {
+  try {
+    if (!isAuthorized(req)) return json({ error: 'unauthorized' }, 401)
+
+    const slug = req.nextUrl.searchParams.get('slug')
+    if (!slug || !SLUG_RE.test(slug)) {
+      return json({ error: 'slug query param is required (^[a-z0-9]+(-[a-z0-9]+)*$)' }, 400)
+    }
+
+    const payload = await getPayload({ config })
+    const existing = await payload.find({
+      collection: 'pages',
+      where: { slug: { equals: slug } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+    if (existing.docs.length === 0) {
+      return json({ error: `no page with slug "${slug}"` }, 404)
+    }
+
+    await payload.delete({ collection: 'pages', id: existing.docs[0].id, overrideAccess: true })
+    return json({ ok: true, deleted: slug }, 200)
+  } catch (err) {
+    console.error('agent pages route error:', err)
+    return json({ error: 'internal' }, 500)
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     if (!isAuthorized(req)) return json({ error: 'unauthorized' }, 401)
