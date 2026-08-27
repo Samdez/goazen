@@ -3,6 +3,7 @@ import { APIError, type CollectionConfig } from 'payload'
 import { slugifyString } from '../utils'
 import { REGIONS } from '@/app/(app)/constants'
 import { clearOtherHighlightsOnSameDay } from './hooks/clear-other-highlights'
+import { clearRegionWhenLocated } from './hooks/clear-region-when-located'
 
 const Events: CollectionConfig = {
   slug: 'events',
@@ -15,7 +16,7 @@ const Events: CollectionConfig = {
     useAsTitle: 'title',
   },
   hooks: {
-    beforeChange: [clearOtherHighlightsOnSameDay],
+    beforeChange: [clearRegionWhenLocated, clearOtherHighlightsOnSameDay],
     afterDelete: [
       async () => {
         try {

@@ -56,11 +56,15 @@ export async function createEvent(formData: FormEventSchemaType) {
         ticketing_url: ticketingLink,
         createdAt: new Date().toISOString(),
         contact_email: email,
-        location_alt,
         event_kind: event_kind.event_kind,
         ...(imageRes && { image: imageRes.id }),
         _status: 'draft',
-        region: region?.region === 'pays basque' ? 'pays-basque' : 'landes',
+        // region/location_alt only make sense without a location — the canonical
+        // region then comes from location.city V2.region
+        ...(!location?.id && {
+          location_alt,
+          region: region?.region === 'pays basque' ? 'pays-basque' : 'landes',
+        }),
       },
       draft: true,
     })
@@ -75,8 +79,10 @@ export async function createEvent(formData: FormEventSchemaType) {
 
       if (existing.docs.length > 0) {
         const doc = existing.docs[0]
-        const currentEvents = (doc.events as Array<{ id: string } | string> | null)
-          ?.map((e) => (typeof e === 'string' ? e : e.id)) ?? []
+        const currentEvents =
+          (doc.events as Array<{ id: string } | string> | null)?.map((e) =>
+            typeof e === 'string' ? e : e.id,
+          ) ?? []
         await payload.update({
           collection: 'email-consents',
           id: doc.id,
