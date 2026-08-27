@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { getPage, getPagesForSitemap } from '@/app/(app)/queries/get-page'
+import { getPageEvents } from '@/app/(app)/queries/get-page-events'
 import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
+import RowEvent from '@/app/(app)/components/RowEvent'
 import { bebas } from '@/app/(app)/fonts'
 import { cn, lexicalToPlainText } from '@/utils'
 
@@ -68,6 +70,23 @@ export default async function LandingPage({ params }: { params: Promise<{ slug: 
     notFound()
   }
 
+  const city = page.city && typeof page.city === 'object' ? page.city : null
+  const genre = page.genre && typeof page.genre === 'object' ? page.genre : null
+
+  const events =
+    city || genre
+      ? await getPageEvents({ cityId: city?.id, genreId: genre?.id })
+      : []
+
+  let agendaHeading: string | null = null
+  if (city && genre) {
+    agendaHeading = `Concerts & soirées ${genre.name} à venir à ${city.name}`
+  } else if (city) {
+    agendaHeading = `Concerts & soirées à venir à ${city.name}`
+  } else if (genre) {
+    agendaHeading = `Concerts & soirées ${genre.name} à venir`
+  }
+
   return (
     <article className="mx-auto max-w-[75ch] px-6 py-12">
       <h1
@@ -79,6 +98,28 @@ export default async function LandingPage({ params }: { params: Promise<{ slug: 
         {page.title}
       </h1>
       {page.content && <RichTextWrapper data={page.content} />}
+
+      {agendaHeading && (
+        <section className="mt-14">
+          <h2
+            className={cn(
+              bebas.className,
+              'mb-6 text-[clamp(24px,3.5vw,36px)] uppercase leading-[1.1] tracking-tight text-brand-ink',
+            )}
+          >
+            {agendaHeading}
+          </h2>
+          {events.length === 0 ? (
+            <p className="text-brand-ink">Aucun concert à venir — revenez bientôt !</p>
+          ) : (
+            <div className="overflow-hidden rounded-brand border-brand border-brand-ink bg-brand-paper">
+              {events.map((event) => (
+                <RowEvent key={event.id} event={event} />
+              ))}
+            </div>
+          )}
+        </section>
+      )}
     </article>
   )
 }

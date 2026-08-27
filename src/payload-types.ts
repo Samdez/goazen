@@ -441,6 +441,8 @@ export interface Page {
     };
     [k: string]: unknown;
   } | null;
+  city?: (string | null) | City;
+  genre?: (string | null) | Category;
   published?: boolean | null;
   slug: string;
   meta?: {
@@ -693,6 +695,8 @@ export interface EventsSelect<T extends boolean = true> {
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
   content?: T;
+  city?: T;
+  genre?: T;
   published?: T;
   slug?: T;
   meta?:
