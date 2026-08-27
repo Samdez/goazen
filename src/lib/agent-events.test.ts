@@ -79,6 +79,12 @@ describe('field mapping', () => {
     expect(formatAgentPrice({ price: null })).toBeNull()
     expect(formatAgentPrice({ price: 'à confirmer' })).toBeNull()
   })
+
+  it('price: bare "12 16" becomes "12-16€"', () => {
+    expect(formatAgentPrice({ price: '12 16' })).toBe('12-16€')
+    expect(formatAgentPrice({ price: ' 8 14.50 ' })).toBe('8-14.50€')
+    expect(formatAgentPrice({ price: '12 16', sold_out: true })).toBe('Complet')
+  })
 })
 
 const baseEvent = {
@@ -108,7 +114,7 @@ describe('mapEventToAgentEvent', () => {
   it('maps the full shape and never leaks contact_email', () => {
     const mapped = mapEventToAgentEvent(baseEvent, 'https://goazen.example/')
     expect(mapped).toEqual({
-      title: 'Le Coupe-Gorge',
+      title: 'LE COUPE-GORGE',
       date: '2026-08-28',
       time: '18:00-02:00',
       day: 'vendredi',
@@ -162,9 +168,9 @@ describe('mapEventToAgentEvent', () => {
 describe('sortAgentEvents', () => {
   it('date asc, then start time asc, null times last', () => {
     const mk = (date: string, time: string | null, slug: string) =>
-      ({ ...mapEventToAgentEvent(baseEvent, ''), date, time, slug }) as ReturnType<
+      ({ ...mapEventToAgentEvent(baseEvent, ''), date, time, slug } as ReturnType<
         typeof mapEventToAgentEvent
-      >
+      >)
     const sorted = sortAgentEvents([
       mk('2026-08-29', '20:00-23:00', 'c'),
       mk('2026-08-28', null, 'b'),

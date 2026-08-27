@@ -93,6 +93,12 @@ export function splitGenres(raw: string | null | undefined): string[] {
 }
 
 export function formatAgentPrice(event: Pick<PayloadEvent, 'price' | 'sold_out'>): string | null {
+  // "12 16" (broken separator in source data) → "12-16€"
+  const bareRange = (event.price ?? '')
+    .trim()
+    .match(/^(\d+(?:[.,]\d{1,2})?)\s+(\d+(?:[.,]\d{1,2})?)$/)
+  if (!event.sold_out && bareRange) return `${bareRange[1]}-${bareRange[2]}€`
+
   const formatted = formatPrice({ price: event.price, sold_out: event.sold_out })
   if (formatted === 'Prix à confirmer') return null
   return formatted.replace(/[\u00A0\u202F]/g, ' ')
@@ -141,7 +147,7 @@ export function mapEventToAgentEvent(event: PayloadEvent, baseUrl: string): Agen
   }
 
   return {
-    title: event.title,
+    title: event.title.trim().toLocaleUpperCase('fr-FR'),
     date: parisDateString(eventDate),
     time: formatTimeRange(event.time),
     day: parisDayName(eventDate),
