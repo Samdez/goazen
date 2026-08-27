@@ -14,6 +14,7 @@ import Link from 'next/link'
 import { REGIONS } from '../../constants'
 import { JsonLd } from '../../components/JsonLd'
 import { breadcrumbJsonLd, eventsItemListJsonLd } from '@/lib/structured-data'
+import type { Metadata } from 'next'
 
 export async function generateStaticParams() {
   return REGIONS.map((region) => ({
@@ -21,40 +22,30 @@ export async function generateStaticParams() {
   }))
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ region: string }> }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ region: string }>
+}): Promise<Metadata> {
   const { region } = await params
-  const formattedRegionName = region === 'pays-basque' ? 'Pays Basque' : 'Landes'
+  const regionName = region === 'pays-basque' ? 'Pays Basque' : 'Landes'
+  const locative = region === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'
+
+  const title = `Concerts & soirées ${regionName} — agenda | Goazen!`
+  const description = `Agenda complet des concerts, DJ sets et soirées à venir ${locative}. Toute la programmation musicale de la région sur Goazen!`
+  const canonical = `https://goazen.info/concerts/${region}`
 
   return {
-    title: `Concerts et Soirées ${
-      region === 'pays-basque' ? 'au' : 'dans les'
-    } ${formattedRegionName} | Goazen!`,
-    description: `Agenda complet des concerts et soirées ${
-      region === 'pays-basque' ? 'au' : 'dans les'
-    } ${formattedRegionName}. Découvrez tous les événements musicaux à venir.`,
-    alternates: {
-      canonical: `https://goazen.info/concerts/${region}`,
-    },
+    title,
+    description,
+    alternates: { canonical },
     openGraph: {
-      title: `Concerts et Soirées ${
-        region === 'pays-basque' ? 'au' : 'dans les'
-      } ${formattedRegionName} | Agenda Complet`,
-      description: `Agenda des concerts et soirées ${
-        region === 'pays-basque' ? 'au' : 'dans les'
-      } ${formattedRegionName}. Trouvez votre prochaine sortie !`,
-      url: `https://goazen.info/concerts/${region}`,
+      title,
+      description,
+      url: canonical,
       siteName: 'Goazen!',
       locale: 'fr_FR',
       type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `Concerts ${
-        region === 'pays-basque' ? 'au' : 'dans les'
-      } ${formattedRegionName} | Agenda Complet`,
-      description: `Agenda des concerts et soirées ${
-        region === 'pays-basque' ? 'au' : 'dans les'
-      } ${formattedRegionName}. Trouvez votre prochaine sortie !`,
     },
     robots: {
       index: true,

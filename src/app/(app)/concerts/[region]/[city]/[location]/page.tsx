@@ -10,32 +10,35 @@ import { getLocations } from '@/app/(app)/queries/get-locations'
 import { getCity } from '@/app/(app)/queries/get-city'
 import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
 import Script from 'next/script'
+import type { Metadata } from 'next'
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ city: string; location: string; region: string }>
-}) {
-  const locationParam = (await params).location
-  const regionParam = (await params).region
-  const cityParam = (await params).city
+}): Promise<Metadata> {
+  const { location: locationParam, region: regionParam, city: cityParam } = await params
+  const canonical = `https://goazen.info/concerts/${regionParam}/${cityParam}/${locationParam}`
   try {
     const location = await getLocation(locationParam)
     if (!location) {
       return {
-        title: 'Not found',
-        description: 'The page you are looking for does not exist',
+        title: 'Lieu introuvable | Goazen!',
+        description: "Le lieu que vous recherchez n'existe pas.",
+        robots: { index: false, follow: false },
       }
     }
     const cityName =
       typeof location['city V2'] === 'object' ? location['city V2']?.name : location.city
 
-    const description =
-      location.meta?.description ||
-      `Découvrez la programmation complète des concerts et soirées à ${location.name}, ${location.city}. Agenda des événements, DJ sets, et infos pratiques. Le meilleur des concerts et soirées au Pays Basque. Réservez vos places dès maintenant !`
+    // Prefer the plugin-seo meta group on the location doc when set.
     const title =
-      location.meta?.title ||
-      `Concerts à ${location.name} ${cityName} | Programme & Billetterie - Goazen!`
+      location.meta?.title?.trim() ||
+      `${location.name} à ${cityName} — concerts & soirées | Goazen!`
+    const description = (
+      location.meta?.description?.trim() ||
+      `Programmation complète des concerts, DJ sets et soirées à ${location.name}, ${cityName}. Dates, billetterie et infos pratiques sur Goazen!`
+    ).slice(0, 155)
 
     const locationImage =
       typeof location.image !== 'string' &&
@@ -53,13 +56,11 @@ export async function generateMetadata({
     return {
       title,
       description,
-      alternates: {
-        canonical: `https://goazen.info/concerts/${regionParam}/${cityParam}/${locationParam}`,
-      },
+      alternates: { canonical },
       openGraph: {
         title,
         description,
-        url: `https://goazen.info/concerts/${regionParam}/${cityParam}/${locationParam}`,
+        url: canonical,
         siteName: 'Goazen!',
         images: fullLocationImage
           ? [
@@ -67,18 +68,12 @@ export async function generateMetadata({
                 url: fullLocationImage,
                 width: 1200,
                 height: 630,
-                alt: `Concerts à ${location.name} ${location.city}`,
+                alt: `Concerts à ${location.name} ${cityName}`,
               },
             ]
           : undefined,
         locale: 'fr_FR',
         type: 'website',
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title,
-        description,
-        images: fullLocationImage ? [fullLocationImage] : undefined,
       },
       robots: {
         index: true,
@@ -94,12 +89,9 @@ export async function generateMetadata({
     }
   } catch (error) {
     return {
-      title: 'Not found',
-      description: 'The page you are looking for does not exist',
-      robots: {
-        index: false,
-        follow: false,
-      },
+      title: 'Lieu introuvable | Goazen!',
+      description: "Le lieu que vous recherchez n'existe pas.",
+      robots: { index: false, follow: false },
     }
   }
 }

@@ -8,29 +8,25 @@ import { CityFilterCombobox } from '../components/CityFilterCombobox'
 import EventsGrid from '../components/EventsGrid'
 import { JsonLd } from '../components/JsonLd'
 import { breadcrumbJsonLd, eventsItemListJsonLd } from '@/lib/structured-data'
+import type { Metadata } from 'next'
 
-export async function generateMetadata() {
+export async function generateMetadata(): Promise<Metadata> {
+  const title = 'Concerts & soirées au Pays Basque — agenda | Goazen!'
+  const description =
+    'Agenda complet des concerts, DJ sets, festivals et soirées à venir au Pays Basque et dans les Landes. Toute la programmation sur Goazen!'
+  const canonical = 'https://goazen.info/concerts'
+
   return {
-    title: 'Tous les concerts et soirées au Pays Basque et dans les Landes | Goazen!',
-    description:
-      'Agenda complet de tous les concerts, DJ sets, festivals et soirées à venir au Pays Basque et dans les Landes.',
-    alternates: {
-      canonical: 'https://goazen.info/concerts',
-    },
+    title,
+    description,
+    alternates: { canonical },
     openGraph: {
-      title: 'Tous les concerts et soirées au Pays Basque et dans les Landes | Goazen!',
-      description:
-        'Agenda complet de tous les concerts, DJ sets, festivals et soirées à venir au Pays Basque et dans les Landes.',
-      url: 'https://goazen.info/concerts',
+      title,
+      description,
+      url: canonical,
       siteName: 'Goazen!',
       locale: 'fr_FR',
       type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: 'Tous les concerts au Pays Basque et dans les Landes | Agenda Complet',
-      description:
-        'Agenda complet de tous les concerts, DJ sets, festivals et soirées à venir au Pays Basque et dans les Landes.',
     },
     robots: {
       index: true,

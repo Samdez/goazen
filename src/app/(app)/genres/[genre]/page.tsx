@@ -7,6 +7,7 @@ import { getCachedEvents } from '../../queries/get-events'
 import { getPlaceholderImage } from '../../queries/get-placeholder-image'
 import { searchParamsSchema } from '../../schemas/searchParams'
 import { AUTRE_CATEGORY_NAME } from '../../constants'
+import type { Metadata } from 'next'
 
 function humanizeSlug(slug: string) {
   return slug.replace(/-/g, ' ')
@@ -25,30 +26,32 @@ export async function generateStaticParams() {
     .map((c) => ({ genre: c.slug as string }))
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ genre: string }> }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ genre: string }>
+}): Promise<Metadata> {
   const { genre } = await params
   const name = await getGenreName(genre)
-  const title = `Concerts ${name} au Pays Basque et dans les Landes | Goazen!`
-  const description = `Agenda des concerts ${name} au Pays Basque et dans les Landes. Tous les événements ${name} à venir près de chez toi.`
+  const title = `Concerts ${name} — agenda | Goazen!`
+  const description =
+    `Agenda des concerts ${name} à venir au Pays Basque et dans les Landes. Tous les événements ${name} près de chez toi, mis à jour chaque jour.`.slice(
+      0,
+      155,
+    )
+  const canonical = `https://goazen.info/genres/${genre}`
 
   return {
     title,
     description,
-    alternates: {
-      canonical: `https://goazen.info/genres/${genre}`,
-    },
+    alternates: { canonical },
     openGraph: {
       title,
       description,
-      url: `https://goazen.info/genres/${genre}`,
+      url: canonical,
       siteName: 'Goazen!',
       locale: 'fr_FR',
       type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `Concerts ${name} au Pays Basque et dans les Landes`,
-      description,
     },
     robots: {
       index: true,

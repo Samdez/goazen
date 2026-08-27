@@ -8,6 +8,27 @@ import { PacmanLoader } from 'react-spinners'
 import { CityFilterCombobox } from '../components/CityFilterCombobox'
 import UnifiedFilterSections from '../components/UnifiedFilterSection'
 
+export async function generateMetadata() {
+  const title = 'Salles de concert & bars — Pays Basque & Landes | Goazen'
+  const description =
+    'Tous les bars et salles de concert du Pays Basque et des Landes : où écouter de la musique live, des DJ sets et sortir près de chez toi.'
+  const canonical = 'https://goazen.info/salles-de-concert'
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      siteName: 'Goazen!',
+      locale: 'fr_FR',
+      type: 'website',
+    },
+  }
+}
+
 async function LocationsPage({ searchParams }: { searchParams: Promise<{ city: string }> }) {
   const currSearchParams = await searchParams
   const activeCity = currSearchParams.city
