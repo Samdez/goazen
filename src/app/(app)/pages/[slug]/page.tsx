@@ -7,6 +7,10 @@ import RowEvent from '@/app/(app)/components/RowEvent'
 import { bebas } from '@/app/(app)/fonts'
 import { cn, lexicalToPlainText } from '@/utils'
 
+// ISR: re-render periodically so the "upcoming events" section (new Date())
+// isn't frozen at build time.
+export const revalidate = 300
+
 export async function generateStaticParams() {
   const pages = await getPagesForSitemap()
   return pages.map((page) => ({ slug: page.slug as string })).filter((p) => p.slug)

@@ -10,6 +10,10 @@ import { JsonLd } from '../components/JsonLd'
 import { breadcrumbJsonLd, eventsItemListJsonLd } from '@/lib/structured-data'
 import type { Metadata } from 'next'
 
+// ISR: re-render periodically so the "upcoming events" filter (new Date())
+// isn't frozen at build time.
+export const revalidate = 300
+
 export async function generateMetadata(): Promise<Metadata> {
   const title = 'Concerts & soirées au Pays Basque — agenda | Goazen!'
   const description =

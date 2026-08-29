@@ -14,6 +14,10 @@ import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
 import { buildEventUrl, cn, lexicalToPlainText } from '@/utils'
 import type { Event, SpecialEvent } from '@/payload-types'
 
+// ISR: re-render periodically so the "upcoming events" filter (new Date())
+// isn't frozen at build time.
+export const revalidate = 300
+
 export async function generateStaticParams() {
   const specialEvents = await getSpecialEvents()
 

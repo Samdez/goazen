@@ -12,6 +12,10 @@ import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
 import Script from 'next/script'
 import type { Metadata } from 'next'
 
+// ISR: re-render periodically so the "upcoming events" filter (new Date())
+// isn't frozen at build time.
+export const revalidate = 300
+
 export async function generateMetadata({
   params,
 }: {

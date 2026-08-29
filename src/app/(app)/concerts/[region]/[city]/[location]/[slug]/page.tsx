@@ -13,6 +13,10 @@ import { getCachedEvents } from '@/app/(app)/queries/get-events'
 import EventsCarousel from '@/app/(app)/components/EventsCarousel'
 import Script from 'next/script'
 
+// ISR: re-render periodically so the "upcoming events" filter (new Date())
+// isn't frozen at build time.
+export const revalidate = 300
+
 export async function generateMetadata({
   params,
 }: {

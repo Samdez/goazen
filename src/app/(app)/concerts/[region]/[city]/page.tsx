@@ -19,6 +19,10 @@ import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
 import { JsonLd } from '@/app/(app)/components/JsonLd'
 import { breadcrumbJsonLd, eventsItemListJsonLd } from '@/lib/structured-data'
 
+// ISR: re-render periodically so the "upcoming events" filter (new Date())
+// isn't frozen at build time.
+export const revalidate = 300
+
 export async function generateStaticParams() {
   const cities = await getCities()
 
