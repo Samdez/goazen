@@ -61,10 +61,11 @@ const Pages: CollectionConfig = {
       index: true,
       hooks: {
         beforeValidate: [
-          ({ req: { payload }, data }) => {
-            // Auto-generate from the title ONLY when no slug was provided
-            // (explicit slugs from the admin or the agent API are kept as-is).
-            if (payload && data && data.title && !data.slug) {
+          ({ req: { payload }, data, operation }) => {
+            // Auto-generate from the title ONLY on create when no slug was
+            // provided. On update, a missing slug means "keep the existing one"
+            // (otherwise every update would re-slug the doc from the title).
+            if (payload && data && data.title && !data.slug && operation === 'create') {
               return slugifyString(data.title)
             }
           },
