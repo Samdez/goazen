@@ -9,6 +9,10 @@ import { searchParamsSchema } from '../../schemas/searchParams'
 import { AUTRE_CATEGORY_NAME } from '../../constants'
 import type { Metadata } from 'next'
 
+// ISR: re-render periodically so the "upcoming events" filter (new Date())
+// isn't frozen at build time.
+export const revalidate = 300
+
 function humanizeSlug(slug: string) {
   return slug.replace(/-/g, ' ')
 }

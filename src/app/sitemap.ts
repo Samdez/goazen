@@ -8,6 +8,10 @@ import { getSpecialEvents } from './(app)/queries/get-special-events'
 import { getCategories } from './(app)/queries/get-categories'
 import { getPagesForSitemap } from './(app)/queries/get-page'
 
+// ISR: regenerate periodically so past events drop out of the sitemap
+// instead of being frozen at build time.
+export const revalidate = 300
+
 function toDate(value: string | Date | undefined): Date {
   if (!value) return new Date(0)
   return value instanceof Date ? value : new Date(value)
