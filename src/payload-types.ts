@@ -70,7 +70,6 @@ export interface Config {
     users: User;
     medias: Media;
     events: Event;
-    pages: Page;
     categories: Category;
     locations: Location;
     cities: City;
@@ -90,7 +89,6 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     medias: MediasSelect<false> | MediasSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
-    pages: PagesSelect<false> | PagesSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     locations: LocationsSelect<false> | LocationsSelect<true>;
     cities: CitiesSelect<false> | CitiesSelect<true>;
@@ -420,40 +418,6 @@ export interface SpecialEvent {
   deletedAt?: string | null;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages".
- */
-export interface Page {
-  id: string;
-  title: string;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  city?: (string | null) | City;
-  genre?: (string | null) | Category;
-  published?: boolean | null;
-  slug: string;
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-  };
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-}
-/**
  * Emails des organisateurs ayant accepté les CGU (partage partenaires commerciaux)
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -511,10 +475,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'events';
         value: string | Event;
-      } | null)
-    | ({
-        relationTo: 'pages';
-        value: string | Page;
       } | null)
     | ({
         relationTo: 'categories';
@@ -687,27 +647,6 @@ export interface EventsSelect<T extends boolean = true> {
   createdAt?: T;
   deletedAt?: T;
   _status?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages_select".
- */
-export interface PagesSelect<T extends boolean = true> {
-  title?: T;
-  content?: T;
-  city?: T;
-  genre?: T;
-  published?: T;
-  slug?: T;
-  meta?:
-    | T
-    | {
-        title?: T;
-        description?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
