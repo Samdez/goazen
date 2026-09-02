@@ -6,7 +6,6 @@ import { AUTRE_CATEGORY_NAME, REGIONS } from './(app)/constants'
 import { getCities } from './(app)/queries/get-cities'
 import { getSpecialEvents } from './(app)/queries/get-special-events'
 import { getCategories } from './(app)/queries/get-categories'
-import { getPagesForSitemap } from './(app)/queries/get-page'
 
 // ISR: regenerate periodically so past events drop out of the sitemap
 // instead of being frozen at build time.
@@ -31,7 +30,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }))
   const locations = await getLocationsForSitemap()
-  const pages = await getPagesForSitemap()
 
   const latestEventUpdate = events.docs.reduce<Date>((acc, e) => {
     const t = toDate(e.updatedAt)
@@ -64,13 +62,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: toDate(event.updatedAt),
     changeFrequency: 'weekly' as const,
     priority: 0.7,
-  }))
-
-  const pagesUrls = pages.map((page) => ({
-    url: `https://goazen.info/pages/${page.slug}`,
-    lastModified: toDate(page.updatedAt),
-    changeFrequency: 'weekly' as const,
-    priority: 0.6,
   }))
 
   const locationsUrls = locations
@@ -106,7 +97,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...citiesUrls,
     ...genresUrls,
     ...locationsUrls,
-    ...pagesUrls,
     ...eventsUrls,
   ]
 }
