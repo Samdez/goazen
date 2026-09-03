@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { cn, formatDate, getLocationInfo, slugifyString } from '@/utils'
+import { cn, formatDate, getLocationInfo, isEventPast, slugifyString } from '@/utils'
 import { buildEventSEODescription, buildEventSEOTitle } from '@/config-utils'
 import { getEventKindBadgeClassName, getEventKindLabel, hasEventKind } from '@/utils/event-kind'
 import { Button } from '@/components/ui/button'
@@ -146,7 +146,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
 
   const locationInfo = getLocationInfo(event)
 
-  const isPastEvent = new Date(event.date) < new Date()
+  const isPastEvent = isEventPast(event.date)
 
   // Create structured data for the music event
   const eventStructuredData = {

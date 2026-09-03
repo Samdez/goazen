@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { RichText } from '@payloadcms/richtext-lexical/react'
+import { isEventPast } from '@/utils'
 import { getCachedEvents } from '@/app/(app)/queries/get-events'
 import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
 import { getLocation } from '@/app/(app)/queries/get-location'
@@ -175,7 +176,7 @@ async function LocationPage({
       : undefined,
     // Add upcoming events
     event: events.docs.map((event) => {
-      const isPastEvent = new Date(event.date) < new Date()
+      const isPastEvent = isEventPast(event.date)
 
       return {
         '@type': 'MusicEvent',
