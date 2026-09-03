@@ -42,6 +42,14 @@ export function formatDate(date: string) {
   return new Date(date).toLocaleDateString('fr-FR', options)
 }
 
+// An event is "past" only once its whole calendar day (Europe/Paris) is over —
+// the stored `date` is the start timestamp, so comparing it to `new Date()`
+// would mark tonight's concert as finished while it is still running.
+export function isEventPast(date: string): boolean {
+  const parisDay = (d: Date) => d.toLocaleDateString('en-CA', { timeZone: 'Europe/Paris' })
+  return parisDay(new Date(date)) < parisDay(new Date())
+}
+
 function getEndOfWeek(date: Date) {
   const lastday = date.getDate() - (date.getDay() - 1) + 6
   return new Date(date.setDate(lastday)).toISOString().split('T')[0]
