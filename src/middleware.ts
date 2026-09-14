@@ -1,66 +1,74 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { regionForCity } from '@/lib/city-region-map'
+
+// Segments qui ne sont pas des villes : déjà au nouveau format, ou route spéciale.
+const NON_CITY_SEGMENTS = new Set(['evenement', 'pays-basque', 'landes'])
+
+// Anciennes URLs : /concerts/<ville>[/<salle>[/<slug>]]
+const OLD_URL_PATTERN = /^\/concerts\/([^/]+)(?:\/([^/]+)?(?:\/([^/]+))?)?$/
+
+/**
+ * Fallback pour un slug absent de la map générée (ville ajoutée sans avoir
+ * relancé `pnpm generate:city-map`).
+ *
+ * C'est l'ancien chemin : une requête HTTP sortante depuis le middleware, donc
+ * une 2e invocation de function et de la mémoire provisionnée facturée pendant
+ * tout l'aller-retour. À éviter — d'où la map. Gardé uniquement pour ne pas
+ * casser une ville fraîchement créée.
+ */
+async function lookupRegionOverHttp(request: NextRequest, city: string) {
+  try {
+    const response = await fetch(
+      `${request.nextUrl.origin}/api/get-city-region?city=${encodeURIComponent(city)}`,
+    )
+    if (!response.ok) return undefined
+    const data = await response.json()
+    return typeof data?.region === 'string' ? data.region : undefined
+  } catch (error) {
+    console.error('Error looking up city region:', error)
+    return undefined
+  }
+}
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Check if it's an old URL pattern (directly city after concerts)
-  const oldUrlPattern = /^\/concerts\/([^/]+)(?:\/([^/]+)?(?:\/([^/]+))?)?$/
-  const match = pathname.match(oldUrlPattern)
+  const match = pathname.match(OLD_URL_PATTERN)
+  if (!match) {
+    return NextResponse.next()
+  }
 
-  if (match) {
-    const [, firstSegment, secondSegment, thirdSegment] = match
+  const [, firstSegment, secondSegment, thirdSegment] = match
 
-    // Skip if it's a special route or region
-    if (['evenement', 'pays-basque', 'landes'].includes(firstSegment)) {
-      return NextResponse.next()
-    }
+  if (NON_CITY_SEGMENTS.has(firstSegment)) {
+    return NextResponse.next()
+  }
 
-    try {
-      // Get the region from our API route
-      const response = await fetch(
-        `${request.nextUrl.origin}/api/get-city-region?city=${encodeURIComponent(firstSegment)}`,
-      )
+  // Chemin nominal : zéro I/O, zéro invocation supplémentaire.
+  const region = regionForCity(firstSegment) ?? (await lookupRegionOverHttp(request, firstSegment))
 
-      if (!response.ok) {
-        // If the API returns an error, let Next.js handle the 404
-        return NextResponse.next()
-      }
+  if (!region) {
+    // Ville inconnue — on laisse Next rendre le 404.
+    return NextResponse.next()
+  }
 
-      const data = await response.json()
-
-      if (!data.region) {
-        // If no region is found, let Next.js handle the 404
-        return NextResponse.next()
-      }
-
-      // Construct the new URL with the correct region
-      let newPath = `/concerts/${data.region}/${firstSegment}`
-      if (secondSegment) {
-        newPath += `/${secondSegment}`
-        if (thirdSegment) {
-          newPath += `/${thirdSegment}`
-        }
-      }
-
-      // Create a 301 redirect response with cache headers
-      const redirectResponse = NextResponse.redirect(new URL(newPath, request.url), 301)
-
-      // Cache the redirect for 1 year
-      redirectResponse.headers.set('Cache-Control', 'public, max-age=31536000, immutable')
-
-      return redirectResponse
-    } catch (error) {
-      console.error('Error looking up city region:', error)
-      // If there's an error looking up the city, let Next.js handle the 404
-      return NextResponse.next()
+  let newPath = `/concerts/${region}/${firstSegment}`
+  if (secondSegment) {
+    newPath += `/${secondSegment}`
+    if (thirdSegment) {
+      newPath += `/${thirdSegment}`
     }
   }
 
-  return NextResponse.next()
+  const redirectResponse = NextResponse.redirect(new URL(newPath, request.url), 301)
+  redirectResponse.headers.set('Cache-Control', 'public, max-age=31536000, immutable')
+
+  return redirectResponse
 }
 
-// Configure the middleware to only run on specific paths
+// Le matcher reste volontairement étroit : le middleware ne doit jamais tourner
+// sur /_next/*, les assets statiques ou les images (chaque passage = 1 invocation).
 export const config = {
   matcher: '/concerts/:path*',
 }

@@ -1,6 +1,7 @@
 'use server'
 
 import { unstable_cache } from 'next/cache'
+import { toDayKey } from '@/lib/day-key'
 import { payload } from '../(client)/payload-client'
 
 function extendEndDateToEndOfDay(date: string) {
@@ -101,9 +102,17 @@ export async function _getEvents({
 }
 
 export async function getCachedEvents(params: GetEventsParams) {
+  // La cle est volontairement normalisee au JOUR UTC.
+  //
+  // _getEvents recale deja startDate sur `J-1 22:00 UTC` et endDate sur
+  // `24:00 UTC` : deux timestamps de la meme journee produisent exactement la
+  // meme requete Mongo. Les appelants passent `new Date().toISOString()`, donc
+  // sans cette normalisation la cle etait unique a chaque requete et le cache
+  // n'avait jamais aucun hit. Normaliser ici (et pas chez les appelants) evite
+  // qu'un nouvel appelant puisse re-casser la cle par inadvertance.
   const cacheKey = JSON.stringify({
-    startDate: params.startDate || '',
-    endDate: params.endDate || '',
+    startDate: toDayKey(params.startDate),
+    endDate: toDayKey(params.endDate),
     page: params.page || 1,
     category: params.category || '',
     locationId: params.locationId || '',
