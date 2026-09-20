@@ -173,20 +173,83 @@ function titleCaseToken(tok: string): string {
     .join('')
 }
 
-export function formatGenre(raw: string | null | undefined, maxTokens = 4): string | null {
-  if (!raw) return null
-  const s = String(raw).trim()
-  if (!s) return null
-  const tokens = s
+/** Raw (untouched casing) tokens of a free-text genre string. */
+export function splitGenreText(raw: string | null | undefined): string[] {
+  if (!raw) return []
+  return String(raw)
     .split(/[,\/•·]| x |&/i)
     .map((t) => t.trim())
     .filter(Boolean)
-    .map(titleCaseToken)
-    .filter(Boolean)
+}
+
+function joinGenreTokens(tokens: string[], maxTokens: number): string | null {
   if (!tokens.length) return null
-  const trimmed = tokens.slice(0, maxTokens)
-  const joined = trimmed.join(' · ')
+  const joined = tokens.slice(0, maxTokens).join(' · ')
   return tokens.length > maxTokens ? `${joined}…` : joined
+}
+
+export function formatGenre(raw: string | null | undefined, maxTokens = 4): string | null {
+  const tokens = splitGenreText(raw).map(titleCaseToken).filter(Boolean)
+  return joinGenreTokens(tokens, maxTokens)
+}
+
+const FALLBACK_CATEGORY_NAME = 'autre'
+
+/**
+ * Noms des categories d'un event, "Autre" exclu (il n'apporte aucune info
+ * musicale). Les relations non peuplees (depth 0) sont ignorees.
+ */
+export function eventCategoryNames(event: Pick<Event, 'category'>): string[] {
+  return (event.category ?? [])
+    .map((cat) => (cat && typeof cat === 'object' ? (cat.name ?? '') : ''))
+    .map((name) => name.trim())
+    .filter((name) => name && name.toLocaleLowerCase('fr-FR') !== FALLBACK_CATEGORY_NAME)
+}
+
+/**
+ * Premiere categorie porteuse de sens (pour les liens "Tous les concerts <genre>").
+ * "Autre" est ignore : il ne designe aucun genre.
+ */
+export function primaryEventCategory(
+  event: Pick<Event, 'category'>,
+): { name: string; slug?: string | null } | null {
+  const categories = (event.category ?? []).filter(
+    (cat): cat is Exclude<NonNullable<Event['category']>[number], string> =>
+      !!cat && typeof cat === 'object',
+  )
+  return (
+    categories.find(
+      (cat) => (cat.name ?? '').trim().toLocaleLowerCase('fr-FR') !== FALLBACK_CATEGORY_NAME,
+    ) ?? null
+  )
+}
+
+/**
+ * Les genres a afficher pour un event.
+ *
+ * Deux champs coexistent dans le CMS : le texte libre `genres` (la precision
+ * saisie par l'orga) et la relation `category` (la taxonomie qui alimente les
+ * filtres). Regle produit : le texte libre gagne des qu'il est renseigne, les
+ * categories ne servent que de repli. Les deux ne se cumulent jamais.
+ *
+ * C'est la seule fonction a utiliser pour afficher un genre : chaque surface
+ * qui ne lisait qu'un des deux champs faisait disparaitre des genres.
+ */
+export function collectEventGenres(
+  event: Pick<Event, 'category' | 'genres'>,
+  { titleCase = true }: { titleCase?: boolean } = {},
+): string[] {
+  const fromText = splitGenreText(event.genres)
+  const tokens = fromText.length ? fromText : eventCategoryNames(event)
+  return titleCase ? tokens.map(titleCaseToken).filter(Boolean) : tokens
+}
+
+/** Genres d'un event prets a afficher : `Deep House · Techno`. */
+export function formatEventGenres(
+  event: Pick<Event, 'category' | 'genres'>,
+  maxTokens = 4,
+): string | null {
+  return joinGenreTokens(collectEventGenres(event), maxTokens)
 }
 
 // ---------- EVENT KIND ----------

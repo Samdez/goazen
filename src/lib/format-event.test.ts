@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
+  collectEventGenres,
+  formatEventGenres,
   formatEventType,
   formatGenre,
   formatPrice,
@@ -147,6 +149,59 @@ describe('formatGenre', () => {
     expect(formatGenre('')).toBeNull()
     expect(formatGenre(null)).toBeNull()
     expect(formatGenre(undefined)).toBeNull()
+  })
+})
+
+describe('collectEventGenres', () => {
+  const ev = (category: unknown, genres?: string | null) =>
+    ({ category, genres }) as Pick<Event, 'category' | 'genres'>
+
+  it('shows the free text when it is filled', () => {
+    expect(collectEventGenres(ev([{ id: 'a', name: 'Electro' }], 'deep house'))).toEqual([
+      'Deep House',
+    ])
+    expect(formatEventGenres(ev(null, 'deep house, acid'))).toBe('Deep House · Acid')
+  })
+
+  it('falls back to the categories when the free text is empty', () => {
+    expect(collectEventGenres(ev([{ id: 'a', name: 'Techno' }], null))).toEqual(['Techno'])
+    expect(collectEventGenres(ev([{ id: 'a', name: 'Techno' }], '   '))).toEqual(['Techno'])
+    expect(
+      formatEventGenres(ev([{ id: 'a', name: 'Electro' }, { id: 'b', name: 'Techno' }], '')),
+    ).toBe('Electro · Techno')
+  })
+
+  it('never mixes the two sources', () => {
+    expect(
+      collectEventGenres(ev([{ id: 'a', name: 'Rock/Metal' }], 'garage rock')),
+    ).toEqual(['Garage Rock'])
+  })
+
+  it('ignores the "Autre" category — it carries no genre', () => {
+    expect(collectEventGenres(ev([{ id: 'a', name: 'Autre' }], null))).toEqual([])
+    expect(formatEventGenres(ev([{ id: 'a', name: 'Autre' }], null))).toBeNull()
+    expect(
+      collectEventGenres(ev([{ id: 'a', name: 'Autre' }, { id: 'b', name: 'Rock' }], null)),
+    ).toEqual(['Rock'])
+  })
+
+  it('ignores unpopulated (string) category relationships', () => {
+    expect(collectEventGenres(ev(['someId'], null))).toEqual([])
+  })
+
+  it('returns null from formatEventGenres when there is nothing to show', () => {
+    expect(formatEventGenres(ev(null, null))).toBeNull()
+    expect(formatEventGenres(ev([], ''))).toBeNull()
+  })
+
+  it('can skip title-casing', () => {
+    expect(collectEventGenres(ev(null, 'HOUSE, UKG'), { titleCase: false })).toEqual([
+      'HOUSE',
+      'UKG',
+    ])
+    expect(
+      collectEventGenres(ev([{ id: 'a', name: 'FOLK/CHANSON' }], null), { titleCase: false }),
+    ).toEqual(['FOLK/CHANSON'])
   })
 })
 

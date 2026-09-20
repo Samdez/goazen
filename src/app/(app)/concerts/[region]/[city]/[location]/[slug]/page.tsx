@@ -12,6 +12,11 @@ import { darkerGrotesque } from '@/app/(app)/fonts'
 import { getCachedEvents } from '@/app/(app)/queries/get-events'
 import EventsCarousel from '@/app/(app)/components/EventsCarousel'
 import Script from 'next/script'
+import {
+  collectEventGenres,
+  formatEventGenres,
+  primaryEventCategory,
+} from '@/lib/format-event'
 
 // ISR: re-render periodically so the "upcoming events" filter (new Date())
 // isn't frozen at build time.
@@ -147,6 +152,8 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
   const locationInfo = getLocationInfo(event)
 
   const isPastEvent = isEventPast(event.date)
+  const genres = formatEventGenres(event)
+  const genreLink = primaryEventCategory(event)
 
   // Create structured data for the music event
   const eventStructuredData = {
@@ -171,13 +178,7 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
       )
       .filter(Boolean),
     // Add music-specific details
-    musicType:
-      event.category && event.category.length > 0
-        ? event.category
-            ?.map((cat) => (typeof cat === 'object' ? cat.name : undefined))
-            .filter(Boolean)
-            .join(', ')
-        : event.genres,
+    musicType: collectEventGenres(event).join(', ') || undefined,
     // Add venue information
     location:
       typeof event.location === 'object' && event.location
@@ -263,6 +264,16 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
             </p>
           )}
         </div>
+        {genres && (
+          <p
+            className={cn(
+              darkerGrotesque.className,
+              'px-4 text-center text-2xl font-bold uppercase tracking-wide text-black',
+            )}
+          >
+            {genres}
+          </p>
+        )}
         <Image
           className="mx-auto"
           src={imageUrl || ''}
@@ -318,20 +329,10 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
                 </Link>
               </Button>
             )}
-          {event.category && event.category.length > 0 && (
+          {genreLink?.slug && (
             <Button className="rounded-lg border-4 border-black bg-[#E45110] p-2 text-2xl text-black">
-              <Link
-                href={`/genres/${
-                  typeof event.category?.[0] === 'string'
-                    ? event.category?.[0]
-                    : event.category?.[0]?.slug
-                }`}
-                className="text-2xl text-black"
-              >
-                Tous les concerts{' '}
-                {typeof event.category?.[0] === 'string'
-                  ? event.category?.[0]
-                  : event.category?.[0]?.name}
+              <Link href={`/genres/${genreLink.slug}`} className="text-2xl text-black">
+                Tous les concerts {genreLink.name}
               </Link>
             </Button>
           )}

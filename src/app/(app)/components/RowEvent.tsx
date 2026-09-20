@@ -4,8 +4,8 @@ import Link from 'next/link'
 import { bebas, darkerGrotesque } from '../fonts'
 import {
   formatDateRow,
+  formatEventGenres,
   formatEventType,
-  formatGenre,
   formatPrice,
   formatTime,
   formatVenue,
@@ -18,7 +18,7 @@ export default function RowEvent({ event }: { event: Event }) {
   const time = formatTime(event.time)
   const type = formatEventType(event.event_kind)
   const venue = formatVenue(event)
-  const genre = formatGenre(event.genres, 2)
+  const genre = formatEventGenres(event, 2)
   const price = formatPrice({ price: event.price, sold_out: event.sold_out })
   const isFree = price === 'Gratuit'
 

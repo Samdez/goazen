@@ -51,6 +51,38 @@ describe('convertEventsToCSV', () => {
     expect(lines[1]).toContain('"HOUSE, UKG, AFRO-CARIBBEAN"')
   })
 
+  it('falls back to the categories when the free-text genre is empty', () => {
+    const csv = convertEventsToCSV([
+      makeEvent({
+        genres: null,
+        category: [
+          { id: 'a', name: 'ELECTRO' },
+          { id: 'b', name: 'TECHNO' },
+        ] as Event['category'],
+      }),
+    ])
+    expect(csv.split('\r\n')[1]).toContain('ELECTRO / TECHNO')
+  })
+
+  it('free text wins over the categories', () => {
+    const csv = convertEventsToCSV([
+      makeEvent({
+        genres: 'deep house',
+        category: [{ id: 'a', name: 'ELECTRO' }] as Event['category'],
+      }),
+    ])
+    const row = csv.split('\r\n')[1]
+    expect(row).toContain('deep house')
+    expect(row).not.toContain('ELECTRO')
+  })
+
+  it('leaves the genre cell empty when only "Autre" is set', () => {
+    const csv = convertEventsToCSV([
+      makeEvent({ genres: null, category: [{ id: 'a', name: 'Autre' }] as Event['category'] })
+    ])
+    expect(csv).not.toContain('Autre')
+  })
+
   it('keeps category relationships joined by " / " without breaking the row', () => {
     const csv = convertEventsToCSV([
       makeEvent({
