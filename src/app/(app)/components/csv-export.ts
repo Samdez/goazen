@@ -1,5 +1,6 @@
 import type { Event } from '../../../payload-types'
 import { getEventKindDisplayLabel } from '@/utils/event-kind'
+import { eventCategoryNames } from '@/lib/format-event'
 
 const DAYS_FR = [
   'Dimanche',
@@ -35,13 +36,9 @@ function eventToRow(event: Event): string {
     typeof event.location?.['city V2'] === 'object'
       ? event.location['city V2'].name
       : ''
-  const categories = event.category
-    ?.map((cat) => (typeof cat !== 'string' ? cat.name : ''))
-    .filter(Boolean)
-    .join(' / ')
-
   const locationCell = `${location ?? ''} / ${locationCity} - ${event.time ?? ''}`
-  const genresCell = event.genres || categories || ''
+  // texte libre tel que saisi, categories en repli (cf. collectEventGenres)
+  const genresCell = event.genres?.trim() || eventCategoryNames(event).join(' / ')
   const priceCell = event.price === '0' ? 'Gratuit' : event.price ? `${event.price}€` : ''
 
   return [

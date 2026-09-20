@@ -1,5 +1,5 @@
 import type { Event as PayloadEvent } from '@/payload-types'
-import { formatPrice } from '@/lib/format-event'
+import { collectEventGenres, formatPrice } from '@/lib/format-event'
 
 const PARIS_TZ = 'Europe/Paris'
 
@@ -92,6 +92,12 @@ export function splitGenres(raw: string | null | undefined): string[] {
     .map((t) => t.toLocaleUpperCase('fr-FR'))
 }
 
+function agentGenres(event: Pick<PayloadEvent, 'category' | 'genres'>): string[] {
+  return collectEventGenres(event, { titleCase: false }).flatMap((t) =>
+    splitGenres(t),
+  )
+}
+
 export function formatAgentPrice(event: Pick<PayloadEvent, 'price' | 'sold_out'>): string | null {
   const formatted = formatPrice({ price: event.price, sold_out: event.sold_out })
   if (formatted === 'Prix à confirmer') return null
@@ -148,7 +154,7 @@ export function mapEventToAgentEvent(event: PayloadEvent, baseUrl: string): Agen
     venue: venue.toLocaleUpperCase('fr-FR'),
     city: city.toLocaleUpperCase('fr-FR'),
     region,
-    genres: splitGenres(event.genres),
+    genres: agentGenres(event),
     price: formatAgentPrice(event),
     event_kind: formatAgentEventKind(event.event_kind),
     image,

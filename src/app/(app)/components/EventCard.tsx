@@ -5,8 +5,8 @@ import Link from 'next/link'
 import { bebas, darkerGrotesque } from '../fonts'
 import {
   formatDateLong,
+  formatEventGenres,
   formatEventType,
-  formatGenre,
   formatPrice,
   formatTime,
   formatVenue,
@@ -33,7 +33,7 @@ export default function EventCard({
   const time = formatTime(event.time)
   const type = formatEventType(event.event_kind)
   const venue = formatVenue(event)
-  const genre = formatGenre(event.genres)
+  const genre = formatEventGenres(event)
   const price = formatPrice({ price: event.price, sold_out: event.sold_out })
 
   return (
