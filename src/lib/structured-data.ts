@@ -1,5 +1,6 @@
 import type { Event } from '@/payload-types'
 import { buildEventUrl, getLocationInfo } from '@/utils'
+import { collectEventGenres, eventStartDateIso } from './format-event'
 
 export const SITE_URL = 'https://goazen.info'
 
@@ -39,6 +40,13 @@ function parsePrice(price?: string | null): string | undefined {
   return match ? match[1].replace(',', '.') : undefined
 }
 
+/**
+ * Un event en schema.org `MusicEvent`.
+ *
+ * Source unique : pages de liste (via `eventsItemListJsonLd`), page événement
+ * et page salle lisent toutes celle-ci. Sans `@context` — il est posé par
+ * l'appelant, à la racine du bloc publié (cf. `eventJsonLd`).
+ */
 export function eventToJsonLd(event: Event, opts?: { placeholderImage?: string }) {
   const info = getLocationInfo(event)
   const region = regionLabel(info.region)
@@ -47,20 +55,25 @@ export function eventToJsonLd(event: Event, opts?: { placeholderImage?: string }
   const image = eventImageUrl(event, opts?.placeholderImage)
   const priceValue = parsePrice(event.price)
   const hasOffer = Boolean(event.ticketing_url) || priceValue !== undefined
+  const genres = collectEventGenres(event)
+  // Une salle référencée est un lieu de concert ; un `location_alt` en texte
+  // libre n'est qu'une adresse approximative, d'où le `Place` générique.
+  const venueType = event.location && typeof event.location === 'object' ? 'MusicVenue' : 'Place'
 
   return {
     '@type': 'MusicEvent',
     name: event.title,
-    startDate: event.date,
+    startDate: eventStartDateIso(event),
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     url: `${SITE_URL}${buildEventUrl(event)}`,
     ...(event.description ? { description: event.description } : {}),
     ...(image ? { image } : {}),
+    ...(genres.length ? { genre: genres } : {}),
     ...(locationName
       ? {
           location: {
-            '@type': 'Place',
+            '@type': venueType,
             name: locationName,
             address: {
               '@type': 'PostalAddress',
@@ -83,6 +96,14 @@ export function eventToJsonLd(event: Event, opts?: { placeholderImage?: string }
           },
         }
       : {}),
+  }
+}
+
+/** Le même `MusicEvent`, publiable seul (page événement). */
+export function eventJsonLd(event: Event, opts?: { placeholderImage?: string }) {
+  return {
+    '@context': 'https://schema.org',
+    ...eventToJsonLd(event, opts),
   }
 }
 
