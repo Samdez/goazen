@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { regionForCity } from '@/lib/city-region-map'
+import { UNKNOWN_CITY_SEGMENT } from '@/lib/url-segments'
 
 // Segments qui ne sont pas des villes : déjà au nouveau format, ou route spéciale.
 const NON_CITY_SEGMENTS = new Set(['evenement', 'pays-basque', 'landes'])
 
 // Anciennes URLs : /concerts/<ville>[/<salle>[/<slug>]]
 const OLD_URL_PATTERN = /^\/concerts\/([^/]+)(?:\/([^/]+)?(?:\/([^/]+))?)?$/
+
+// Sentinelle interne publiée par erreur dans les URLs canoniques et le sitemap
+// jusqu'à #31, quand aucune ville ne pouvait être résolue.
+const LEGACY_NO_LOCATION_PATTERN = /^\/concerts\/([^/]+)\/no-location\/(.+)$/
 
 /**
  * Fallback pour un slug absent de la map générée (ville ajoutée sans avoir
@@ -31,8 +36,23 @@ async function lookupRegionOverHttp(request: NextRequest, city: string) {
   }
 }
 
+function permanentRedirect(request: NextRequest, path: string) {
+  const response = NextResponse.redirect(new URL(path, request.url), 301)
+  response.headers.set('Cache-Control', 'public, max-age=31536000, immutable')
+  return response
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Les URLs `no-location` déjà indexées gardent leur place : même forme, même
+  // événement, seul le segment ville change. Zéro I/O, la réécriture est
+  // purement textuelle.
+  const legacyNoLocation = pathname.match(LEGACY_NO_LOCATION_PATTERN)
+  if (legacyNoLocation) {
+    const [, region, rest] = legacyNoLocation
+    return permanentRedirect(request, `/concerts/${region}/${UNKNOWN_CITY_SEGMENT}/${rest}`)
+  }
 
   const match = pathname.match(OLD_URL_PATTERN)
   if (!match) {
@@ -61,10 +81,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  const redirectResponse = NextResponse.redirect(new URL(newPath, request.url), 301)
-  redirectResponse.headers.set('Cache-Control', 'public, max-age=31536000, immutable')
-
-  return redirectResponse
+  return permanentRedirect(request, newPath)
 }
 
 // Le matcher reste volontairement étroit : le middleware ne doit jamais tourner
