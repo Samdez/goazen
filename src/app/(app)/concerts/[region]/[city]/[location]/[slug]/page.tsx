@@ -11,12 +11,9 @@ import { payload } from '@/app/(app)/(client)/payload-client'
 import { darkerGrotesque } from '@/app/(app)/fonts'
 import { getCachedEvents } from '@/app/(app)/queries/get-events'
 import EventsCarousel from '@/app/(app)/components/EventsCarousel'
-import Script from 'next/script'
-import {
-  collectEventGenres,
-  formatEventGenres,
-  primaryEventCategory,
-} from '@/lib/format-event'
+import { JsonLd } from '@/app/(app)/components/JsonLd'
+import { eventJsonLd } from '@/lib/structured-data'
+import { formatEventGenres, primaryEventCategory } from '@/lib/format-event'
 
 // ISR: re-render periodically so the "upcoming events" filter (new Date())
 // isn't frozen at build time.
@@ -146,80 +143,18 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
   const imageUrl =
     !(typeof event.image === 'string') && event.image ? event.image?.url : placeholderImage
 
-  // Ensure we have a fully qualified URL for structured data
-  const fullImageUrl = imageUrl?.startsWith('http') ? imageUrl : `https://goazen.info${imageUrl}`
-
   const locationInfo = getLocationInfo(event)
 
   const isPastEvent = isEventPast(event.date)
   const genres = formatEventGenres(event)
   const genreLink = primaryEventCategory(event)
 
-  // Create structured data for the music event
-  const eventStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'MusicEvent',
-    name: event.title,
-    startDate: event.date,
-    eventStatus: 'https://schema.org/EventScheduled',
-    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-    description: event.description,
-    image: fullImageUrl,
-    // Add performer information if available in categories
-    performer: event.category
-      ?.map((cat) =>
-        typeof cat === 'object'
-          ? {
-              '@type': 'MusicGroup',
-              name: cat.name,
-              genre: cat.slug, // Using slug as genre identifier
-            }
-          : undefined,
-      )
-      .filter(Boolean),
-    // Add music-specific details
-    musicType: collectEventGenres(event).join(', ') || undefined,
-    // Add venue information
-    location:
-      typeof event.location === 'object' && event.location
-        ? {
-            '@type': 'MusicVenue',
-            name: event.location.name,
-            address: {
-              '@type': 'PostalAddress',
-              addressLocality: locationInfo?.cityName,
-              addressRegion: locationInfo?.region === 'pays-basque' ? 'Pays Basque' : 'Landes',
-              addressCountry: 'FR',
-            },
-          }
-        : {
-            '@type': 'MusicVenue',
-            name: event.location_alt,
-          },
-    // Add offer information
-    offers: event.ticketing_url
-      ? {
-          '@type': 'Offer',
-          url: event.ticketing_url,
-          availability:
-            isPastEvent || event.sold_out
-              ? 'https://schema.org/SoldOut'
-              : 'https://schema.org/InStock',
-          validFrom: event.createdAt || event.date,
-          // Add price if available
-          ...(event.price && {
-            price: event.price,
-            priceCurrency: 'EUR',
-          }),
-        }
-      : undefined,
-  }
-
   return (
     <>
-      <Script id="event-structured-data" type="application/ld+json">
-        {JSON.stringify(eventStructuredData)}
-      </Script>
+      <JsonLd
+        id="event-structured-data"
+        data={eventJsonLd(event, { placeholderImage: placeholderImage || undefined })}
+      />
 
       <div className="flex flex-col items-center gap-4 text-white">
         {isPastEvent && (

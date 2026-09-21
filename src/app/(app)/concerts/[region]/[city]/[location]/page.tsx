@@ -1,6 +1,5 @@
 import Image from 'next/image'
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import { isEventPast } from '@/utils'
 import { getCachedEvents } from '@/app/(app)/queries/get-events'
 import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
 import { getLocation } from '@/app/(app)/queries/get-location'
@@ -10,7 +9,8 @@ import RelatedLocationsAndCities from '@/app/(app)/components/RelatedLocationsAn
 import { getLocations } from '@/app/(app)/queries/get-locations'
 import { getCity } from '@/app/(app)/queries/get-city'
 import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
-import Script from 'next/script'
+import { JsonLd } from '@/app/(app)/components/JsonLd'
+import { eventToJsonLd } from '@/lib/structured-data'
 import type { Metadata } from 'next'
 
 // ISR: re-render periodically so the "upcoming events" filter (new Date())
@@ -175,69 +175,9 @@ async function LocationPage({
         }
       : undefined,
     // Add upcoming events
-    event: events.docs.map((event) => {
-      const isPastEvent = isEventPast(event.date)
-
-      return {
-        '@type': 'MusicEvent',
-        name: event.title,
-        startDate: event.date,
-        endDate: event.date,
-        description: event.description,
-        image:
-          typeof event.image === 'object' && event.image
-            ? event.image.url?.startsWith('http')
-              ? event.image.url
-              : `https://goazen.info${event.image.url}`
-            : undefined,
-        eventStatus: isPastEvent
-          ? 'https://schema.org/EventScheduled'
-          : 'https://schema.org/EventScheduled',
-        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-        // Add performer information if available
-        performer: event.category
-          ?.map((cat) =>
-            typeof cat === 'object'
-              ? {
-                  '@type': 'MusicGroup',
-                  name: cat.name,
-                  genre: cat.slug,
-                }
-              : undefined,
-          )
-          .filter(Boolean),
-        // Add music-specific details
-        musicType: event.category
-          ?.map((cat) => (typeof cat === 'object' ? cat.name : undefined))
-          .filter(Boolean)
-          .join(', '),
-        location: {
-          '@type': 'MusicVenue',
-          name: location.name,
-          address: {
-            '@type': 'PostalAddress',
-            addressLocality: cityName,
-            addressRegion: regionParam === 'pays-basque' ? 'Pays Basque' : 'Landes',
-            addressCountry: 'FR',
-          },
-        },
-        offers: event.ticketing_url
-          ? {
-              '@type': 'Offer',
-              url: event.ticketing_url,
-              availability:
-                isPastEvent || event.sold_out
-                  ? 'https://schema.org/SoldOut'
-                  : 'https://schema.org/InStock',
-              validFrom: event.createdAt || event.date,
-              ...(event.price && {
-                price: event.price,
-                priceCurrency: 'EUR',
-              }),
-            }
-          : undefined,
-      }
-    }),
+    event: events.docs.map((event) =>
+      eventToJsonLd(event, { placeholderImage: placeholderImageUrl || undefined }),
+    ),
     // Add venue-specific details
     publicAccess: true,
     smokingAllowed: false,
@@ -257,9 +197,7 @@ async function LocationPage({
 
   return (
     <>
-      <Script id="venue-structured-data" type="application/ld+json">
-        {JSON.stringify(venueStructuredData)}
-      </Script>
+      <JsonLd id="venue-structured-data" data={venueStructuredData} />
 
       <div className="flex flex-col items-center gap-4 px-4 py-8">
         <h1 className="text-center text-4xl font-bold text-black">

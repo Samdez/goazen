@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   collectEventGenres,
+  eventStartDateIso,
+  parseEventTime,
   formatEventGenres,
   formatEventType,
   formatGenre,
@@ -234,5 +236,69 @@ describe('isTonight', () => {
     const now = new Date('2026-05-12T10:00:00Z')
     const ev = new Date('2026-05-13T19:30:00Z')
     expect(isTonight(ev, now)).toBe(false)
+  })
+})
+
+describe('parseEventTime', () => {
+  it('reads a single time', () => {
+    expect(parseEventTime('20h30')).toEqual({ hour: 20, minute: 30 })
+    expect(parseEventTime('21H')).toEqual({ hour: 21, minute: 0 })
+    expect(parseEventTime('19:45')).toEqual({ hour: 19, minute: 45 })
+  })
+
+  it('keeps only the start of a range', () => {
+    expect(parseEventTime('20h - 1h30')).toEqual({ hour: 20, minute: 0 })
+    expect(parseEventTime('22h a 2h')).toEqual({ hour: 22, minute: 0 })
+  })
+
+  it('returns null for unreadable input', () => {
+    expect(parseEventTime('0')).toBeNull()
+    expect(parseEventTime('à confirmer')).toBeNull()
+    expect(parseEventTime(null)).toBeNull()
+  })
+})
+
+describe('eventStartDateIso', () => {
+  it('merges the Paris day of `date` with the free-text `time`', () => {
+    // `date` carries an arbitrary time of day (14:00Z) — only the day matters.
+    expect(eventStartDateIso({ date: '2026-09-21T14:00:00.000Z', time: '20h30' })).toBe(
+      '2026-09-21T20:30:00+02:00',
+    )
+  })
+
+  it('uses the winter offset outside DST', () => {
+    expect(eventStartDateIso({ date: '2026-01-15T14:00:00.000Z', time: '21h' })).toBe(
+      '2026-01-15T21:00:00+01:00',
+    )
+  })
+
+  it('takes the start of a range', () => {
+    expect(eventStartDateIso({ date: '2026-06-12T14:00:00.000Z', time: '20h - 1h30' })).toBe(
+      '2026-06-12T20:00:00+02:00',
+    )
+  })
+
+  it('rolls past-midnight hours (25h) to the next day', () => {
+    expect(eventStartDateIso({ date: '2026-06-12T14:00:00.000Z', time: '25h' })).toBe(
+      '2026-06-13T01:00:00+02:00',
+    )
+  })
+
+  it('reads the day in Paris, not in UTC', () => {
+    // 22:00Z on the 21st is already the 22nd in Paris — the page says so too.
+    expect(eventStartDateIso({ date: '2026-09-21T22:00:00.000Z', time: '20h30' })).toBe(
+      '2026-09-22T20:30:00+02:00',
+    )
+  })
+
+  it('falls back to the day alone when `time` is unusable', () => {
+    expect(eventStartDateIso({ date: '2026-09-21T14:00:00.000Z', time: null })).toBe('2026-09-21')
+    expect(eventStartDateIso({ date: '2026-09-21T14:00:00.000Z', time: 'à confirmer' })).toBe(
+      '2026-09-21',
+    )
+  })
+
+  it('passes an unparsable `date` through untouched', () => {
+    expect(eventStartDateIso({ date: 'pas une date', time: '20h30' })).toBe('pas une date')
   })
 })

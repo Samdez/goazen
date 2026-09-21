@@ -49,19 +49,34 @@ function getParisDateParts(d: Date) {
 
 const TIME_TOKEN = /(\d{1,2})\s*[hH:]\s*(\d{0,2})?/
 
-function parseTimeToken(token: string): string | null {
+export type TimeParts = { hour: number; minute: number }
+
+function parseTimeToken(token: string): TimeParts | null {
   const t = token.trim()
   if (!t) return null
   const m = t.match(/^(\d{1,2})\s*[hH:]?\s*(\d{2})?$/) ?? t.match(TIME_TOKEN)
   if (!m) return null
-  const h = Number(m[1])
-  const min = m[2] ? Number(m[2]) : 0
-  if (Number.isNaN(h) || Number.isNaN(min)) return null
-  if (h > 29 || min > 59) return null
-  return `${String(h).padStart(2, '')}h${min ? String(min).padStart(2, '0') : ''}`
+  const hour = Number(m[1])
+  const minute = m[2] ? Number(m[2]) : 0
+  if (Number.isNaN(hour) || Number.isNaN(minute)) return null
+  if (hour > 29 || minute > 59) return null
+  return { hour, minute }
 }
 
-export function formatTime(raw: string | null | undefined): string | null {
+function formatTimeParts({ hour, minute }: TimeParts): string {
+  return `${hour}h${minute ? String(minute).padStart(2, '0') : ''}`
+}
+
+/**
+ * Découpe une heure saisie en texte libre en un début et une fin optionnelle.
+ *
+ * Seule fonction à lire le champ `time` : l'affichage (`formatTime`) et le
+ * JSON-LD (`eventStartDateIso`) doivent s'accorder sur la même lecture, sinon
+ * la page annonce 20h30 et le schéma une autre heure.
+ */
+function parseTimeRange(
+  raw: string | null | undefined,
+): { start: TimeParts; end: TimeParts | null } | null {
   if (raw == null) return null
   const s = String(raw).trim()
   if (!s || s === '0' || s.toLowerCase() === 'tba') return null
@@ -70,14 +85,24 @@ export function formatTime(raw: string | null | undefined): string | null {
   const rangeSplit = s.split(/\s*(?:[-–/]|\s+a\s+|\s+à\s+|\s+to\s+)\s*/i)
   if (rangeSplit.length === 2) {
     const left = parseTimeToken(rangeSplit[0])
-    const right = parseTimeToken(rangeSplit[1])
-    if (left && right) return `${left}${EN_DASH}${right}`
-    if (left && !right) return left
+    if (left) return { start: left, end: parseTimeToken(rangeSplit[1]) }
   }
 
   const single = parseTimeToken(s)
-  if (single) return single
-  return null
+  return single ? { start: single, end: null } : null
+}
+
+/** Heure de début d'un `time` texte libre, `null` si illisible. */
+export function parseEventTime(raw: string | null | undefined): TimeParts | null {
+  return parseTimeRange(raw)?.start ?? null
+}
+
+export function formatTime(raw: string | null | undefined): string | null {
+  const range = parseTimeRange(raw)
+  if (!range) return null
+  return range.end
+    ? `${formatTimeParts(range.start)}${EN_DASH}${formatTimeParts(range.end)}`
+    : formatTimeParts(range.start)
 }
 
 // ---------- PRICE ----------
@@ -294,6 +319,58 @@ function mapWeekdayShort(en: string): string {
     Sat: DAYS_FR_LONG[6],
   }
   return map[en] ?? en
+}
+
+function pad2(n: number): string {
+  return String(n).padStart(2, '0')
+}
+
+/**
+ * Décalage UTC d'Europe/Paris, en minutes, à un instant donné (+120 l'été).
+ */
+function parisOffsetMinutes(instant: Date): number {
+  const { year, month, day, hour, minute } = getParisDateParts(instant)
+  const wallClockAsUtc = Date.UTC(year, month - 1, day, hour, minute)
+  // getParisDateParts s'arrête à la minute : on tronque l'instant de référence
+  // à la minute aussi, sinon les secondes fausseraient la soustraction.
+  const instantToMinute = Math.floor(instant.getTime() / 60_000) * 60_000
+  return (wallClockAsUtc - instantToMinute) / 60_000
+}
+
+/**
+ * `startDate` schema.org d'un event, à l'heure réellement affichée sur la page.
+ *
+ * Le CMS stocke deux champs disjoints : `date` (un timestamp dont seule la
+ * journée compte — l'heure est arbitraire, souvent 14h UTC) et `time` (du texte
+ * libre, « 20h30 »). Publier `date` tel quel faisait annoncer 16h Paris pour un
+ * concert à 20h30. On recompose donc la journée parisienne de `date` avec
+ * l'heure lue dans `time`, en ISO avec offset (`2026-09-21T20:30:00+02:00`).
+ *
+ * `time` illisible → la journée seule (`YYYY-MM-DD`), que schema.org accepte :
+ * mieux vaut pas d'heure qu'une fausse. Au-delà de 24h (« 25h » pour 1h du mat)
+ * on bascule sur le lendemain.
+ */
+export function eventStartDateIso(event: Pick<Event, 'date' | 'time'>): string {
+  const base = new Date(event.date)
+  if (Number.isNaN(base.getTime())) return event.date
+
+  const { year, month, day } = getParisDateParts(base)
+  const parsed = parseEventTime(event.time)
+  if (!parsed) return `${year}-${pad2(month)}-${pad2(day)}`
+
+  const local = new Date(
+    Date.UTC(year, month - 1, day + Math.floor(parsed.hour / 24), parsed.hour % 24, parsed.minute),
+  )
+  // L'heure locale lue comme si elle était UTC est décalée d'un offset qu'on ne
+  // connaît pas encore : première estimation, puis correction à l'instant réel
+  // (ne diverge que dans l'heure inexistante d'un changement d'heure).
+  const firstGuess = parisOffsetMinutes(local)
+  const offset = parisOffsetMinutes(new Date(local.getTime() - firstGuess * 60_000))
+
+  const sign = offset < 0 ? '-' : '+'
+  const abs = Math.abs(offset)
+  const stamp = local.toISOString().slice(0, 19)
+  return `${stamp}${sign}${pad2(Math.floor(abs / 60))}:${pad2(abs % 60)}`
 }
 
 // ---------- TONIGHT WINDOW ----------
