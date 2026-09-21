@@ -1,5 +1,6 @@
 'use server'
 import { unstable_cache } from 'next/cache'
+import type { Location } from '@/payload-types'
 import { slugifyString } from '@/utils'
 import { payload } from '../(client)/payload-client'
 
@@ -73,6 +74,76 @@ export async function getLocationsForSitemap() {
       return locations.docs
     },
     ['locations-sitemap'],
+    {
+      tags: ['locations'],
+      revalidate: 60 * 60 * 24, // 24 hours
+    },
+  )()
+}
+
+/** Ce qu'une carte de salle affiche, et rien de plus. */
+export type LocationCardDoc = {
+  id: string
+  name: string
+  slug?: string | null
+  /** `city V2.slug` si la relation existe, sinon l'enum `city` legacy. */
+  citySlug?: string | null
+  region?: string
+  imageUrl?: string
+}
+
+// `select` renvoie un doc partiel : on ne lit que les champs demandés.
+type SelectedLocation = Pick<Location, 'id' | 'name' | 'slug' | 'city' | 'city V2' | 'image'>
+
+function toLocationCard(location: SelectedLocation): LocationCardDoc {
+  const cityDoc = typeof location['city V2'] === 'object' ? location['city V2'] : null
+  const media = typeof location.image === 'object' ? location.image : null
+  return {
+    id: location.id,
+    name: location.name,
+    slug: location.slug,
+    citySlug: cityDoc?.slug ?? location.city ?? null,
+    region: cityDoc?.region ?? undefined,
+    imageUrl: media?.sizes?.card?.url ?? media?.url ?? undefined,
+  }
+}
+
+/**
+ * Variante légère pour /salles-de-concert.
+ *
+ * `getLocations` renvoie les docs complets : les deux descriptions Lexical de
+ * chaque salle, plus toutes les variantes de son image, finissaient dans le
+ * payload RSC de la page — 2,1 Mo, assez pour qu'un crawler la tronque. On ne
+ * transmet au client que les six champs qu'une carte affiche.
+ */
+export async function getLocationCards(
+  params: GetLocationsParams,
+): Promise<{
+  docs: LocationCardDoc[]
+  hasNextPage: boolean
+  nextPage?: number | null
+}> {
+  const { cityName, page = 1, limit = 100 } = params
+  const cacheKey = JSON.stringify({ cityName: cityName || '', page, limit })
+
+  return unstable_cache(
+    async () => {
+      const locations = await payload.find({
+        collection: 'locations',
+        sort: 'name',
+        where: cityName ? { 'city V2.slug': { equals: slugifyString(cityName) } } : {},
+        page,
+        limit,
+        depth: 1,
+        select: { name: true, slug: true, city: true, 'city V2': true, image: true },
+      })
+      return {
+        docs: locations.docs.map(toLocationCard),
+        hasNextPage: locations.hasNextPage,
+        nextPage: locations.nextPage,
+      }
+    },
+    ['location-cards', cacheKey],
     {
       tags: ['locations'],
       revalidate: 60 * 60 * 24, // 24 hours

@@ -1,4 +1,5 @@
 import { City, Location } from '@/payload-types'
+import type { CityOption } from '../queries/get-cities'
 import Link from 'next/link'
 import { PaginatedDocs } from 'payload'
 import { JSX } from 'react'
@@ -9,12 +10,12 @@ export default function RelatedLocationsAndCities({
   city,
   sectionTitle,
 }: {
-  locations: PaginatedDocs<Location> | PaginatedDocs<City>
+  locations: PaginatedDocs<Location> | PaginatedDocs<CityOption>
   regionParam: string
   city: City
   sectionTitle: string
 }) {
-  function createHref(item: Location | City) {
+  function createHref(item: Location | CityOption) {
     //item is a location
     if ('city V2' in item && typeof item['city V2'] !== 'string' && item['city V2']) {
       return `/concerts/${regionParam}/${item['city V2'].slug}/${item.slug}`

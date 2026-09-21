@@ -9,8 +9,12 @@ import RelatedLocationsAndCities from '@/app/(app)/components/RelatedLocationsAn
 import { getLocations } from '@/app/(app)/queries/get-locations'
 import { getCity } from '@/app/(app)/queries/get-city'
 import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
+import Link from 'next/link'
 import { JsonLd } from '@/app/(app)/components/JsonLd'
-import { eventToJsonLd } from '@/lib/structured-data'
+import { musicVenueJsonLd } from '@/lib/structured-data'
+import { formatDateLong } from '@/lib/format-event'
+import { buildEventUrl } from '@/utils'
+import { getPastEvents } from '@/app/(app)/queries/get-past-events'
 import type { Metadata } from 'next'
 
 // ISR: re-render periodically so the "upcoming events" filter (new Date())
@@ -138,62 +142,28 @@ async function LocationPage({
     locationId: location.id,
     startDate: new Date().toISOString(),
   })
+  // Une salle sans date à venir n'affichait qu'un « rien de prévu » : page vide,
+  // jamais citée par un moteur. On montre alors ce qui s'y est déjà joué.
+  const archive = events.docs.length ? null : await getPastEvents({ locationId: location.id })
   const cityName =
     typeof location['city V2'] === 'object' ? location['city V2']?.name : location.city
 
   const imageUrl =
     !(typeof location?.image === 'string') && location.image ? location.image?.url : ''
 
-  // Ensure we have a fully qualified URL for structured data
-  const fullImageUrl = imageUrl?.startsWith('http')
-    ? imageUrl
-    : imageUrl
-      ? `https://goazen.info${imageUrl}`
-      : placeholderImageUrl?.startsWith('http')
-        ? placeholderImageUrl
-        : `https://goazen.info${placeholderImageUrl}`
-
   const description = location.description_V2 || location.description
 
-  // Create structured data for the music venue
-  const venueStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'MusicVenue',
-    name: location.name,
-    description: description,
-    image: fullImageUrl,
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: cityName,
-      addressRegion: regionParam === 'pays-basque' ? 'Pays Basque' : 'Landes',
-      addressCountry: 'FR',
+  const venueStructuredData = musicVenueJsonLd(
+    location,
+    // À défaut de programmation, on publie les dernières dates passées : elles
+    // ont bien eu lieu ici, et sans elles le bloc n'apprend rien sur la salle.
+    events.docs.length ? events.docs : (archive?.docs ?? []),
+    {
+      url: `https://goazen.info/concerts/${regionParam}/${cityParam}/${locationParam}`,
+      region: regionParam,
+      placeholderImage: placeholderImageUrl || undefined,
     },
-    geo: location.place_id
-      ? {
-          '@type': 'GeoCoordinates',
-          // You might want to add latitude and longitude if you have them
-        }
-      : undefined,
-    // Add upcoming events
-    event: events.docs.map((event) =>
-      eventToJsonLd(event, { placeholderImage: placeholderImageUrl || undefined }),
-    ),
-    // Add venue-specific details
-    publicAccess: true,
-    smokingAllowed: false,
-    openingHoursSpecification: {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Friday', 'Saturday'], // Add actual opening days if you have them
-      opens: '20:00',
-      closes: '02:00',
-    },
-    // Add organization information
-    parentOrganization: {
-      '@type': 'Organization',
-      name: 'Goazen!',
-      url: 'https://goazen.info',
-    },
-  }
+  )
 
   return (
     <>
@@ -205,6 +175,27 @@ async function LocationPage({
         </h1>
         {events.docs.length ? (
           <EventsCarousel events={events.docs} placeholderImageUrl={placeholderImageUrl || ''} />
+        ) : archive && archive.total > 0 ? (
+          <div className="flex w-full max-w-3xl flex-col items-center gap-6 text-black">
+            <p className="text-center text-xl">
+              Aucune date annoncée pour l&apos;instant.{' '}
+              {archive.total === 1
+                ? '1 concert référencé ici depuis 2024.'
+                : `${archive.total} concerts référencés ici depuis 2024.`}
+            </p>
+            <div className="w-full">
+              <h2 className="mb-2 text-2xl font-bold">Les dernières dates passées</h2>
+              <ul className="flex flex-col gap-2">
+                {archive.docs.map((event) => (
+                  <li key={event.id}>
+                    <Link href={buildEventUrl(event)} className="text-lg hover:text-white">
+                      <span className="font-bold">{formatDateLong(event.date)}</span> — {event.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         ) : (
           <div className="flex h-36 items-center">
             <p className="text-4l text-black">Rien de prévu ici à notre connaissance...😔</p>

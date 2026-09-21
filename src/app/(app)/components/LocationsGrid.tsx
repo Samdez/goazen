@@ -1,12 +1,12 @@
 'use client'
 import LocationCard from './LocationCard'
 
-import type { Location } from '@/payload-types'
+import type { LocationCardDoc } from '../queries/get-locations'
 import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { PacmanLoader } from 'react-spinners'
 import { useCategory } from '../hooks/useGenre'
-import { getLocations } from '../queries/get-locations'
+import { getLocationCards } from '../queries/get-locations'
 import Image from 'next/image'
 
 export default function LocationsGrid({
@@ -16,19 +16,19 @@ export default function LocationsGrid({
   hasNextPageProps,
   cityName,
 }: {
-  initialLocations: Location[]
+  initialLocations: LocationCardDoc[]
   initialNextPage?: number | null
   hasNextPageProps: boolean
   placeholderImageUrl: string
   cityName: string
 }) {
-  const [locations, setLocations] = useState<Location[]>(initialLocations)
+  const [locations, setLocations] = useState<LocationCardDoc[]>(initialLocations)
   const [nextPage, setNextPage] = useState(initialNextPage)
   const [hasNextPage, setHasNextPage] = useState(hasNextPageProps)
   const { ref, inView } = useInView()
 
   const loadMoreLocations = async () => {
-    const newLocations = await getLocations({
+    const newLocations = await getLocationCards({
       cityName,
       page: nextPage ? nextPage : undefined,
     })

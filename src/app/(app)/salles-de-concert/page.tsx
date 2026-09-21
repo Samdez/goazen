@@ -1,6 +1,6 @@
 import LocationsGrid from '../components/LocationsGrid'
 import { getCities } from '../queries/get-cities'
-import { getLocations } from '../queries/get-locations'
+import { getLocationCards } from '../queries/get-locations'
 import { getPlaceholderImage } from '../queries/get-placeholder-image'
 import FilterByCity from '../components/FilterByCity'
 import { Suspense } from 'react'
@@ -33,7 +33,7 @@ async function LocationsPage({ searchParams }: { searchParams: Promise<{ city: s
   const currSearchParams = await searchParams
   const activeCity = currSearchParams.city
   const [locations, cities, defaultImage] = await Promise.all([
-    getLocations({ cityName: activeCity }),
+    getLocationCards({ cityName: activeCity }),
     getCities(),
     getPlaceholderImage(),
   ])

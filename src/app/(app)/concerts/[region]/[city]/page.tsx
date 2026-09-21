@@ -128,27 +128,22 @@ export default async function CityPage({
       />
       <JsonLd id="city-events" data={eventsItemListJsonLd(events.docs, { placeholderImage })} />
 
-      <Suspense
-        fallback={
-          <div className="mx-auto mt-4 flex w-full justify-center">
-            <PacmanLoader />
-          </div>
-        }
-      >
-        <UnifiedFilterSections
-          title={`Concerts, soirées et DJ sets à ${cityData.name}`}
-          subTitle={`Tous les concerts et soirées à venir à ${cityData.name}${
-            region === 'pays-basque' ? ' (Pays Basque)' : ' (Landes)'
-          }`}
-          buttons={[
-            <CityFilterCombobox
-              key="city-filter"
-              cities={citiesData.docs}
-              isLocationsPage={false}
-            />,
-          ]}
-        />
-      </Suspense>
+      {/* Le titre est le h1 de la page : il doit être prérendu. Seul le filtre
+          par ville reste sous <Suspense> — il appelle useSearchParams(), qui
+          fait basculer tout son sous-arbre en rendu client. Avec le titre à
+          l'intérieur, le h1 n'existait que dans le payload RSC, invisible pour
+          un crawler sans JS. */}
+      <UnifiedFilterSections
+        title={`Concerts, soirées et DJ sets à ${cityData.name}`}
+        subTitle={`Tous les concerts et soirées à venir à ${cityData.name}${
+          region === 'pays-basque' ? ' (Pays Basque)' : ' (Landes)'
+        }`}
+        buttons={[
+          <Suspense key="city-filter" fallback={null}>
+            <CityFilterCombobox cities={citiesData.docs} isLocationsPage={false} />
+          </Suspense>,
+        ]}
+      />
       <Suspense
         fallback={
           <div className="mx-auto mt-[14vh] flex min-h-screen w-full justify-center">
