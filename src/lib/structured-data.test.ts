@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { eventJsonLd, eventToJsonLd, eventsItemListJsonLd } from './structured-data'
-import type { Event } from '@/payload-types'
+import {
+  eventJsonLd,
+  eventToJsonLd,
+  eventsItemListJsonLd,
+  musicVenueJsonLd,
+} from './structured-data'
+import type { Event, Location } from '@/payload-types'
 
 const atabal = {
   id: 'loc1',
@@ -89,5 +94,74 @@ describe('eventsItemListJsonLd', () => {
     expect(list['@context']).toBe('https://schema.org')
     expect(list.itemListElement[0].item).not.toHaveProperty('@context')
     expect(list.itemListElement[0].item.startDate).toBe('2026-09-21T20:30:00+02:00')
+  })
+})
+
+function lexical(text: string) {
+  return { root: { children: [{ type: 'paragraph', version: 1, children: [{ text }] }] } }
+}
+
+const venue = {
+  ...atabal,
+  description_V2: lexical('Salle de musiques actuelles à Biarritz.'),
+  place_id: 'ChIJ_fake_place_id',
+  image: { url: '/api/medias/file/atabal.jpg' },
+} as unknown as Location
+
+const venueOpts = {
+  url: 'https://goazen.info/concerts/pays-basque/biarritz/atabal',
+  region: 'pays-basque',
+}
+
+describe('musicVenueJsonLd', () => {
+  it('describes the venue and its city', () => {
+    expect(musicVenueJsonLd(venue, [], venueOpts)).toMatchObject({
+      '@context': 'https://schema.org',
+      '@type': 'MusicVenue',
+      name: 'Atabal',
+      url: venueOpts.url,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Biarritz',
+        addressRegion: 'Pays Basque',
+        addressCountry: 'FR',
+      },
+    })
+  })
+
+  it('flattens the Lexical description instead of publishing the raw object', () => {
+    const data = musicVenueJsonLd(venue, [], venueOpts)
+    expect(data.description).toBe('Salle de musiques actuelles à Biarritz.')
+  })
+
+  it('drops the invented opening hours, the empty geo and the fake parent org', () => {
+    const data = musicVenueJsonLd(venue, [], venueOpts)
+    expect(data).not.toHaveProperty('openingHoursSpecification')
+    expect(data).not.toHaveProperty('geo')
+    expect(data).not.toHaveProperty('parentOrganization')
+  })
+
+  it('lists the events through the shared event builder', () => {
+    const event = makeEvent()
+    const data = musicVenueJsonLd(venue, [event], venueOpts) as { event: Record<string, unknown>[] }
+    expect(data.event).toHaveLength(1)
+    expect(data.event[0]).toMatchObject(eventToJsonLd(event))
+  })
+
+  it('omits `event` entirely rather than publishing an empty list', () => {
+    expect(musicVenueJsonLd(venue, [], venueOpts)).not.toHaveProperty('event')
+  })
+
+  it('falls back to the legacy `city` enum and the route region', () => {
+    const legacy = {
+      id: 'loc2',
+      name: 'La Luna Negra',
+      slug: 'la-luna-negra',
+      city: 'bayonne',
+      'city V2': null,
+    } as unknown as Location
+    expect(musicVenueJsonLd(legacy, [], { url: 'https://goazen.info/x', region: 'pays-basque' })).toMatchObject({
+      address: { addressLocality: 'Bayonne', addressRegion: 'Pays Basque' },
+    })
   })
 })

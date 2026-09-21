@@ -144,7 +144,8 @@ export function formatPrice(opts: { price?: string | null; sold_out?: boolean | 
 
 // ---------- VENUE ----------
 
-function cityNameFromLocation(loc: Location): string | null {
+/** Nom de ville d'une salle : relation `city V2`, sinon l'enum `city` legacy. */
+export function cityNameFromLocation(loc: Location): string | null {
   const c = loc['city V2']
   if (c && typeof c === 'object') return (c as City).name ?? null
   if (loc.city) {

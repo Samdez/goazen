@@ -2,25 +2,19 @@ import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { Location } from '@/payload-types'
+import type { LocationCardDoc } from '../queries/get-locations'
 
 function LocationCard({
   location,
   isEven,
   placeholderImageUrl,
 }: {
-  location?: Location
+  location?: LocationCardDoc
   isEven: boolean
   placeholderImageUrl: string
 }) {
   if (!location) return
-  const locationCity = typeof location['city V2'] !== 'string' && location['city V2']?.slug
-  const locationRegion = typeof location['city V2'] !== 'string' && location['city V2']?.region
-
-  const imageUrl =
-    !(typeof location.image === 'string') && location.image
-      ? location.image.sizes?.card?.url || location.image?.url
-      : placeholderImageUrl
+  const imageUrl = location.imageUrl || placeholderImageUrl
 
   return (
     <>
@@ -31,7 +25,7 @@ function LocationCard({
         )}
       >
         <Link
-          href={`/concerts/${locationRegion}/${locationCity || location.city}/${location?.slug}`}
+          href={`/concerts/${location.region}/${location.citySlug}/${location.slug}`}
           className="w-full rounded-xl"
         >
           <CardHeader className="flex h-28 items-center justify-center border-b-4 border-black bg-[#E45110] p-2">

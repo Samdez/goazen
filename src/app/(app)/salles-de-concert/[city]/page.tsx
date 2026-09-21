@@ -1,6 +1,6 @@
 import LocationsGrid from '../../components/LocationsGrid'
 import { getCities } from '../../queries/get-cities'
-import { getLocations } from '../../queries/get-locations'
+import { getLocationCards } from '../../queries/get-locations'
 import { getCity } from '../../queries/get-city'
 import { getPlaceholderImage } from '../../queries/get-placeholder-image'
 import { CityFilterCombobox } from '../../components/CityFilterCombobox'
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<{ city: str
 async function LocationsPage({ params }: { params: Promise<{ city: string }> }) {
   const cityParam = (await params).city
   const [locations, placeholderImageUrl, cities] = await Promise.all([
-    getLocations({ cityName: cityParam }),
+    getLocationCards({ cityName: cityParam }),
     getPlaceholderImage(),
     getCities(),
   ])

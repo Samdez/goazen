@@ -15,14 +15,14 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { ChevronDownIcon } from 'lucide-react'
-import { City } from '@/payload-types'
+import type { CityOption } from '../queries/get-cities'
 import { Params } from 'next/dist/server/request/params'
 
 export function CityFilterCombobox({
   cities,
   isLocationsPage,
 }: {
-  cities: City[]
+  cities: CityOption[]
   isLocationsPage?: boolean
 }) {
   const searchParams = useSearchParams()
@@ -81,12 +81,12 @@ function CitiesList({
   isLocationsPage,
 }: {
   setOpen: (open: boolean) => void
-  cities: City[]
+  cities: CityOption[]
   params: Params
   isLocationsPage?: boolean
 }) {
   const router = useRouter()
-  const createHref = (city: City) => {
+  const createHref = (city: CityOption) => {
     if (isLocationsPage) {
       return `/salles-de-concert/${city.slug}`
     }

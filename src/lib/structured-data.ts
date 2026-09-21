@@ -1,6 +1,6 @@
-import type { Event } from '@/payload-types'
-import { buildEventUrl, getLocationInfo } from '@/utils'
-import { collectEventGenres, eventStartDateIso } from './format-event'
+import type { Event, Location } from '@/payload-types'
+import { buildEventUrl, getLocationInfo, lexicalToPlainText } from '@/utils'
+import { cityNameFromLocation, collectEventGenres, eventStartDateIso } from './format-event'
 
 export const SITE_URL = 'https://goazen.info'
 
@@ -104,6 +104,49 @@ export function eventJsonLd(event: Event, opts?: { placeholderImage?: string }) 
   return {
     '@context': 'https://schema.org',
     ...eventToJsonLd(event, opts),
+  }
+}
+
+/**
+ * Une salle en schema.org `MusicVenue`, avec sa programmation.
+ *
+ * Remplace l'objet écrit à la main dans la page : celui-ci publiait la
+ * description Lexical brute (un objet JSON illisible pour un moteur), un
+ * `GeoCoordinates` vide dès qu'un `place_id` existait, et des horaires
+ * d'ouverture inventés (« vendredi et samedi 20h-2h ») identiques pour toutes
+ * les salles. On ne publie plus que ce qu'on sait vraiment.
+ */
+export function musicVenueJsonLd(
+  location: Location,
+  events: Event[],
+  opts: { url: string; region?: string | null; placeholderImage?: string },
+) {
+  const cityDoc = typeof location['city V2'] === 'object' ? location['city V2'] : null
+  const cityName = clean(cityNameFromLocation(location))
+  const region = regionLabel(cityDoc?.region ?? opts.region)
+  const description = clean(
+    lexicalToPlainText(location.description_V2) || lexicalToPlainText(location.description),
+  )
+  const image =
+    absoluteUrl(typeof location.image === 'object' ? location.image?.url : undefined) ??
+    absoluteUrl(opts.placeholderImage)
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MusicVenue',
+    name: location.name,
+    url: opts.url,
+    ...(description ? { description } : {}),
+    ...(image ? { image } : {}),
+    address: {
+      '@type': 'PostalAddress',
+      ...(cityName ? { addressLocality: cityName } : {}),
+      ...(region ? { addressRegion: region } : {}),
+      addressCountry: 'FR',
+    },
+    ...(events.length
+      ? { event: events.map((event) => eventToJsonLd(event, opts)) }
+      : {}),
   }
 }
 

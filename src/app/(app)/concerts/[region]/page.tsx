@@ -102,6 +102,27 @@ export default async function RegionPage({ params }: { params: Promise<{ region:
           <FestivalBanner event={festival} />
         </div>
       )}
+      {/* Le titre est le h1 de la page : il doit être prérendu. Seul le filtre
+          par ville reste sous <Suspense> — il appelle useSearchParams(), qui
+          fait basculer tout son sous-arbre en rendu client. Avec le titre à
+          l'intérieur, le h1 n'existait que dans le payload RSC, invisible pour
+          un crawler sans JS. */}
+      <UnifiedFilterSections
+        title={`Concerts, soirées et DJ sets ${
+          region === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'
+        }`}
+        subTitle="Tous les concerts et soirées à venir:"
+        buttons={[
+          <Suspense key="city-filter" fallback={null}>
+            <CityFilterCombobox
+              cities={[
+                ...cities.docs,
+                { id: 'all', name: 'Toutes les villes', createdAt: '', updatedAt: '' },
+              ]}
+            />
+          </Suspense>,
+        ]}
+      />
       <Suspense
         key={region}
         fallback={
@@ -110,21 +131,6 @@ export default async function RegionPage({ params }: { params: Promise<{ region:
           </div>
         }
       >
-        <UnifiedFilterSections
-          title={`Concerts, soirées et DJ sets ${
-            region === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'
-          }`}
-          subTitle="Tous les concerts et soirées à venir:"
-          buttons={[
-            <CityFilterCombobox
-              key="city-filter"
-              cities={[
-                ...cities.docs,
-                { id: 'all', name: 'Toutes les villes', createdAt: '', updatedAt: '' },
-              ]}
-            />,
-          ]}
-        />
         <EventsGrid
           initialEvents={events.docs}
           initialNextPage={events.nextPage}
