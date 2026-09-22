@@ -2,6 +2,7 @@ import type { Event, Location } from '@/payload-types'
 import { buildEventUrl, getLocationInfo, lexicalToPlainText } from '@/utils'
 import { PLACEHOLDER_SEGMENTS } from './url-segments'
 import { cityNameFromLocation, collectEventGenres, eventStartDateIso } from './format-event'
+import { normalizeTicketingUrl } from './ticketing-url'
 
 export const SITE_URL = 'https://goazen.info'
 
@@ -135,7 +136,13 @@ export function eventToJsonLd(event: Event, opts?: { placeholderImage?: string }
   const cityName = clean(info.cityName)
   const image = eventImageUrl(event, opts?.placeholderImage)
   const priceValue = parsePrice(event.price)
-  const hasOffer = Boolean(event.ticketing_url) || priceValue !== undefined
+  const eventUrl = `${SITE_URL}${buildEventUrl(event)}`
+  // `offers.url` doit être une URL valide : un `ticketing_url` illisible
+  // (« Sur place », un @insta) est remplacé par la page événement, qui porte
+  // elle aussi l'info billetterie. Mieux qu'une offre publiée avec une URL
+  // invalide, et mieux qu'un prix perdu faute d'offre.
+  const ticketingUrl = normalizeTicketingUrl(event.ticketing_url)
+  const hasOffer = Boolean(ticketingUrl) || priceValue !== undefined
   const genres = collectEventGenres(event)
   // Une salle référencée est un lieu de concert ; un `location_alt` en texte
   // libre n'est qu'une adresse approximative, d'où le `Place` générique.
@@ -147,7 +154,7 @@ export function eventToJsonLd(event: Event, opts?: { placeholderImage?: string }
     startDate: eventStartDateIso(event),
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-    url: `${SITE_URL}${buildEventUrl(event)}`,
+    url: eventUrl,
     ...(event.description ? { description: event.description } : {}),
     ...(image ? { image } : {}),
     ...(genres.length ? { genre: genres } : {}),
@@ -169,7 +176,7 @@ export function eventToJsonLd(event: Event, opts?: { placeholderImage?: string }
       ? {
           offers: {
             '@type': 'Offer',
-            ...(event.ticketing_url ? { url: event.ticketing_url } : {}),
+            url: ticketingUrl ?? eventUrl,
             ...(priceValue !== undefined ? { price: priceValue, priceCurrency: 'EUR' } : {}),
             availability: event.sold_out
               ? 'https://schema.org/SoldOut'

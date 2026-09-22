@@ -1,6 +1,7 @@
 import { createUniqueFieldSchema } from '@ts-react/form'
 import { z } from 'zod'
 import { EventKindSchema } from './event-kind-schema'
+import { normalizeTicketingUrl } from '@/lib/ticketing-url'
 
 export const LocationSchema = z.object({
   name: z.string(),
@@ -63,9 +64,16 @@ const baseEventFields = {
     ),
   price: PriceSchema.describe('Prix // Prix (0 si gratuit, 20 caractères max)'),
   email: z.string().email().describe('Email // Email'),
+  // `refine` et non `transform` : @ts-react/form mappe le champ d'après le type
+  // zod, et un ZodEffects ne rendrait plus un input texte. La normalisation se
+  // fait à l'écriture, dans `create-event`. Ce qui n'est pas rattrapable est
+  // refusé ici : sinon on le retrouve dans `offers.url` du JSON-LD.
   ticketingLink: z
     .string()
     .optional()
+    .refine((value) => !value || normalizeTicketingUrl(value) !== undefined, {
+      message: 'Lien invalide : colle une URL complète (https://…) ou laisse vide',
+    })
     .describe('Lien de la billetterie // Lien de la billetterie (optionnel)'),
 }
 

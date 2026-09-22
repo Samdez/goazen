@@ -1,5 +1,6 @@
 import type { Event as PayloadEvent } from '@/payload-types'
 import { collectEventGenres, formatPrice } from '@/lib/format-event'
+import { normalizeTicketingUrl } from './ticketing-url'
 
 const PARIS_TZ = 'Europe/Paris'
 
@@ -158,7 +159,8 @@ export function mapEventToAgentEvent(event: PayloadEvent, baseUrl: string): Agen
     price: formatAgentPrice(event),
     event_kind: formatAgentEventKind(event.event_kind),
     image,
-    ticketing_url: event.ticketing_url || null,
+    // Texte libre en base : on n'expose que ce qui est réellement suivable.
+    ticketing_url: normalizeTicketingUrl(event.ticketing_url) ?? null,
     slug: event.slug ?? '',
   }
 }

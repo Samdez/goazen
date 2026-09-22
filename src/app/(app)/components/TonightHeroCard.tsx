@@ -12,6 +12,7 @@ import {
 } from '@/lib/format-event'
 import { getEventKindBadgeClassName, hasEventKind, getEventKindLabel } from '@/utils/event-kind'
 import type { HeroLabel } from '../queries/get-hero-event'
+import { normalizeTicketingUrl } from '@/lib/ticketing-url'
 
 const PILL_LABELS: Record<HeroLabel, string> = {
   tonight: 'Ce soir',
@@ -47,7 +48,7 @@ export default function TonightHeroCard({
   const venue = formatVenue(event)
   const genre = formatEventGenres(event)
   const price = formatPrice({ price: event.price, sold_out: event.sold_out })
-  const ticketingUrl = event.ticketing_url
+  const ticketingUrl = normalizeTicketingUrl(event.ticketing_url)
 
   const pillLabel = PILL_LABELS[labelKey]
   const headlinerLabel = HEADLINER_LABELS[labelKey]

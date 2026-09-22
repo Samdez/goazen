@@ -3,6 +3,7 @@
 import type { Media } from '@/payload-types'
 import { payload } from '../(client)/payload-client'
 import type { FormEventSchemaType } from '../formulaire/create-event-form-schema'
+import { normalizeTicketingUrl } from '@/lib/ticketing-url'
 
 export async function createEvent(formData: FormEventSchemaType) {
   const {
@@ -53,7 +54,7 @@ export async function createEvent(formData: FormEventSchemaType) {
         ...(genres.length > 0 && { category: genres }),
         genres: genresText,
         price,
-        ticketing_url: ticketingLink,
+        ticketing_url: normalizeTicketingUrl(ticketingLink) ?? null,
         createdAt: new Date().toISOString(),
         contact_email: email,
         event_kind: event_kind.event_kind,
