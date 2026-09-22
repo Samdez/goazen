@@ -11,7 +11,7 @@ import { getCity } from '@/app/(app)/queries/get-city'
 import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
 import Link from 'next/link'
 import { JsonLd } from '@/app/(app)/components/JsonLd'
-import { musicVenueJsonLd } from '@/lib/structured-data'
+import { musicVenueJsonLd, OG_IMAGE } from '@/lib/structured-data'
 import { formatDateLong } from '@/lib/format-event'
 import { buildEventUrl } from '@/utils'
 import { getPastEvents } from '@/app/(app)/queries/get-past-events'
@@ -80,7 +80,7 @@ export async function generateMetadata({
                 alt: `Concerts à ${location.name} ${cityName}`,
               },
             ]
-          : undefined,
+          : [OG_IMAGE],
         locale: 'fr_FR',
         type: 'website',
       },

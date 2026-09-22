@@ -3,6 +3,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { cn, formatDate, getLocationInfo, isEventPast, slugifyString } from '@/utils'
 import { buildEventSEODescription, buildEventSEOTitle } from '@/config-utils'
+import { OG_IMAGE } from '@/lib/structured-data'
 import { getEventKindBadgeClassName, getEventKindLabel, hasEventKind } from '@/utils/event-kind'
 import { Button } from '@/components/ui/button'
 import { getPlaceholderImage } from '@/app/(app)/queries/get-placeholder-image'
@@ -82,7 +83,7 @@ export async function generateMetadata({
         siteName: 'Goazen!',
         images: fullImageUrl
           ? [{ url: fullImageUrl, width: 1200, height: 630, alt: event.title }]
-          : undefined,
+          : [OG_IMAGE],
         locale: 'fr_FR',
         type: 'website',
       },

@@ -5,6 +5,19 @@ import { cityNameFromLocation, collectEventGenres, eventStartDateIso } from './f
 
 export const SITE_URL = 'https://goazen.info'
 
+/**
+ * Vignette de partage par défaut (1200×630), générée par `/og`.
+ *
+ * À poser explicitement dans chaque `openGraph` : un objet `openGraph` défini
+ * par une page remplace celui du layout, images comprises.
+ */
+export const OG_IMAGE = {
+  url: `${SITE_URL}/og`,
+  width: 1200,
+  height: 630,
+  alt: 'Goazen! — agenda des concerts au Pays Basque et dans les Landes',
+}
+
 function regionLabel(region?: string | null): string | undefined {
   if (region === 'pays-basque') return 'Pays Basque'
   if (region === 'landes') return 'Landes'
@@ -51,6 +64,70 @@ function parsePrice(price?: string | null): string | undefined {
  * et page salle lisent toutes celle-ci. Sans `@context` — il est posé par
  * l'appelant, à la racine du bloc publié (cf. `eventJsonLd`).
  */
+/** Les comptes officiels de Goazen!, pour `sameAs`. */
+export const GOAZEN_PROFILES = ['https://www.instagram.com/goazen.info/']
+
+export const GOAZEN_EMAIL = 'contact@goazen.info'
+
+/**
+ * L'éditeur du site, en `Organization`.
+ *
+ * Sans entité identifiable — des profils vérifiables, une zone couverte, un
+ * contact — les moteurs génératifs traitent la source comme anonyme et la
+ * citent moins volontiers. C'est le même bloc que celui de la page À propos :
+ * deux définitions divergentes donneraient deux entités différentes.
+ */
+export function organizationJsonLd(opts?: { description?: string }) {
+  return {
+    '@type': 'Organization',
+    name: 'Goazen!',
+    url: SITE_URL,
+    logo: `${SITE_URL}/GOAZEN_MASCOTTES.png`,
+    description:
+      opts?.description ??
+      'Agenda des concerts, DJ sets et soirées au Pays Basque et dans les Landes. Gratuit, tenu bénévolement.',
+    email: GOAZEN_EMAIL,
+    sameAs: GOAZEN_PROFILES,
+    foundingDate: '2024',
+    areaServed: [
+      { '@type': 'AdministrativeArea', name: 'Pays Basque' },
+      { '@type': 'AdministrativeArea', name: 'Landes' },
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer support',
+      email: GOAZEN_EMAIL,
+      availableLanguage: ['fr'],
+    },
+  }
+}
+
+/**
+ * Le site lui-même.
+ *
+ * Pas de `SearchAction` : Goazen! n'a pas de recherche texte, seulement des
+ * filtres (ville, date, genre). Annoncer une recherche qui n'existe pas
+ * donnerait une sitelinks searchbox cassée dans les résultats Google.
+ */
+export function webSiteJsonLd() {
+  return {
+    '@type': 'WebSite',
+    name: 'Goazen!',
+    alternateName: 'Goazen',
+    url: SITE_URL,
+    inLanguage: 'fr-FR',
+    publisher: { '@type': 'Organization', name: 'Goazen!', url: SITE_URL },
+  }
+}
+
+/** Organization + WebSite en un seul bloc, pour la home. */
+export function siteIdentityJsonLd(opts?: { description?: string }) {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [organizationJsonLd(opts), webSiteJsonLd()],
+  }
+}
+
 export function eventToJsonLd(event: Event, opts?: { placeholderImage?: string }) {
   const info = getLocationInfo(event)
   const region = regionLabel(info.region)
@@ -148,9 +225,7 @@ export function musicVenueJsonLd(
       ...(region ? { addressRegion: region } : {}),
       addressCountry: 'FR',
     },
-    ...(events.length
-      ? { event: events.map((event) => eventToJsonLd(event, opts)) }
-      : {}),
+    ...(events.length ? { event: events.map((event) => eventToJsonLd(event, opts)) } : {}),
   }
 }
 

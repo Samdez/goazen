@@ -11,6 +11,7 @@ import Navbar from './components/Navbar'
 import SiteFooter from './components/SiteFooter'
 import { Toaster } from '@/components/ui/toaster'
 import { bebas } from './fonts'
+import { OG_IMAGE } from '@/lib/structured-data'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://goazen.info'),
@@ -38,9 +39,11 @@ export const metadata: Metadata = {
     title: 'Goazen! - Agenda Concerts & Soirées Biarritz, Pays Basque',
     description:
       'Tous les concerts et soirées à Biarritz et dans le Pays Basque. Agenda des événements musicaux : rock, électro, DJ sets. Où sortir ce soir ?',
+    images: [OG_IMAGE],
   },
   twitter: {
     card: 'summary_large_image',
+    images: [OG_IMAGE.url],
     title: 'Goazen! - Agenda Concerts Biarritz & Pays Basque',
     description:
       'Tous les concerts et soirées à Biarritz et dans le Pays Basque. Agenda des événements musicaux : rock, électro, DJ sets. Où sortir ce soir ?',
