@@ -17,6 +17,9 @@ import type { City } from '@/payload-types'
 import type { PaginatedDocs } from 'payload'
 import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
 import { JsonLd } from '@/app/(app)/components/JsonLd'
+import StatsBand from '@/app/(app)/components/StatsBand'
+import { getScopedStats } from '@/app/(app)/queries/get-site-stats'
+import { pluralize } from '@/lib/stats-wording'
 import { breadcrumbJsonLd, eventsItemListJsonLd, OG_IMAGE } from '@/lib/structured-data'
 
 // ISR: re-render periodically so the "upcoming events" filter (new Date())
@@ -42,10 +45,11 @@ export async function generateMetadata({
   const cityName = cityData?.name || cityParam.charAt(0).toUpperCase() + cityParam.slice(1)
 
   const title = `Concerts & soirées à ${cityName} — agenda | Goazen!`
-  const description = `Agenda des concerts, DJ sets et soirées à venir à ${cityName}. Toute la programmation musicale de la ville sur Goazen!`.slice(
-    0,
-    155,
-  )
+  const description =
+    `Agenda des concerts, DJ sets et soirées à venir à ${cityName}. Toute la programmation musicale de la ville sur Goazen!`.slice(
+      0,
+      155,
+    )
   const canonical = `https://goazen.info/concerts/${regionParam}/${cityParam}`
 
   return {
@@ -83,7 +87,7 @@ export default async function CityPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const { region, city } = await params
-  const [cityData, placeholderImage, events, citiesData] = await Promise.all([
+  const [cityData, placeholderImage, events, citiesData, stats] = await Promise.all([
     getCity(city),
     getPlaceholderImage(),
     getCachedEvents({
@@ -92,6 +96,7 @@ export default async function CityPage({
       startDate: new Date().toISOString(),
     }),
     getCities(region),
+    getScopedStats({ region, city }),
   ])
 
   if (!cityData) {
@@ -145,6 +150,17 @@ export default async function CityPage({
           </Suspense>,
         ]}
       />
+      {stats.total > 0 && (
+        <StatsBand
+          className="pb-8"
+          items={[
+            `${pluralize(stats.total, 'concert')} référencé${stats.total > 1 ? 's' : ''} à ${cityData.name}${
+              stats.sinceYear ? ` depuis ${stats.sinceYear}` : ''
+            }`,
+            stats.upcoming > 0 ? `${pluralize(stats.upcoming, 'date')} à venir` : null,
+          ]}
+        />
+      )}
       <Suspense
         fallback={
           <div className="mx-auto mt-[14vh] flex min-h-screen w-full justify-center">
