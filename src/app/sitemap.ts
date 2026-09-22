@@ -92,6 +92,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.9,
     },
+    // Pages éditoriales : elles disent qui tient l'agenda et comment nous
+    // joindre, ce que les moteurs génératifs regardent avant de citer une source.
+    {
+      url: 'https://goazen.info/a-propos',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: 'https://goazen.info/genres',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    },
+    {
+      url: 'https://goazen.info/contact',
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.4,
+    },
     ...specialEventsUrls,
     ...regionsUrls,
     ...citiesUrls,
