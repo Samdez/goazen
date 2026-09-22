@@ -6,6 +6,7 @@ import { getPlaceholderImage } from '../../queries/get-placeholder-image'
 import { CityFilterCombobox } from '../../components/CityFilterCombobox'
 import UnifiedFilterSections from '../../components/UnifiedFilterSection'
 import { Suspense } from 'react'
+import { OG_IMAGE } from '@/lib/structured-data'
 
 export async function generateStaticParams() {
   const cities = await getCities()
@@ -32,6 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ city: str
       description,
       url: canonical,
       siteName: 'Goazen!',
+      images: [OG_IMAGE],
       locale: 'fr_FR',
       type: 'website',
     },

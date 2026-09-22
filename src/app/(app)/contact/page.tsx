@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ContactFormBlock } from '../components/ContactFormBlock'
 import { JsonLd } from '../components/JsonLd'
-import { SITE_URL } from '@/lib/structured-data'
+import { organizationJsonLd, SITE_URL, OG_IMAGE } from '@/lib/structured-data'
 
 const TITLE = 'Contact — Goazen!'
 const DESCRIPTION =
@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: `${SITE_URL}/contact`,
     siteName: 'Goazen!',
+    images: [OG_IMAGE],
     locale: 'fr_FR',
     type: 'website',
   },
@@ -33,13 +34,7 @@ export default function ContactPage() {
           name: TITLE,
           url: `${SITE_URL}/contact`,
           inLanguage: 'fr-FR',
-          mainEntity: {
-            '@type': 'Organization',
-            name: 'Goazen!',
-            url: SITE_URL,
-            email: 'contact@goazen.info',
-            sameAs: ['https://www.instagram.com/goazen.info/'],
-          },
+          mainEntity: organizationJsonLd(),
         }}
       />
       <div className="mx-auto max-w-2xl px-4 py-12 font-text text-lg [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-brand-orange">

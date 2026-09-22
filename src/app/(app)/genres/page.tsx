@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { JsonLd } from '../components/JsonLd'
 import { getCategories } from '../queries/get-categories'
 import { AUTRE_CATEGORY_NAME } from '../constants'
-import { breadcrumbJsonLd, SITE_URL } from '@/lib/structured-data'
+import { breadcrumbJsonLd, SITE_URL, OG_IMAGE } from '@/lib/structured-data'
 
 export const revalidate = 86400
 
@@ -20,6 +20,7 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: `${SITE_URL}/genres`,
     siteName: 'Goazen!',
+    images: [OG_IMAGE],
     locale: 'fr_FR',
     type: 'website',
   },

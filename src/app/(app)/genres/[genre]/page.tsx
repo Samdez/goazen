@@ -8,6 +8,7 @@ import { getPlaceholderImage } from '../../queries/get-placeholder-image'
 import { searchParamsSchema } from '../../schemas/searchParams'
 import { AUTRE_CATEGORY_NAME } from '../../constants'
 import type { Metadata } from 'next'
+import { OG_IMAGE } from '@/lib/structured-data'
 
 // ISR: re-render periodically so the "upcoming events" filter (new Date())
 // isn't frozen at build time.
@@ -54,6 +55,7 @@ export async function generateMetadata({
       description,
       url: canonical,
       siteName: 'Goazen!',
+      images: [OG_IMAGE],
       locale: 'fr_FR',
       type: 'website',
     },

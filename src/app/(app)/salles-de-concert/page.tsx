@@ -7,6 +7,7 @@ import { Suspense } from 'react'
 import { PacmanLoader } from 'react-spinners'
 import { CityFilterCombobox } from '../components/CityFilterCombobox'
 import UnifiedFilterSections from '../components/UnifiedFilterSection'
+import { OG_IMAGE } from '@/lib/structured-data'
 
 export async function generateMetadata() {
   const title = 'Salles de concert & bars — Pays Basque & Landes | Goazen'
@@ -23,6 +24,7 @@ export async function generateMetadata() {
       description,
       url: canonical,
       siteName: 'Goazen!',
+      images: [OG_IMAGE],
       locale: 'fr_FR',
       type: 'website',
     },

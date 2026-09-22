@@ -7,7 +7,7 @@ import UnifiedFilterSections from '../components/UnifiedFilterSection'
 import { CityFilterCombobox } from '../components/CityFilterCombobox'
 import EventsGrid from '../components/EventsGrid'
 import { JsonLd } from '../components/JsonLd'
-import { breadcrumbJsonLd, eventsItemListJsonLd } from '@/lib/structured-data'
+import { breadcrumbJsonLd, eventsItemListJsonLd, OG_IMAGE } from '@/lib/structured-data'
 import type { Metadata } from 'next'
 
 // ISR: re-render periodically so the "upcoming events" filter (new Date())
@@ -29,6 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       url: canonical,
       siteName: 'Goazen!',
+      images: [OG_IMAGE],
       locale: 'fr_FR',
       type: 'website',
     },

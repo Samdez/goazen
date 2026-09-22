@@ -17,7 +17,7 @@ import type { City } from '@/payload-types'
 import type { PaginatedDocs } from 'payload'
 import { RichTextWrapper } from '@/app/(app)/components/RichTextWrapper'
 import { JsonLd } from '@/app/(app)/components/JsonLd'
-import { breadcrumbJsonLd, eventsItemListJsonLd } from '@/lib/structured-data'
+import { breadcrumbJsonLd, eventsItemListJsonLd, OG_IMAGE } from '@/lib/structured-data'
 
 // ISR: re-render periodically so the "upcoming events" filter (new Date())
 // isn't frozen at build time.
@@ -57,6 +57,7 @@ export async function generateMetadata({
       description,
       url: canonical,
       siteName: 'Goazen!',
+      images: [OG_IMAGE],
       locale: 'fr_FR',
       type: 'website',
     },

@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { JsonLd } from '../components/JsonLd'
 import { getSiteStats } from '../queries/get-site-stats'
-import { SITE_URL } from '@/lib/structured-data'
+import { organizationJsonLd, SITE_URL, OG_IMAGE } from '@/lib/structured-data'
 
 // ISR : les chiffres affichés doivent suivre la base, pas la date du build.
 export const revalidate = 86400
@@ -20,6 +20,7 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: `${SITE_URL}/a-propos`,
     siteName: 'Goazen!',
+    images: [OG_IMAGE],
     locale: 'fr_FR',
     type: 'website',
   },
@@ -43,17 +44,7 @@ export default async function AboutPage() {
           description: DESCRIPTION,
           url: `${SITE_URL}/a-propos`,
           inLanguage: 'fr-FR',
-          mainEntity: {
-            '@type': 'Organization',
-            name: 'Goazen!',
-            url: SITE_URL,
-            email: 'contact@goazen.info',
-            sameAs: ['https://www.instagram.com/goazen.info/'],
-            areaServed: [
-              { '@type': 'AdministrativeArea', name: 'Pays Basque' },
-              { '@type': 'AdministrativeArea', name: 'Landes' },
-            ],
-          },
+          mainEntity: organizationJsonLd({ description: DESCRIPTION }),
         }}
       />
 

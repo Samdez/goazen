@@ -13,7 +13,7 @@ import { darkerGrotesque } from '../../fonts'
 import Link from 'next/link'
 import { REGIONS } from '../../constants'
 import { JsonLd } from '../../components/JsonLd'
-import { breadcrumbJsonLd, eventsItemListJsonLd } from '@/lib/structured-data'
+import { breadcrumbJsonLd, eventsItemListJsonLd, OG_IMAGE } from '@/lib/structured-data'
 import type { Metadata } from 'next'
 
 // ISR: re-render periodically so the "upcoming events" filter (new Date())
@@ -48,6 +48,7 @@ export async function generateMetadata({
       description,
       url: canonical,
       siteName: 'Goazen!',
+      images: [OG_IMAGE],
       locale: 'fr_FR',
       type: 'website',
     },

@@ -32,7 +32,7 @@ import { getBrowseHero, getTonightHero } from './queries/get-hero-event'
 import { getBannerSpecialEvent } from './queries/get-banner-special-event'
 import { AUTRE_CATEGORY_NAME, CITY_CHIPS } from './constants'
 import { JsonLd } from './components/JsonLd'
-import { eventsItemListJsonLd } from '@/lib/structured-data'
+import { eventsItemListJsonLd, siteIdentityJsonLd } from '@/lib/structured-data'
 import type { Event } from '@/payload-types'
 
 const searchParamsSchema = z.object({
@@ -486,18 +486,9 @@ function MascotEmpty({ title, subtitle }: { title: string; subtitle: string }) {
 }
 
 function SeoJsonLd({ events, placeholderImage }: { events: Event[]; placeholderImage: string }) {
-  const organization = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: 'Goazen!',
-    description:
-      'Découvrez tous les concerts, DJ sets, festivals et soirées au Pays Basque et dans les Landes',
-    url: 'https://goazen.info',
-    logo: 'https://goazen.info/GOAZEN_MASCOTTES.png',
-  }
   return (
     <>
-      <JsonLd id="organization-structured-data" data={organization} />
+      <JsonLd id="organization-structured-data" data={siteIdentityJsonLd()} />
       <JsonLd id="home-events" data={eventsItemListJsonLd(events, { placeholderImage })} />
     </>
   )
