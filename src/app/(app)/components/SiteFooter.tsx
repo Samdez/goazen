@@ -60,6 +60,11 @@ export default function SiteFooter() {
                 Genres
               </Link>
             </li>
+            <li>
+              <Link href="/a-propos" className="hover:text-brand-orange">
+                À propos
+              </Link>
+            </li>
           </FooterCol>
 
           <FooterCol title="Participer">
