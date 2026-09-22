@@ -2,6 +2,18 @@ import slugify from 'slugify'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { Event } from './payload-types'
+import {
+  UNKNOWN_CITY_SEGMENT,
+  UNKNOWN_REGION_SEGMENT,
+  UNKNOWN_VENUE_SEGMENT,
+} from './lib/url-segments'
+
+export {
+  PLACEHOLDER_SEGMENTS,
+  UNKNOWN_CITY_SEGMENT,
+  UNKNOWN_REGION_SEGMENT,
+  UNKNOWN_VENUE_SEGMENT,
+} from './lib/url-segments'
 
 export function slugifyString(string: string) {
   const slug = string.replace('/', '-')
@@ -86,39 +98,65 @@ export function createHref({
 }
 
 export function buildEventUrl(event: Event) {
-  const locationInfo = getLocationInfo(event)
-  return `/concerts/${locationInfo?.region || event.region}/${locationInfo?.citySlug}/${locationInfo?.locationSlug}/${event.slug}_${event.id}`
+  const { region, citySlug, locationSlug } = getLocationInfo(event)
+  return `/concerts/${region}/${citySlug}/${locationSlug}/${event.slug}_${event.id}`
 }
 
-export function getLocationInfo(event: Event) {
-  if (
-    event.location &&
-    typeof event.location !== 'string' &&
-    event.location['city V2'] &&
-    typeof event.location['city V2'] !== 'string'
-  ) {
+/**
+ * Découpe un `location_alt` saisi en texte libre (« Le Baya - Capbreton »).
+ *
+ * Convention de saisie : le lieu d'abord, la ville après un séparateur. Sans
+ * séparateur, on ne sait pas deviner la ville — mieux vaut l'admettre que
+ * publier un segment faux.
+ */
+function splitLocationAlt(alt?: string | null) {
+  const parts = String(alt ?? '')
+    .split(/[-/,]/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+  return { venueName: parts[0] ?? null, cityName: parts[1] ?? null }
+}
+
+export type LocationInfo = {
+  citySlug: string
+  cityName: string | null
+  locationSlug: string
+  locationName: string | null
+  region: string
+}
+
+/**
+ * De quoi construire l'URL d'un événement et nommer son lieu.
+ *
+ * Cascade volontaire, du plus fiable au moins fiable : la relation `city V2`
+ * (qui porte aussi la région), puis l'enum `city` legacy des Locations d'avant
+ * la migration, puis la ville lue dans le texte libre, puis un segment neutre.
+ * Chaque étape sautée produisait avant une sentinelle dans l'URL canonique.
+ */
+export function getLocationInfo(event: Event): LocationInfo {
+  const location = event.location && typeof event.location !== 'string' ? event.location : null
+  const cityDoc =
+    location && location['city V2'] && typeof location['city V2'] !== 'string'
+      ? location['city V2']
+      : null
+
+  if (location) {
+    const citySlug = cityDoc?.slug || location.city || null
     return {
-      citySlug: event.location['city V2'].slug,
-      cityName: event.location['city V2'].name,
-      locationSlug: event.location.slug,
-      locationName: event.location.name,
-      region: event.location['city V2'].region,
+      citySlug: citySlug || UNKNOWN_CITY_SEGMENT,
+      cityName: cityDoc?.name || location.city || null,
+      locationSlug: location.slug || slugify(location.name) || UNKNOWN_VENUE_SEGMENT,
+      locationName: location.name || null,
+      region: cityDoc?.region || event.region || UNKNOWN_REGION_SEGMENT,
     }
   }
-  if (typeof event.location === 'string' || !event.location) {
-    return {
-      citySlug: slugify(event.location_alt?.split(/[-/,]/)?.at(1) || 'no-location'),
-      cityName: slugify(event.location_alt?.split(/[-/,]/)?.at(1) || 'no-location'),
-      locationSlug: slugify(event.location_alt?.split(/[-/,]/)?.at(0) || 'no-location'),
-      locationName: event.location_alt?.split(/[-/,]/)?.at(0) || 'no-location',
-      region: event.region,
-    }
-  }
+
+  const { venueName, cityName } = splitLocationAlt(event.location_alt)
   return {
-    citySlug: event.location.city,
-    cityName: event.location.city,
-    locationSlug: event.location.slug,
-    locationName: event.location.name,
-    region: event.region,
+    citySlug: cityName ? slugify(cityName) : UNKNOWN_CITY_SEGMENT,
+    cityName,
+    locationSlug: venueName ? slugify(venueName) : UNKNOWN_VENUE_SEGMENT,
+    locationName: venueName,
+    region: event.region || UNKNOWN_REGION_SEGMENT,
   }
 }

@@ -1,5 +1,6 @@
 import type { Event, Location } from '@/payload-types'
 import { buildEventUrl, getLocationInfo, lexicalToPlainText } from '@/utils'
+import { PLACEHOLDER_SEGMENTS } from './url-segments'
 import { cityNameFromLocation, collectEventGenres, eventStartDateIso } from './format-event'
 
 export const SITE_URL = 'https://goazen.info'
@@ -10,11 +11,14 @@ function regionLabel(region?: string | null): string | undefined {
   return undefined
 }
 
-/** getLocationInfo returns the sentinel 'no-location' when a city/venue can't be resolved. */
+/**
+ * Un segment neutre (`ville-non-precisee`…) dit qu'on ne sait pas : le publier
+ * comme nom de lieu affirmerait une adresse qui n'existe pas.
+ */
 function clean(value?: string | null): string | undefined {
   if (!value) return undefined
   const trimmed = value.trim()
-  if (!trimmed || trimmed === 'no-location') return undefined
+  if (!trimmed || PLACEHOLDER_SEGMENTS.has(trimmed)) return undefined
   return trimmed
 }
 
