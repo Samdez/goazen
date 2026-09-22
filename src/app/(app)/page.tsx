@@ -33,7 +33,7 @@ import { getBannerSpecialEvent } from './queries/get-banner-special-event'
 import { AUTRE_CATEGORY_NAME, CITY_CHIPS } from './constants'
 import { JsonLd } from './components/JsonLd'
 import { eventsItemListJsonLd, siteIdentityJsonLd } from '@/lib/structured-data'
-import { approxCount, capitalize, formatCount, pluralize } from '@/lib/stats-wording'
+import { approxCount, capitalize, formatCount } from '@/lib/stats-wording'
 import StatsBand from './components/StatsBand'
 import { getSiteStats } from './queries/get-site-stats'
 import type { Event } from '@/payload-types'
@@ -431,7 +431,11 @@ async function PageIntro() {
         items={[
           `${capitalize(approxCount(stats.publishedEvents))} concerts référencés depuis ${stats.sinceYear}`,
           `${formatCount(stats.locations)} salles et lieux de concert`,
-          stats.thisWeek > 0 ? `${pluralize(stats.thisWeek, 'date')} cette semaine` : null,
+          stats.thisWeek > 0
+            ? `${formatCount(stats.thisWeek)} ${
+                stats.thisWeek > 1 ? 'concerts et DJ sets' : 'concert ou DJ set'
+              } cette semaine`
+            : null,
         ]}
       />
     </section>
