@@ -2,6 +2,7 @@
 
 import { unstable_cache } from 'next/cache'
 import { toDayKey } from '@/lib/day-key'
+import { scopeWhere } from '@/lib/event-filters'
 import { payload } from '../(client)/payload-client'
 
 function extendEndDateToEndOfDay(date: string) {
@@ -49,37 +50,12 @@ export async function _getEvents({
     collection: 'events',
     where: {
       and: [
-        ...(locationId ? [{ location: { equals: locationId } }] : []),
+        ...scopeWhere({ locationId }),
         ...(adjustedStartDate ? [{ date: { greater_than_equal: adjustedStartDate } }] : []),
         ...(extendedEndDate ? [{ date: { less_than_equal: extendedEndDate } }] : []),
         ...(category ? [{ 'category.slug': { equals: category } }] : []),
-        ...(regionParam
-          ? [
-              {
-                or: [
-                  {
-                    and: [
-                      { 'location.city V2.region': { exists: true } },
-                      { 'location.city V2.region': { equals: regionParam } },
-                    ],
-                  },
-                  {
-                    and: [
-                      { 'location.city V2.region': { exists: false } },
-                      { region: { equals: regionParam } },
-                    ],
-                  },
-                ],
-              },
-            ]
-          : []),
-        ...(city
-          ? [
-              {
-                or: [{ 'location.city V2.slug': { equals: city } }],
-              },
-            ]
-          : []),
+        // Périmètre région/ville partagé avec les compteurs (cf. event-filters).
+        ...scopeWhere({ region: regionParam, city }),
         ...(specialEvent ? [{ 'special_event.slug': { equals: specialEvent } }] : []),
         ...(selectionOnly ? [{ add_to_selection: { equals: true } }] : []),
         { _status: { equals: 'published' } },

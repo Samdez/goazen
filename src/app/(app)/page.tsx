@@ -33,6 +33,9 @@ import { getBannerSpecialEvent } from './queries/get-banner-special-event'
 import { AUTRE_CATEGORY_NAME, CITY_CHIPS } from './constants'
 import { JsonLd } from './components/JsonLd'
 import { eventsItemListJsonLd, siteIdentityJsonLd } from '@/lib/structured-data'
+import { approxCount, capitalize, formatCount, pluralize } from '@/lib/stats-wording'
+import StatsBand from './components/StatsBand'
+import { getSiteStats } from './queries/get-site-stats'
 import type { Event } from '@/payload-types'
 
 const searchParamsSchema = z.object({
@@ -402,7 +405,9 @@ function AVenirSection({ events }: { events: Event[] }) {
 
 // ============================== SHARED CHROME ================================
 
-function PageIntro() {
+async function PageIntro() {
+  const stats = await getSiteStats()
+
   return (
     <section className="mx-auto max-w-[1280px] px-5 pb-7 pt-14 md:px-8">
       <h1
@@ -419,6 +424,16 @@ function PageIntro() {
       >
         Retrouve tous les concerts, DJ sets, festivals et soirées près de chez toi.
       </p>
+      {/* Le volume est l'argument : un chiffre en prose est ce qu'un moteur
+          génératif reprend, là où « le plus grand agenda » sans chiffre ne dit rien. */}
+      <StatsBand
+        className="mx-0 mt-4 max-w-none px-0 text-left text-[17px] md:text-[17px]"
+        items={[
+          `${capitalize(approxCount(stats.publishedEvents))} concerts référencés depuis ${stats.sinceYear}`,
+          `${formatCount(stats.locations)} salles et lieux de concert`,
+          stats.thisWeek > 0 ? `${pluralize(stats.thisWeek, 'date')} cette semaine` : null,
+        ]}
+      />
     </section>
   )
 }
@@ -485,10 +500,22 @@ function MascotEmpty({ title, subtitle }: { title: string; subtitle: string }) {
   )
 }
 
-function SeoJsonLd({ events, placeholderImage }: { events: Event[]; placeholderImage: string }) {
+async function SeoJsonLd({
+  events,
+  placeholderImage,
+}: {
+  events: Event[]
+  placeholderImage: string
+}) {
+  const stats = await getSiteStats()
   return (
     <>
-      <JsonLd id="organization-structured-data" data={siteIdentityJsonLd()} />
+      <JsonLd
+        id="organization-structured-data"
+        data={siteIdentityJsonLd({
+          description: `Agenda des concerts, DJ sets et soirées au Pays Basque et dans les Landes : ${approxCount(stats.publishedEvents)} dates référencées depuis ${stats.sinceYear}, dans ${formatCount(stats.locations)} salles et lieux. Gratuit, tenu bénévolement.`,
+        })}
+      />
       <JsonLd id="home-events" data={eventsItemListJsonLd(events, { placeholderImage })} />
     </>
   )

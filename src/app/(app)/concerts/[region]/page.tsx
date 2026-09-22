@@ -13,6 +13,9 @@ import { darkerGrotesque } from '../../fonts'
 import Link from 'next/link'
 import { REGIONS } from '../../constants'
 import { JsonLd } from '../../components/JsonLd'
+import StatsBand from '../../components/StatsBand'
+import { getScopedStats } from '../../queries/get-site-stats'
+import { pluralize } from '@/lib/stats-wording'
 import { breadcrumbJsonLd, eventsItemListJsonLd, OG_IMAGE } from '@/lib/structured-data'
 import type { Metadata } from 'next'
 
@@ -68,7 +71,7 @@ export async function generateMetadata({
 
 export default async function RegionPage({ params }: { params: Promise<{ region: string }> }) {
   const { region } = await params
-  const [cities, placeholderImage, events, festival] = await Promise.all([
+  const [cities, placeholderImage, events, festival, stats] = await Promise.all([
     getCities(region),
     getPlaceholderImage(),
     getCachedEvents({
@@ -76,6 +79,7 @@ export default async function RegionPage({ params }: { params: Promise<{ region:
       startDate: new Date().toISOString(),
     }),
     getFeaturedFestival(),
+    getScopedStats({ region }),
   ])
 
   if (!placeholderImage) {
@@ -124,6 +128,17 @@ export default async function RegionPage({ params }: { params: Promise<{ region:
           </Suspense>,
         ]}
       />
+      {stats.total > 0 && (
+        <StatsBand
+          className="pb-8"
+          items={[
+            `${pluralize(stats.total, 'concert')} référencé${stats.total > 1 ? 's' : ''} ${
+              region === 'pays-basque' ? 'au Pays Basque' : 'dans les Landes'
+            }${stats.sinceYear ? ` depuis ${stats.sinceYear}` : ''}`,
+            stats.upcoming > 0 ? `${pluralize(stats.upcoming, 'date')} à venir` : null,
+          ]}
+        />
+      )}
       <Suspense
         key={region}
         fallback={

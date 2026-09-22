@@ -15,6 +15,9 @@ import { musicVenueJsonLd, OG_IMAGE } from '@/lib/structured-data'
 import { formatDateLong } from '@/lib/format-event'
 import { buildEventUrl } from '@/utils'
 import { getPastEvents } from '@/app/(app)/queries/get-past-events'
+import { getScopedStats } from '@/app/(app)/queries/get-site-stats'
+import { pluralize } from '@/lib/stats-wording'
+import StatsBand from '@/app/(app)/components/StatsBand'
 import type { Metadata } from 'next'
 
 // ISR: re-render periodically so the "upcoming events" filter (new Date())
@@ -144,7 +147,10 @@ async function LocationPage({
   })
   // Une salle sans date à venir n'affichait qu'un « rien de prévu » : page vide,
   // jamais citée par un moteur. On montre alors ce qui s'y est déjà joué.
-  const archive = events.docs.length ? null : await getPastEvents({ locationId: location.id })
+  const [archive, stats] = await Promise.all([
+    events.docs.length ? null : getPastEvents({ locationId: location.id }),
+    getScopedStats({ locationId: location.id }),
+  ])
   const cityName =
     typeof location['city V2'] === 'object' ? location['city V2']?.name : location.city
 
@@ -173,15 +179,20 @@ async function LocationPage({
         <h1 className="text-center text-4xl font-bold text-black">
           Tous les concerts, DJ sets, et soirées à {location.name} {cityName} :
         </h1>
+        {stats.total > 0 && (
+          <StatsBand
+            items={[
+              `${pluralize(stats.total, 'concert')} référencé${stats.total > 1 ? 's' : ''} ici${stats.sinceYear ? ` depuis ${stats.sinceYear}` : ''}`,
+              stats.upcoming > 0 ? `${pluralize(stats.upcoming, 'date')} à venir` : null,
+            ]}
+          />
+        )}
         {events.docs.length ? (
           <EventsCarousel events={events.docs} placeholderImageUrl={placeholderImageUrl || ''} />
         ) : archive && archive.total > 0 ? (
           <div className="flex w-full max-w-3xl flex-col items-center gap-6 text-black">
             <p className="text-center text-xl">
-              Aucune date annoncée pour l&apos;instant.{' '}
-              {archive.total === 1
-                ? '1 concert référencé ici depuis 2024.'
-                : `${archive.total} concerts référencés ici depuis 2024.`}
+              Aucune date annoncée pour l&apos;instant — mais la salle est suivie ici.
             </p>
             <div className="w-full">
               <h2 className="mb-2 text-2xl font-bold">Les dernières dates passées</h2>
@@ -189,7 +200,8 @@ async function LocationPage({
                 {archive.docs.map((event) => (
                   <li key={event.id}>
                     <Link href={buildEventUrl(event)} className="text-lg hover:text-white">
-                      <span className="font-bold">{formatDateLong(event.date)}</span> — {event.title}
+                      <span className="font-bold">{formatDateLong(event.date)}</span> —{' '}
+                      {event.title}
                     </Link>
                   </li>
                 ))}
