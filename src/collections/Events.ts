@@ -4,6 +4,7 @@ import { slugifyString } from '../utils'
 import { REGIONS } from '@/app/(app)/constants'
 import { clearOtherHighlightsOnSameDay } from './hooks/clear-other-highlights'
 import { clearRegionWhenLocated } from './hooks/clear-region-when-located'
+import { normalizeTicketingUrl } from '@/lib/ticketing-url'
 
 const Events: CollectionConfig = {
   slug: 'events',
@@ -125,7 +126,26 @@ const Events: CollectionConfig = {
         condition: (data) => data.special_event,
       },
     },
-    { name: 'ticketing_url', type: 'text' },
+    {
+      name: 'ticketing_url',
+      type: 'text',
+      label: 'Lien billetterie',
+      admin: {
+        description:
+          'URL complète de la billetterie. Laisser vide si la vente se fait sur place — une note en texte libre ici casse la donnée structurée envoyée à Google.',
+      },
+      // On nettoie à l'écriture plutôt qu'à la lecture : un `www.x.fr` saisi
+      // sans schéma est complété une fois pour toutes en base. La valeur
+      // irrécupérable est conservée telle quelle pour que `validate` puisse
+      // l'expliquer, au lieu de disparaître sans un mot.
+      hooks: {
+        beforeValidate: [({ value }) => normalizeTicketingUrl(value) ?? value],
+      },
+      validate: (value: string | null | undefined) =>
+        !value || normalizeTicketingUrl(value)
+          ? true
+          : 'Lien invalide : saisir une URL complète (https://…) ou laisser le champ vide.',
+    },
     { name: 'contact_email', type: 'text' },
     {
       name: 'slug',

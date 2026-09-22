@@ -73,6 +73,53 @@ describe('eventToJsonLd', () => {
   it('carries no @context — it belongs to the published root', () => {
     expect(eventToJsonLd(makeEvent())).not.toHaveProperty('@context')
   })
+
+  describe('offers.url', () => {
+    it('publishes a valid ticketing link as-is', () => {
+      const data = eventToJsonLd(
+        makeEvent({ ticketing_url: 'https://www.billetweb.fr/concert', price: '15 €' }),
+      ) as { offers: Record<string, unknown> }
+      expect(data.offers).toMatchObject({
+        url: 'https://www.billetweb.fr/concert',
+        price: '15',
+        priceCurrency: 'EUR',
+      })
+    })
+
+    it('completes a scheme-less link instead of publishing it raw', () => {
+      const data = eventToJsonLd(makeEvent({ ticketing_url: 'www.atabal.fr/billets' })) as {
+        offers: Record<string, unknown>
+      }
+      expect(data.offers.url).toBe('https://www.atabal.fr/billets')
+    })
+
+    // Le motif signalé par la Search Console : « Invalid URL in field "url"
+    // (in "offers") ». La page événement est une URL valide, et porte l'info.
+    it('falls back to the event page when the ticketing field holds free text', () => {
+      const data = eventToJsonLd(
+        makeEvent({ ticketing_url: 'Sur place', price: 'Gratuit' }),
+      ) as { offers: Record<string, unknown>; url: string }
+      expect(data.offers.url).toBe(data.url)
+      expect(data.offers.price).toBe('0')
+    })
+
+    it('never publishes an offer whose url is not an absolute http(s) URL', () => {
+      const cases = ['Sur place', 'javascript:alert(1)', 'mailto:x@y.fr', '@insta', '']
+      for (const ticketing_url of cases) {
+        const data = eventToJsonLd(makeEvent({ ticketing_url, price: '10 €' })) as {
+          offers: Record<string, string>
+        }
+        expect(() => new URL(data.offers.url)).not.toThrow()
+        expect(data.offers.url).toMatch(/^https?:\/\//)
+      }
+    })
+
+    it('omits `offers` when there is neither a usable link nor a price', () => {
+      expect(
+        eventToJsonLd(makeEvent({ ticketing_url: 'Sur place', price: null })),
+      ).not.toHaveProperty('offers')
+    })
+  })
 })
 
 describe('eventJsonLd', () => {

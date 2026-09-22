@@ -15,6 +15,7 @@ import EventsCarousel from '@/app/(app)/components/EventsCarousel'
 import { JsonLd } from '@/app/(app)/components/JsonLd'
 import { eventJsonLd } from '@/lib/structured-data'
 import { formatEventGenres, primaryEventCategory } from '@/lib/format-event'
+import { normalizeTicketingUrl } from '@/lib/ticketing-url'
 
 // ISR: re-render periodically so the "upcoming events" filter (new Date())
 // isn't frozen at build time.
@@ -149,6 +150,8 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
   const isPastEvent = isEventPast(event.date)
   const genres = formatEventGenres(event)
   const genreLink = primaryEventCategory(event)
+  // Le champ est du texte libre : sans schéma, `www.x.fr` partirait en lien relatif.
+  const ticketingUrl = normalizeTicketingUrl(event.ticketing_url)
 
   return (
     <>
@@ -234,8 +237,8 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
             Complet 😢
           </Button>
         ) : (
-          event.ticketing_url && (
-            <a href={`${event.ticketing_url}`} target="_blank">
+          ticketingUrl && (
+            <a href={ticketingUrl} target="_blank" rel="noopener noreferrer">
               <Button className="rounded-lg border-4 border-black bg-[#E45110] p-2 text-2xl text-black">
                 Billetterie
               </Button>
