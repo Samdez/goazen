@@ -86,6 +86,15 @@ export async function middleware(request: NextRequest) {
 
 // Le matcher reste volontairement étroit : le middleware ne doit jamais tourner
 // sur /_next/*, les assets statiques ou les images (chaque passage = 1 invocation).
+//
+// Il ne vise plus que les URLs qu'il réécrit : les anciennes `/concerts/<ville>/…`
+// et les `/concerts/<région>/no-location/…`. Les URLs au format actuel
+// (`pays-basque`, `landes`, `evenement`) — l'immense majorité du trafic — ne le
+// déclenchent plus : il coûtait ~7 % du CPU facturé pour un simple
+// `NextResponse.next()`.
 export const config = {
-  matcher: '/concerts/:path*',
+  matcher: [
+    '/concerts/:region/no-location/:path*',
+    '/concerts/((?!(?:pays-basque|landes|evenement)(?:/|$)).*)',
+  ],
 }

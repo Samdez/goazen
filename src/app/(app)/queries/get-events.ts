@@ -3,6 +3,7 @@
 import { unstable_cache } from 'next/cache'
 import { toDayKey } from '@/lib/day-key'
 import { scopeWhere } from '@/lib/event-filters'
+import { eventsQueryTags } from '@/lib/cache-tags'
 import { payload } from '../(client)/payload-client'
 
 function extendEndDateToEndOfDay(date: string) {
@@ -77,7 +78,15 @@ export async function _getEvents({
   return uniqueEvents
 }
 
-export async function getCachedEvents(params: GetEventsParams) {
+/**
+ * `revalidate: false` garde l'entrée jusqu'à la prochaine révalidation de son
+ * tag : c'est ce qui fige les pages des événements passés depuis longtemps,
+ * car un `unstable_cache` à 24 h ramène toute la page à 24 h.
+ */
+export async function getCachedEvents(
+  params: GetEventsParams,
+  { revalidate = 60 * 60 * 24 }: { revalidate?: number | false } = {},
+) {
   // La cle est volontairement normalisee au JOUR UTC.
   //
   // _getEvents recale deja startDate sur `J-1 22:00 UTC` et endDate sur
@@ -100,7 +109,7 @@ export async function getCachedEvents(params: GetEventsParams) {
   })
 
   return unstable_cache(async () => await _getEvents(params), ['events', cacheKey], {
-    tags: ['events'],
-    revalidate: 60 * 60 * 24, // 24 hours
+    tags: eventsQueryTags(params),
+    revalidate,
   })()
 }

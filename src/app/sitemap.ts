@@ -7,9 +7,9 @@ import { getCities } from './(app)/queries/get-cities'
 import { getSpecialEvents } from './(app)/queries/get-special-events'
 import { getCategories } from './(app)/queries/get-categories'
 
-// ISR: regenerate periodically so past events drop out of the sitemap
-// instead of being frozen at build time.
-export const revalidate = 300
+// Une fois par jour suffit aux moteurs, et le tag `events` le rafraîchit à
+// chaque modification d'événement.
+export const revalidate = 86400
 
 function toDate(value: string | Date | undefined): Date {
   if (!value) return new Date(0)

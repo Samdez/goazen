@@ -5,6 +5,8 @@ import { REGIONS } from '@/app/(app)/constants'
 import { clearOtherHighlightsOnSameDay } from './hooks/clear-other-highlights'
 import { clearRegionWhenLocated } from './hooks/clear-region-when-located'
 import { normalizeTicketingUrl } from '@/lib/ticketing-url'
+import { tagsForEventChange } from '@/lib/cache-tags'
+import { revalidateCacheTags } from '@/lib/revalidate-cache'
 
 const Events: CollectionConfig = {
   slug: 'events',
@@ -18,15 +20,16 @@ const Events: CollectionConfig = {
   },
   hooks: {
     beforeChange: [clearRegionWhenLocated, clearOtherHighlightsOnSameDay],
+    // Révalidation ciblée : les listes, la page de l'événement et sa salle —
+    // au lieu de tout le cache `events` (voir src/lib/cache-tags.ts).
+    afterChange: [
+      async ({ doc, previousDoc }) => {
+        await revalidateCacheTags(tagsForEventChange(doc, previousDoc))
+      },
+    ],
     afterDelete: [
-      async () => {
-        try {
-          await fetch(`${process.env.NEXT_PUBLIC_URL}/api/revalidate?tag=events`, {
-            method: 'POST',
-          })
-        } catch (err) {
-          console.error('Error revalidating:', err)
-        }
+      async ({ doc }) => {
+        await revalidateCacheTags(tagsForEventChange(doc))
       },
     ],
   },
@@ -174,17 +177,6 @@ const Events: CollectionConfig = {
                   field: 'region',
                 })
               }
-            }
-          },
-        ],
-        afterChange: [
-          async ({ req }) => {
-            try {
-              await fetch(`${process.env.NEXT_PUBLIC_URL}/api/revalidate?tag=events`, {
-                method: 'POST',
-              })
-            } catch (err) {
-              console.error('Error revalidating:', err)
             }
           },
         ],

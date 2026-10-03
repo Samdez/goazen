@@ -1,16 +1,18 @@
 import { revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 
+// Accepte plusieurs tags (`?tag=a&tag=b`) : un enregistrement d'événement en
+// révalide trois ou quatre d'un coup, en une seule requête.
 export async function POST(request: NextRequest) {
-  const tag = request.nextUrl.searchParams.get('tag')
+  const tags = request.nextUrl.searchParams.getAll('tag').filter(Boolean)
 
-  if (!tag) {
+  if (!tags.length) {
     return NextResponse.json({ message: 'Missing tag parameter' }, { status: 400 })
   }
 
   try {
-    revalidateTag(tag)
-    return NextResponse.json({ revalidated: true, now: Date.now() })
+    tags.forEach((tag) => revalidateTag(tag))
+    return NextResponse.json({ revalidated: true, tags, now: Date.now() })
   } catch (err) {
     return NextResponse.json({ message: 'Error revalidating' }, { status: 500 })
   }

@@ -19,9 +19,10 @@ import { pluralize } from '@/lib/stats-wording'
 import { breadcrumbJsonLd, eventsItemListJsonLd, OG_IMAGE } from '@/lib/structured-data'
 import type { Metadata } from 'next'
 
-// ISR: re-render periodically so the "upcoming events" filter (new Date())
-// isn't frozen at build time.
-export const revalidate = 300
+// Liste « à venir » : régénérée toutes les 6 h pour suivre le changement de
+// jour, et immédiatement à chaque modification d'événement (tag `events`).
+// 5 minutes régénéraient la page à presque chaque passage de robot.
+export const revalidate = 21600
 
 export async function generateStaticParams() {
   return REGIONS.map((region) => ({

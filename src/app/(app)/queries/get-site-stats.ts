@@ -4,6 +4,7 @@ import { unstable_cache } from 'next/cache'
 import type { Where } from 'payload'
 import { scopeWhere, type EventScope } from '@/lib/event-filters'
 import { payload } from '../(client)/payload-client'
+import { eventsQueryTags } from '@/lib/cache-tags'
 
 export type SiteStats = {
   publishedEvents: number
@@ -127,7 +128,7 @@ export async function getScopedStats(scope: EventScope): Promise<ScopedStats> {
   })
 
   return unstable_cache(async () => await _getScopedStats(scope), ['scoped-stats', cacheKey], {
-    tags: ['events'],
+    tags: eventsQueryTags({ locationId: scope.locationId }),
     revalidate: 60 * 60 * 24, // 24 hours
   })()
 }

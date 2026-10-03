@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { cn, formatDate, getLocationInfo, isEventPast, slugifyString } from '@/utils'
+import { cn, formatDate, getLocationInfo, isEventPast, isStaleEvent, slugifyString } from '@/utils'
 import { buildEventSEODescription, buildEventSEOTitle } from '@/config-utils'
 import { OG_IMAGE } from '@/lib/structured-data'
 import { getEventKindBadgeClassName, getEventKindLabel, hasEventKind } from '@/utils/event-kind'
@@ -17,9 +17,15 @@ import { eventJsonLd } from '@/lib/structured-data'
 import { formatEventGenres, primaryEventCategory } from '@/lib/format-event'
 import { normalizeTicketingUrl } from '@/lib/ticketing-url'
 
-// ISR: re-render periodically so the "upcoming events" filter (new Date())
-// isn't frozen at build time.
-export const revalidate = 300
+// Pas de durée fixe : la page se régénère au rythme de ses données.
+// - événement à venir ou récent : 24 h, imposées par le carrousel « prochains
+//   concerts » de la salle (un `unstable_cache` à 24 h ramène la page à 24 h) ;
+// - événement passé depuis plus de 30 jours : jamais, sauf modification de
+//   l'événement ou de la programmation de sa salle (tags ciblés).
+// Avant, `revalidate = 300` régénérait chacune des ~5 600 pages toutes les
+// 5 minutes au passage des robots : c'était l'essentiel du CPU et des
+// écritures ISR facturés.
+export const revalidate = false
 
 export async function generateMetadata({
   params,
@@ -60,8 +66,7 @@ export async function generateMetadata({
       hasSeoMeta ? (metaDescription as string) : await buildEventSEODescription(seoDoc)
     ).slice(0, 155)
 
-    const eventDate = new Date(event.date)
-    const isStaleEvent = eventDate.getTime() < Date.now() - 30 * 24 * 60 * 60 * 1000
+    const isStale = isStaleEvent(event.date)
 
     const imageUrl =
       !(typeof event.image === 'string') && event.image ? event.image?.url : undefined
@@ -89,10 +94,10 @@ export async function generateMetadata({
         type: 'website',
       },
       robots: {
-        index: !isStaleEvent,
+        index: !isStale,
         follow: true,
         googleBot: {
-          index: !isStaleEvent,
+          index: !isStale,
           follow: true,
           'max-video-preview': -1,
           'max-image-preview': 'large',
@@ -134,10 +139,15 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
   const event = await getEvent(slugParam.split('_').reverse()[0])
   const [locationEvents, placeholderImage] = await Promise.all([
     event.location &&
-      getCachedEvents({
-        locationId: typeof event.location === 'string' ? event.location : event.location?.id,
-        startDate: new Date().toISOString(),
-      }),
+      getCachedEvents(
+        {
+          locationId: typeof event.location === 'string' ? event.location : event.location?.id,
+          startDate: new Date().toISOString(),
+        },
+        // Figé avec la page : le tag de la salle le rafraîchit quand sa
+        // programmation change.
+        isStaleEvent(event.date) ? { revalidate: false } : undefined,
+      ),
     getPlaceholderImage(),
   ])
   const otherEvents = locationEvents !== '' && locationEvents?.docs.filter((e) => e.id !== event.id)
