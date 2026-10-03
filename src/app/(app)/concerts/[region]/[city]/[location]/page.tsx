@@ -20,9 +20,10 @@ import { pluralize } from '@/lib/stats-wording'
 import StatsBand from '@/app/(app)/components/StatsBand'
 import type { Metadata } from 'next'
 
-// ISR: re-render periodically so the "upcoming events" filter (new Date())
-// isn't frozen at build time.
-export const revalidate = 300
+// Pas de durée de vie : régénérée quand la salle ou sa programmation change
+// (tags `locations` et `events:location:<id>`), y compris quand le cron
+// quotidien retire une date passée la veille.
+export const revalidate = false
 
 export async function generateMetadata({
   params,

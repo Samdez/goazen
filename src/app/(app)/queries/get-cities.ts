@@ -33,6 +33,6 @@ export async function getCities(region?: string): Promise<PaginatedDocs<CityOpti
       return cities as unknown as PaginatedDocs<CityOption>
     },
     ['cities', region || ''],
-    { tags: ['cities'], revalidate: 60 * 60 * 24 },
+    { tags: ['cities'], revalidate: false },
   )()
 }

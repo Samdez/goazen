@@ -18,9 +18,25 @@ import type { Category } from '@/payload-types'
  * Row 2 (non-sticky) — taste: genre chips.
  */
 export default function FilterBar({ categories }: { categories: Category[] }) {
+  return <FilterBarView categories={categories} searchParams={useSearchParams()} />
+}
+
+const NO_PARAMS = new URLSearchParams()
+
+/** Barre sans filtre actif : repli Suspense de la home statique. */
+export function FilterBarWithoutParams({ categories }: { categories: Category[] }) {
+  return <FilterBarView categories={categories} searchParams={NO_PARAMS} />
+}
+
+function FilterBarView({
+  categories,
+  searchParams,
+}: {
+  categories: Category[]
+  searchParams: Pick<URLSearchParams, 'get' | 'toString'>
+}) {
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
 
   const active = useMemo(() => {

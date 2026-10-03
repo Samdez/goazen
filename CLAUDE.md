@@ -40,7 +40,7 @@ Two top-level route groups in `src/app/`:
 - `(app)/` — public site. Server Components by default, with `'use client'` islands. All DB reads go through server actions in `(app)/queries/`.
 - `(payload)/` — Payload admin (`/admin`) + its API routes (`/api/*` mounted by Payload). Access policies live in `(payload)/access/`.
 
-A separate `src/app/api/` directory holds custom Next routes that are **not** Payload's: `/api/revalidate` (cache busting via `revalidateTag`) and `/api/get-city-region` (used by middleware).
+A separate `src/app/api/` directory holds custom Next routes that are **not** Payload's: `/api/revalidate` (cache busting via `revalidateTag`, requires `REVALIDATE_SECRET`), `/api/cron/daily-revalidate` (nightly Vercel cron, requires `CRON_SECRET`) and `/api/get-city-region` (used by middleware).
 
 ### Region / city model — the load-bearing detail
 
@@ -61,7 +61,7 @@ React Server Components / Server Actions
         │
         ▼
 src/app/(app)/queries/*.ts     ← 'use server' wrappers around payload.find/update
-        │   (some wrapped in unstable_cache with tag 'events')
+        │   (wrapped in unstable_cache: tags only, no revalidate duration)
         ▼
 src/app/(app)/(client)/payload-client.ts
         │   const payload = await getPayload({ config })   ← top-level await
@@ -69,7 +69,9 @@ src/app/(app)/(client)/payload-client.ts
 Payload Local API → mongooseAdapter → MongoDB
 ```
 
-Mutations from collection `afterChange` hooks (e.g. Events.slug) POST to `/api/revalidate?tag=events` to invalidate the `unstable_cache` entries — keep that contract intact when adding new cached queries (use the same `'events'` tag, or add and revalidate a new one explicitly).
+**Caching follows [ADR-0005](docs/adr/0005-event-driven-cache-invalidation.md): pages have no time-based `revalidate`; they are invalidated by tags only.** Collection `afterChange`/`afterDelete` hooks POST to `/api/revalidate?tag=…` (via `src/lib/revalidate-cache.ts`); the Events hook revalidates only the tags computed by `tagsForEventChange` in [`src/lib/cache-tags.ts`](src/lib/cache-tags.ts) (`events` for listings, `event:<id>`, `events:location:<id>`), and nothing for drafts. Calendar changes go through the nightly cron ([`src/lib/daily-revalidation.ts`](src/lib/daily-revalidation.ts)).
+
+When adding a cached query: give it tags and `revalidate: false`. **Never put a duration on an `unstable_cache`** — it silently shortens the ISR lifetime of every page that uses it (Next takes the minimum), which is what blew the Vercel budget before.
 
 ### Payload admin extensions
 
@@ -95,7 +97,7 @@ The public event submission form (`/formulaire`) uses `@ts-react/form` + `react-
 
 ## Env
 
-`.env.local` is the dev/staging credentials file (not in git). Critical vars: `DATABASE_URI` (MongoDB), `PAYLOAD_SECRET`, `S3_*`, `RESEND_API_KEY`, `NEXT_PUBLIC_URL` (used by collection hooks to call `/api/revalidate`). Clerk vars exist but Payload's built-in auth on the `users` collection is what guards `/admin`.
+`.env.local` is the dev/staging credentials file (not in git). Critical vars: `DATABASE_URI` (MongoDB), `PAYLOAD_SECRET`, `S3_*`, `RESEND_API_KEY`, `NEXT_PUBLIC_URL` (used by collection hooks to call `/api/revalidate`), `REVALIDATE_SECRET` and `CRON_SECRET` (see ADR-0005). Clerk vars exist but Payload's built-in auth on the `users` collection is what guards `/admin`.
 
 `env.ts` only declares a small subset (Resend / Maps / `NEXT_PUBLIC_URL`) via `@t3-oss/env-nextjs`; everything else is read directly from `process.env`.
 

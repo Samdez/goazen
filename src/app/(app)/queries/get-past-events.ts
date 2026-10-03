@@ -3,6 +3,7 @@
 import { unstable_cache } from 'next/cache'
 import { toDayKey } from '@/lib/day-key'
 import { payload } from '../(client)/payload-client'
+import { locationEventsTag } from '@/lib/cache-tags'
 
 /**
  * Frontière « passé / à venir », identique à celle de `_getEvents` : un
@@ -52,7 +53,7 @@ export async function getPastEvents({
   const cacheKey = JSON.stringify({ locationId, limit, day: toDayKey(new Date()) })
 
   return unstable_cache(async () => await _getPastEvents({ locationId, limit }), ['past-events', cacheKey], {
-    tags: ['events'],
-    revalidate: 60 * 60 * 24, // 24 hours
+    tags: [locationEventsTag(locationId)],
+    revalidate: false,
   })()
 }

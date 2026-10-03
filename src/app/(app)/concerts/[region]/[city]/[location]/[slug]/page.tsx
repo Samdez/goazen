@@ -11,15 +11,22 @@ import { getEvent } from '@/app/(app)/queries/get-event'
 import { payload } from '@/app/(app)/(client)/payload-client'
 import { darkerGrotesque } from '@/app/(app)/fonts'
 import { getCachedEvents } from '@/app/(app)/queries/get-events'
-import EventsCarousel from '@/app/(app)/components/EventsCarousel'
+import VenueUpcomingEvents from '@/app/(app)/components/VenueUpcomingEvents'
+import { eventTag } from '@/lib/cache-tags'
 import { JsonLd } from '@/app/(app)/components/JsonLd'
 import { eventJsonLd } from '@/lib/structured-data'
 import { formatEventGenres, primaryEventCategory } from '@/lib/format-event'
 import { normalizeTicketingUrl } from '@/lib/ticketing-url'
 
-// ISR: re-render periodically so the "upcoming events" filter (new Date())
-// isn't frozen at build time.
-export const revalidate = 300
+// Pas de durée de vie. Toutes les données de la page dépendent du seul tag
+// `event:<id>` : elle n'est régénérée que
+// - quand l'événement est modifié ;
+// - une fois, la nuit qui suit l'événement (cron quotidien), pour passer en
+//   « terminé » et `noindex` — puis elle est figée pour de bon.
+// Avant, `revalidate = 300` régénérait chacune des ~5 600 pages toutes les
+// 5 minutes au passage des robots : c'était l'essentiel du CPU et des
+// écritures ISR facturés.
+export const revalidate = false
 
 export async function generateMetadata({
   params,
@@ -60,8 +67,9 @@ export async function generateMetadata({
       hasSeoMeta ? (metaDescription as string) : await buildEventSEODescription(seoDoc)
     ).slice(0, 155)
 
-    const eventDate = new Date(event.date)
-    const isStaleEvent = eventDate.getTime() < Date.now() - 30 * 24 * 60 * 60 * 1000
+    // Un événement passé sort de l'index dès le lendemain : c'est le rendu
+    // figé par le cron quotidien, la page ne changera plus ensuite.
+    const isPast = isEventPast(event.date)
 
     const imageUrl =
       !(typeof event.image === 'string') && event.image ? event.image?.url : undefined
@@ -89,10 +97,10 @@ export async function generateMetadata({
         type: 'website',
       },
       robots: {
-        index: !isStaleEvent,
+        index: !isPast,
         follow: true,
         googleBot: {
-          index: !isStaleEvent,
+          index: !isPast,
           follow: true,
           'max-video-preview': -1,
           'max-image-preview': 'large',
@@ -134,10 +142,16 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
   const event = await getEvent(slugParam.split('_').reverse()[0])
   const [locationEvents, placeholderImage] = await Promise.all([
     event.location &&
-      getCachedEvents({
-        locationId: typeof event.location === 'string' ? event.location : event.location?.id,
-        startDate: new Date().toISOString(),
-      }),
+      getCachedEvents(
+        {
+          locationId: typeof event.location === 'string' ? event.location : event.location?.id,
+          startDate: new Date().toISOString(),
+        },
+        // Instantané figé avec la page (et non rattaché à la salle) : un
+        // nouvel événement dans la salle ne régénère pas les autres pages.
+        // Les dates passées depuis sont masquées côté client par le carrousel.
+        { tags: [eventTag(event.id)] },
+      ),
     getPlaceholderImage(),
   ])
   const otherEvents = locationEvents !== '' && locationEvents?.docs.filter((e) => e.id !== event.id)
@@ -246,13 +260,11 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
           )
         )}
         {otherEvents && otherEvents.length > 0 && (
-          <div className="flex flex-col items-center gap-4 px-4 py-8 text-white w-full">
-            <h2 className="text-center text-6xl font-bold text-black">
-              {locationInfo?.locationName}
-            </h2>
-            <h2 className="text-4xl text-black">Prochains concerts: </h2>
-            <EventsCarousel events={otherEvents} placeholderImageUrl={placeholderImage || ''} />
-          </div>
+          <VenueUpcomingEvents
+            venueName={locationInfo?.locationName}
+            events={otherEvents}
+            placeholderImageUrl={placeholderImage || ''}
+          />
         )}
 
         <div className="flex flex-wrap items-center justify-center gap-4 px-4 pb-8 text-white">

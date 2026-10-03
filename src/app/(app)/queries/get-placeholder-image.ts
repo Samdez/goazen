@@ -21,6 +21,8 @@ export async function getPlaceholderImage() {
       } catch (error) {}
     },
     ['image-placeholder'],
-    { tags: ['image-placeholder'], revalidate: 60 * 60 * 24 },
+    // Révalidé par le hook du global à chaque modification : une durée ici ne
+    // ferait que ramener à 24 h toutes les pages qui l'affichent.
+    { tags: ['image-placeholder'], revalidate: false },
   )()
 }

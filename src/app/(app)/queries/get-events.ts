@@ -3,6 +3,7 @@
 import { unstable_cache } from 'next/cache'
 import { toDayKey } from '@/lib/day-key'
 import { scopeWhere } from '@/lib/event-filters'
+import { eventsQueryTags } from '@/lib/cache-tags'
 import { payload } from '../(client)/payload-client'
 
 function extendEndDateToEndOfDay(date: string) {
@@ -77,7 +78,15 @@ export async function _getEvents({
   return uniqueEvents
 }
 
-export async function getCachedEvents(params: GetEventsParams) {
+/**
+ * Pas de durée de vie : une entrée vit jusqu'à la révalidation de ses tags
+ * (modification d'un événement, ou cron quotidien quand un événement passe).
+ * Une durée ici ramènerait à cette durée toutes les pages qui l'affichent.
+ *
+ * `tags` remplace les tags par défaut — la page événement s'en sert pour figer
+ * son carrousel « prochains concerts » avec elle (tag `event:<id>`).
+ */
+export async function getCachedEvents(params: GetEventsParams, { tags }: { tags?: string[] } = {}) {
   // La cle est volontairement normalisee au JOUR UTC.
   //
   // _getEvents recale deja startDate sur `J-1 22:00 UTC` et endDate sur
@@ -99,8 +108,12 @@ export async function getCachedEvents(params: GetEventsParams) {
     selectionOnly: params.selectionOnly || false,
   })
 
-  return unstable_cache(async () => await _getEvents(params), ['events', cacheKey], {
-    tags: ['events'],
-    revalidate: 60 * 60 * 24, // 24 hours
+  const cacheTags = tags ?? eventsQueryTags(params)
+
+  // Les tags font partie de la clé : sinon deux appelants aux tags différents
+  // partageraient la même entrée, rattachée aux tags du premier.
+  return unstable_cache(async () => await _getEvents(params), ['events', cacheKey, ...cacheTags], {
+    tags: cacheTags,
+    revalidate: false,
   })()
 }

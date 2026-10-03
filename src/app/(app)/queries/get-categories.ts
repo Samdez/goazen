@@ -43,6 +43,6 @@ export async function getCategories() {
       return categories.docs
     },
     ['categories'],
-    { tags: ['categories'], revalidate: 60 * 60 * 24 },
+    { tags: ['categories'], revalidate: false },
   )()
 }

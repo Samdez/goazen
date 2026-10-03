@@ -21,6 +21,9 @@ details, no decisions (those live in `docs/adr/`).
 - [ADR-0004](docs/adr/0004-date-scheduled-bon-plan-banner.md) — Bon plan
   banner is date-scheduled via *Banner window*; manual global deleted,
   overlaps blocked at save.
+- [ADR-0005](docs/adr/0005-event-driven-cache-invalidation.md) — Pages are
+  invalidated by events only (publication, nightly cron); no time-based
+  revalidation.
 
 ## Terms
 
@@ -92,6 +95,23 @@ A required-ish select on Events with three values: `dj_set` (*DJ Set*),
 Surfaced as a small badge with kind-specific colour
 (`getEventKindBadgeClassName`) on event cards and — when present — on the
 *Hero* card alongside the *Ce soir* pill.
+
+### Draft event
+An Event that is not yet published: typically submitted by an organizer via
+the *Event submission form*, then reviewed and published by the editor in
+batches (once or twice a week). A draft is invisible on the public site.
+_Avoid_: pending event, submission (for the event itself)
+
+### Upcoming event
+A published Event whose calendar day (Europe/Paris) is today or later. Only
+upcoming events appear in listings and in the sitemap.
+
+### Past event
+A published Event whose calendar day (Europe/Paris) is over — it becomes past
+at midnight Paris time, not when it starts. A past event keeps its page
+(reachable from venue archives and from links shared on social media) but is
+shown as *terminé*, is not indexed, and its page no longer changes.
+_Avoid_: archived event, expired event, stale event
 
 ### Highlight
 An editorial flag on an Event (`highlighted: boolean`) marking it as the

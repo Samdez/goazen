@@ -8,6 +8,10 @@ import UnifiedFilterSections from '../../components/UnifiedFilterSection'
 import { Suspense } from 'react'
 import { OG_IMAGE } from '@/lib/structured-data'
 
+// Annuaire des salles : régénéré seulement quand une salle ou une ville est
+// ajoutée ou modifiée (tags `locations` et `cities`), jamais avec le temps.
+export const revalidate = false
+
 export async function generateStaticParams() {
   const cities = await getCities()
 

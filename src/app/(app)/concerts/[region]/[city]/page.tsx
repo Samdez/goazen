@@ -22,9 +22,9 @@ import { getScopedStats } from '@/app/(app)/queries/get-site-stats'
 import { pluralize } from '@/lib/stats-wording'
 import { breadcrumbJsonLd, eventsItemListJsonLd, OG_IMAGE } from '@/lib/structured-data'
 
-// ISR: re-render periodically so the "upcoming events" filter (new Date())
-// isn't frozen at build time.
-export const revalidate = 300
+// Pas de durée de vie : régénérée quand un événement change, et chaque nuit
+// par le cron quotidien pour passer au jour suivant (tag `events`).
+export const revalidate = false
 
 export async function generateStaticParams() {
   const cities = await getCities()

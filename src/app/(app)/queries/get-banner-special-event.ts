@@ -27,8 +27,9 @@ export async function getBannerSpecialEvent(): Promise<SpecialEvent | null> {
       return res.docs[0] ?? null
     },
     ['banner-special-event', endOnOrAfter.toISOString()],
-    // Short TTL on top of the tag revalidation: the home banner must never
-    // stay up long if a hook misfires.
-    { tags: ['special-events'], revalidate: 60 * 60 },
+    // Pas de durée de vie (ADR-0005) : la clé change chaque jour UTC, et la
+    // home est régénérée chaque nuit par le cron après minuit UTC. Les
+    // modifications d'un special-event restent instantanées (tag).
+    { tags: ['special-events'], revalidate: false },
   )()
 }

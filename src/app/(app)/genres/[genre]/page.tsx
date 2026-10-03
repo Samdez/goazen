@@ -10,9 +10,9 @@ import { AUTRE_CATEGORY_NAME } from '../../constants'
 import type { Metadata } from 'next'
 import { OG_IMAGE } from '@/lib/structured-data'
 
-// ISR: re-render periodically so the "upcoming events" filter (new Date())
-// isn't frozen at build time.
-export const revalidate = 300
+// Pas de durée de vie : régénérée quand un événement change, et chaque nuit
+// par le cron quotidien pour passer au jour suivant (tag `events`).
+export const revalidate = false
 
 function humanizeSlug(slug: string) {
   return slug.replace(/-/g, ' ')
