@@ -9,12 +9,12 @@
  * Désormais :
  * - `events` ne couvre plus que les listes transverses (home, régions, villes,
  *   genres, sitemap) ;
- * - une page événement dépend de `event:<id>` ;
- * - une page salle et le carrousel « prochains concerts » d'une page événement
- *   dépendent de `events:location:<id>`.
+ * - une page événement ne dépend que de `event:<id>` (carrousel compris) ;
+ * - une page salle dépend de `events:location:<id>`.
  *
  * Modifier un événement ne régénère donc que les listes, sa page et la salle
- * concernée (l'ancienne et la nouvelle si la salle a changé).
+ * concernée (l'ancienne et la nouvelle si la salle a changé). Le passage du
+ * temps est géré à part, par le cron quotidien (src/lib/daily-revalidation.ts).
  */
 
 export const EVENTS_LIST_TAG = 'events'

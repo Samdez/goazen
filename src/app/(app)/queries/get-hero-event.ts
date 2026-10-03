@@ -61,7 +61,9 @@ async function pickInWindow(bounds: WindowBounds, opts: WindowOpts): Promise<Eve
       return fallback.docs[0] ?? null
     },
     ['hero-event', cacheKey],
-    { tags: ['events'], revalidate: 60 * 60 * 24 },
+    // Clé bornée au jour : pas de durée de vie, le cron quotidien et les
+    // publications révalident `events` (voir src/lib/daily-revalidation.ts).
+    { tags: ['events'], revalidate: false },
   )()
 }
 

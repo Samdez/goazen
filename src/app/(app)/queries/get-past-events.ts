@@ -54,6 +54,6 @@ export async function getPastEvents({
 
   return unstable_cache(async () => await _getPastEvents({ locationId, limit }), ['past-events', cacheKey], {
     tags: [locationEventsTag(locationId)],
-    revalidate: 60 * 60 * 24, // 24 hours
+    revalidate: false,
   })()
 }

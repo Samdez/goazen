@@ -10,10 +10,9 @@ import { AUTRE_CATEGORY_NAME } from '../../constants'
 import type { Metadata } from 'next'
 import { OG_IMAGE } from '@/lib/structured-data'
 
-// Liste « à venir » : régénérée toutes les 6 h pour suivre le changement de
-// jour, et immédiatement à chaque modification d'événement (tag `events`).
-// 5 minutes régénéraient la page à presque chaque passage de robot.
-export const revalidate = 21600
+// Pas de durée de vie : régénérée quand un événement change, et chaque nuit
+// par le cron quotidien pour passer au jour suivant (tag `events`).
+export const revalidate = false
 
 function humanizeSlug(slug: string) {
   return slug.replace(/-/g, ' ')

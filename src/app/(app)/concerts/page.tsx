@@ -10,10 +10,9 @@ import { JsonLd } from '../components/JsonLd'
 import { breadcrumbJsonLd, eventsItemListJsonLd, OG_IMAGE } from '@/lib/structured-data'
 import type { Metadata } from 'next'
 
-// Liste « à venir » : régénérée toutes les 6 h pour suivre le changement de
-// jour, et immédiatement à chaque modification d'événement (tag `events`).
-// 5 minutes régénéraient la page à presque chaque passage de robot.
-export const revalidate = 21600
+// Pas de durée de vie : régénérée quand un événement change, et chaque nuit
+// par le cron quotidien pour passer au jour suivant (tag `events`).
+export const revalidate = false
 
 export async function generateMetadata(): Promise<Metadata> {
   const title = 'Concerts & soirées au Pays Basque — agenda | Goazen!'

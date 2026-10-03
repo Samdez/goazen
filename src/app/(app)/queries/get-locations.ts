@@ -35,7 +35,7 @@ export async function getLocations(params: GetLocationsParams) {
 
   return unstable_cache(async () => await _getLocations(params), ['locations', cacheKey], {
     tags: ['locations'],
-    revalidate: 60 * 60 * 24, // 24 hours
+    revalidate: false,
   })()
 }
 
@@ -56,7 +56,7 @@ export async function getLocationOptions(): Promise<LocationOption[]> {
     ['location-options'],
     {
       tags: ['locations'],
-      revalidate: 60 * 60 * 24, // 24 hours
+      revalidate: false,
     },
   )()
 }
@@ -76,7 +76,7 @@ export async function getLocationsForSitemap() {
     ['locations-sitemap'],
     {
       tags: ['locations'],
-      revalidate: 60 * 60 * 24, // 24 hours
+      revalidate: false,
     },
   )()
 }
@@ -146,7 +146,7 @@ export async function getLocationCards(
     ['location-cards', cacheKey],
     {
       tags: ['locations'],
-      revalidate: 60 * 60 * 24, // 24 hours
+      revalidate: false,
     },
   )()
 }

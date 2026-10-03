@@ -22,10 +22,9 @@ import { getScopedStats } from '@/app/(app)/queries/get-site-stats'
 import { pluralize } from '@/lib/stats-wording'
 import { breadcrumbJsonLd, eventsItemListJsonLd, OG_IMAGE } from '@/lib/structured-data'
 
-// Liste « à venir » : régénérée toutes les 6 h pour suivre le changement de
-// jour, et immédiatement à chaque modification d'événement (tag `events`).
-// 5 minutes régénéraient la page à presque chaque passage de robot.
-export const revalidate = 21600
+// Pas de durée de vie : régénérée quand un événement change, et chaque nuit
+// par le cron quotidien pour passer au jour suivant (tag `events`).
+export const revalidate = false
 
 export async function generateStaticParams() {
   const cities = await getCities()

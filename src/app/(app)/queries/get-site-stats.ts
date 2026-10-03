@@ -90,7 +90,7 @@ async function _getSiteStats(): Promise<SiteStats> {
 export async function getSiteStats(): Promise<SiteStats> {
   return unstable_cache(async () => await _getSiteStats(), ['site-stats'], {
     tags: ['events'],
-    revalidate: 60 * 60 * 24, // 24 hours
+    revalidate: false,
   })()
 }
 
@@ -129,6 +129,6 @@ export async function getScopedStats(scope: EventScope): Promise<ScopedStats> {
 
   return unstable_cache(async () => await _getScopedStats(scope), ['scoped-stats', cacheKey], {
     tags: eventsQueryTags({ locationId: scope.locationId }),
-    revalidate: 60 * 60 * 24, // 24 hours
+    revalidate: false,
   })()
 }

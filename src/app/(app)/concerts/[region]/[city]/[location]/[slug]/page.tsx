@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { cn, formatDate, getLocationInfo, isEventPast, isStaleEvent, slugifyString } from '@/utils'
+import { cn, formatDate, getLocationInfo, isEventPast, slugifyString } from '@/utils'
 import { buildEventSEODescription, buildEventSEOTitle } from '@/config-utils'
 import { OG_IMAGE } from '@/lib/structured-data'
 import { getEventKindBadgeClassName, getEventKindLabel, hasEventKind } from '@/utils/event-kind'
@@ -11,17 +11,18 @@ import { getEvent } from '@/app/(app)/queries/get-event'
 import { payload } from '@/app/(app)/(client)/payload-client'
 import { darkerGrotesque } from '@/app/(app)/fonts'
 import { getCachedEvents } from '@/app/(app)/queries/get-events'
-import EventsCarousel from '@/app/(app)/components/EventsCarousel'
+import VenueUpcomingEvents from '@/app/(app)/components/VenueUpcomingEvents'
+import { eventTag } from '@/lib/cache-tags'
 import { JsonLd } from '@/app/(app)/components/JsonLd'
 import { eventJsonLd } from '@/lib/structured-data'
 import { formatEventGenres, primaryEventCategory } from '@/lib/format-event'
 import { normalizeTicketingUrl } from '@/lib/ticketing-url'
 
-// Pas de durée fixe : la page se régénère au rythme de ses données.
-// - événement à venir ou récent : 24 h, imposées par le carrousel « prochains
-//   concerts » de la salle (un `unstable_cache` à 24 h ramène la page à 24 h) ;
-// - événement passé depuis plus de 30 jours : jamais, sauf modification de
-//   l'événement ou de la programmation de sa salle (tags ciblés).
+// Pas de durée de vie. Toutes les données de la page dépendent du seul tag
+// `event:<id>` : elle n'est régénérée que
+// - quand l'événement est modifié ;
+// - une fois, la nuit qui suit l'événement (cron quotidien), pour passer en
+//   « terminé » et `noindex` — puis elle est figée pour de bon.
 // Avant, `revalidate = 300` régénérait chacune des ~5 600 pages toutes les
 // 5 minutes au passage des robots : c'était l'essentiel du CPU et des
 // écritures ISR facturés.
@@ -66,7 +67,9 @@ export async function generateMetadata({
       hasSeoMeta ? (metaDescription as string) : await buildEventSEODescription(seoDoc)
     ).slice(0, 155)
 
-    const isStale = isStaleEvent(event.date)
+    // Un événement passé sort de l'index dès le lendemain : c'est le rendu
+    // figé par le cron quotidien, la page ne changera plus ensuite.
+    const isPast = isEventPast(event.date)
 
     const imageUrl =
       !(typeof event.image === 'string') && event.image ? event.image?.url : undefined
@@ -94,10 +97,10 @@ export async function generateMetadata({
         type: 'website',
       },
       robots: {
-        index: !isStale,
+        index: !isPast,
         follow: true,
         googleBot: {
-          index: !isStale,
+          index: !isPast,
           follow: true,
           'max-video-preview': -1,
           'max-image-preview': 'large',
@@ -144,9 +147,10 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
           locationId: typeof event.location === 'string' ? event.location : event.location?.id,
           startDate: new Date().toISOString(),
         },
-        // Figé avec la page : le tag de la salle le rafraîchit quand sa
-        // programmation change.
-        isStaleEvent(event.date) ? { revalidate: false } : undefined,
+        // Instantané figé avec la page (et non rattaché à la salle) : un
+        // nouvel événement dans la salle ne régénère pas les autres pages.
+        // Les dates passées depuis sont masquées côté client par le carrousel.
+        { tags: [eventTag(event.id)] },
       ),
     getPlaceholderImage(),
   ])
@@ -256,13 +260,11 @@ async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
           )
         )}
         {otherEvents && otherEvents.length > 0 && (
-          <div className="flex flex-col items-center gap-4 px-4 py-8 text-white w-full">
-            <h2 className="text-center text-6xl font-bold text-black">
-              {locationInfo?.locationName}
-            </h2>
-            <h2 className="text-4xl text-black">Prochains concerts: </h2>
-            <EventsCarousel events={otherEvents} placeholderImageUrl={placeholderImage || ''} />
-          </div>
+          <VenueUpcomingEvents
+            venueName={locationInfo?.locationName}
+            events={otherEvents}
+            placeholderImageUrl={placeholderImage || ''}
+          />
         )}
 
         <div className="flex flex-wrap items-center justify-center gap-4 px-4 pb-8 text-white">

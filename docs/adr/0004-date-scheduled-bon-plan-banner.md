@@ -25,6 +25,9 @@ revalidation hook makes it instant.
 - Banner on/off flips at day boundaries ride the 1h `unstable_cache` TTL
   (≤1h slop after midnight, accepted); edits via admin are instant via tag
   revalidation.
+  *Superseded by [ADR-0005](0005-event-driven-cache-invalidation.md):* the TTL
+  is gone; the day flip now happens when the nightly cron regenerates the
+  home (between 1 h and 3 h Paris time).
 - Banner fields are admin-only (field-level access) even though venue
   editors can update `special-events` — the homepage slot stays editorial,
   matching the admin-only access of the deleted global.

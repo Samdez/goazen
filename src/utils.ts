@@ -62,14 +62,6 @@ export function isEventPast(date: string): boolean {
   return parisDay(new Date(date)) < parisDay(new Date())
 }
 
-// Passé depuis plus de 30 jours : la page n'est plus indexée et son contenu ne
-// bouge plus, elle n'a donc plus besoin d'être régénérée périodiquement.
-export const STALE_EVENT_AGE_MS = 30 * 24 * 60 * 60 * 1000
-
-export function isStaleEvent(date: string, now = Date.now()): boolean {
-  return new Date(date).getTime() < now - STALE_EVENT_AGE_MS
-}
-
 function getEndOfWeek(date: Date) {
   const lastday = date.getDate() - (date.getDay() - 1) + 6
   return new Date(date.setDate(lastday)).toISOString().split('T')[0]

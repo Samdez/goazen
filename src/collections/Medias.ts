@@ -11,6 +11,15 @@ const Medias: CollectionConfig = {
   },
   upload: {
     staticDir: 'media',
+    // Les fichiers passent par /api/medias/file/* (proxy Payload → S3) : sans
+    // cet en-tête, ni le CDN Vercel ni le navigateur ne les gardaient, et chaque
+    // affichage d'image relançait une fonction (~20 % du CPU facturé).
+    // Immuable sans risque : une nouvelle image est toujours un nouveau fichier,
+    // jamais le remplacement d'un fichier existant sous le même nom.
+    modifyResponseHeaders: ({ headers }) => {
+      headers.set('Cache-Control', 'public, max-age=31536000, immutable')
+      return headers
+    },
     mimeTypes: ['image/*'],
     formatOptions: {
       format: 'webp',

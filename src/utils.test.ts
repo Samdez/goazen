@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import {
-  isStaleEvent,
   buildEventUrl,
   getLocationInfo,
   UNKNOWN_CITY_SEGMENT,
@@ -109,18 +108,5 @@ describe('buildEventUrl', () => {
   it('keeps four segments so the URL cannot collide with a venue page', () => {
     const url = buildEventUrl(event({ region: null, location_alt: null }))
     expect(url.split('/').filter(Boolean)).toHaveLength(5) // concerts + 4
-  })
-})
-
-describe('isStaleEvent', () => {
-  const now = new Date('2026-10-02T12:00:00Z').getTime()
-
-  it('considère un événement passé depuis plus de 30 jours comme figé', () => {
-    expect(isStaleEvent('2026-08-31T20:00:00Z', now)).toBe(true)
-  })
-
-  it('ne fige pas un événement récent ou à venir', () => {
-    expect(isStaleEvent('2026-09-20T20:00:00Z', now)).toBe(false)
-    expect(isStaleEvent('2026-10-10T20:00:00Z', now)).toBe(false)
   })
 })

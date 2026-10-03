@@ -13,6 +13,6 @@ async function _getLocation(slug: string) {
 export async function getLocation(slug: string) {
   return unstable_cache(async () => await _getLocation(slug), ['location', slug], {
     tags: ['locations'],
-    revalidate: 60 * 60 * 24, // 24 hours
+    revalidate: false,
   })()
 }

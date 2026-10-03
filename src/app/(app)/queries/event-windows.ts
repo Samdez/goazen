@@ -46,7 +46,8 @@ async function findInWindow(bounds: WindowBounds, opts: WindowOpts): Promise<Eve
       return res.docs
     },
     ['event-window', cacheKey],
-    { tags: ['events'], revalidate: 60 * 60 * 24 },
+    // Clé bornée au jour : pas de durée de vie (voir src/lib/daily-revalidation.ts).
+    { tags: ['events'], revalidate: false },
   )()
 }
 
@@ -102,6 +103,8 @@ export async function getFeaturedFestival(bounds?: WindowBounds): Promise<Specia
       return res.docs[0] ?? null
     },
     ['featured-festival', start.toISOString(), end.toISOString()],
-    { tags: ['special-events'], revalidate: 60 * 60 * 24 },
+    // La clé change chaque jour : une durée de vie ne servirait qu'à ramener
+    // les pages région (ISR) à 24 h.
+    { tags: ['special-events'], revalidate: false },
   )()
 }

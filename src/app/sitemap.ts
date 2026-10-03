@@ -7,9 +7,9 @@ import { getCities } from './(app)/queries/get-cities'
 import { getSpecialEvents } from './(app)/queries/get-special-events'
 import { getCategories } from './(app)/queries/get-categories'
 
-// Une fois par jour suffit aux moteurs, et le tag `events` le rafraîchit à
-// chaque modification d'événement.
-export const revalidate = 86400
+// Pas de durée de vie : régénérée quand un événement change, et chaque nuit
+// par le cron quotidien pour passer au jour suivant (tag `events`).
+export const revalidate = false
 
 function toDate(value: string | Date | undefined): Date {
   if (!value) return new Date(0)

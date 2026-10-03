@@ -79,14 +79,14 @@ export async function _getEvents({
 }
 
 /**
- * `revalidate: false` garde l'entrée jusqu'à la prochaine révalidation de son
- * tag : c'est ce qui fige les pages des événements passés depuis longtemps,
- * car un `unstable_cache` à 24 h ramène toute la page à 24 h.
+ * Pas de durée de vie : une entrée vit jusqu'à la révalidation de ses tags
+ * (modification d'un événement, ou cron quotidien quand un événement passe).
+ * Une durée ici ramènerait à cette durée toutes les pages qui l'affichent.
+ *
+ * `tags` remplace les tags par défaut — la page événement s'en sert pour figer
+ * son carrousel « prochains concerts » avec elle (tag `event:<id>`).
  */
-export async function getCachedEvents(
-  params: GetEventsParams,
-  { revalidate = 60 * 60 * 24 }: { revalidate?: number | false } = {},
-) {
+export async function getCachedEvents(params: GetEventsParams, { tags }: { tags?: string[] } = {}) {
   // La cle est volontairement normalisee au JOUR UTC.
   //
   // _getEvents recale deja startDate sur `J-1 22:00 UTC` et endDate sur
@@ -108,8 +108,12 @@ export async function getCachedEvents(
     selectionOnly: params.selectionOnly || false,
   })
 
-  return unstable_cache(async () => await _getEvents(params), ['events', cacheKey], {
-    tags: eventsQueryTags(params),
-    revalidate,
+  const cacheTags = tags ?? eventsQueryTags(params)
+
+  // Les tags font partie de la clé : sinon deux appelants aux tags différents
+  // partageraient la même entrée, rattachée aux tags du premier.
+  return unstable_cache(async () => await _getEvents(params), ['events', cacheKey, ...cacheTags], {
+    tags: cacheTags,
+    revalidate: false,
   })()
 }

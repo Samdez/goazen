@@ -20,9 +20,10 @@ import { pluralize } from '@/lib/stats-wording'
 import StatsBand from '@/app/(app)/components/StatsBand'
 import type { Metadata } from 'next'
 
-// Page salle : 24 h pour suivre le changement de jour, et immédiatement quand
-// la programmation de la salle change (tag `events:location:<id>`).
-export const revalidate = 86400
+// Pas de durée de vie : régénérée quand la salle ou sa programmation change
+// (tags `locations` et `events:location:<id>`), y compris quand le cron
+// quotidien retire une date passée la veille.
+export const revalidate = false
 
 export async function generateMetadata({
   params,

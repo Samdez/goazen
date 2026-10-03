@@ -2,6 +2,7 @@
 
 import { Event } from '@/payload-types'
 import EventCard from './EventCard'
+import { useUpcomingEvents } from '../hooks/useUpcomingEvents'
 import {
   Carousel,
   CarouselContent,
@@ -17,10 +18,13 @@ function EventsCarousel({
   events: Event[]
   placeholderImageUrl: string
 }) {
+  const upcomingEvents = useUpcomingEvents(events)
+  if (!upcomingEvents.length) return null
+
   return (
     <Carousel className="py-8 md:w-1/2 w-full">
       <CarouselContent>
-        {events.map((event) => {
+        {upcomingEvents.map((event) => {
           return (
             <CarouselItem key={event.id} className="md:basis-1/2">
               <EventCard event={event} placeholderImageUrl={placeholderImageUrl} />
