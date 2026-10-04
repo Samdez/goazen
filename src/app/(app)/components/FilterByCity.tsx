@@ -15,7 +15,7 @@ function FilterByCity({ activeCity, cities }: { activeCity: string; cities: City
         {cities.map((city) => {
           return (
             <FilterButton
-              path={`/salles-de-concert?city=${city.slug}`}
+              path={`/salles-de-concert/${city.slug}`}
               text={city.name}
               key={city.id}
               activeCity={activeCity}

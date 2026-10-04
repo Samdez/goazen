@@ -1,28 +1,15 @@
-import { DateFilterComboBox } from '../../components/DateFilterComboBox'
-import EventsGrid from '../../components/EventsGrid'
-import { GenreFilterComboBox } from '../../components/GenreFilterComboBox'
-import UnifiedFilterSections from '../../components/UnifiedFilterSection'
 import { getCategories } from '../../queries/get-categories'
-import { getCachedEvents } from '../../queries/get-events'
-import { getPlaceholderImage } from '../../queries/get-placeholder-image'
-import { searchParamsSchema } from '../../schemas/searchParams'
 import { AUTRE_CATEGORY_NAME } from '../../constants'
 import type { Metadata } from 'next'
-import { OG_IMAGE } from '@/lib/structured-data'
+import { buildGenreMetadata, GenreView } from './genre-view'
 
 // Pas de durée de vie : régénérée quand un événement change, et chaque nuit
 // par le cron quotidien pour passer au jour suivant (tag `events`).
+//
+// Dès qu'un filtre de date est dans l'URL (`startDate`, `endDate`,
+// `activeTime`), next.config.ts réécrit la requête vers ./filtre, rendue à la
+// demande. Ne pas relire `searchParams` ici : la page redeviendrait dynamique.
 export const revalidate = false
-
-function humanizeSlug(slug: string) {
-  return slug.replace(/-/g, ' ')
-}
-
-async function getGenreName(slug: string) {
-  const categories = await getCategories()
-  const match = categories.find((c) => c.slug === slug)
-  return match?.name ?? humanizeSlug(slug)
-}
 
 export async function generateStaticParams() {
   const categories = await getCategories()
@@ -37,86 +24,10 @@ export async function generateMetadata({
   params: Promise<{ genre: string }>
 }): Promise<Metadata> {
   const { genre } = await params
-  const name = await getGenreName(genre)
-  const title = `Concerts ${name} — agenda | Goazen!`
-  const description =
-    `Agenda des concerts ${name} à venir au Pays Basque et dans les Landes. Tous les événements ${name} près de chez toi, mis à jour chaque jour.`.slice(
-      0,
-      155,
-    )
-  const canonical = `https://goazen.info/genres/${genre}`
-
-  return {
-    title,
-    description,
-    alternates: { canonical },
-    openGraph: {
-      title,
-      description,
-      url: canonical,
-      siteName: 'Goazen!',
-      images: [OG_IMAGE],
-      locale: 'fr_FR',
-      type: 'website',
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
-  }
+  return buildGenreMetadata(genre)
 }
 
-async function Genre({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ genre: string }>
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}) {
+export default async function Genre({ params }: { params: Promise<{ genre: string }> }) {
   const { genre } = await params
-  const {
-    activeTime,
-    startDate = new Date().toISOString(),
-    endDate,
-  } = searchParamsSchema.parse(await searchParams)
-
-  const categories = await getCategories()
-  const name = categories.find((c) => c.slug === genre)?.name ?? humanizeSlug(genre)
-  const placeholderImageUrl = await getPlaceholderImage()
-  const initialEvents = await getCachedEvents({
-    category: genre,
-    startDate,
-    endDate,
-  })
-
-  return (
-    <>
-      <UnifiedFilterSections
-        title={`Concerts ${name} au Pays Basque et dans les Landes`}
-        buttons={[
-          <GenreFilterComboBox key="genre-filter" categories={categories} />,
-          <DateFilterComboBox key="date-filter" days={['day', 'week']} />,
-        ]}
-        subTitle="Retrouve tous les concerts, DJ sets, festivals et soirées près de chez toi"
-      />
-      <EventsGrid
-        initialEvents={initialEvents.docs}
-        initialNextPage={initialEvents.nextPage}
-        hasNextPageProps={initialEvents.hasNextPage}
-        startDate={startDate}
-        endDate={endDate}
-        activeTime={activeTime}
-        placeholderImageUrl={placeholderImageUrl || ''}
-      />
-    </>
-  )
+  return <GenreView genre={genre} filters={{}} />
 }
-
-export default Genre

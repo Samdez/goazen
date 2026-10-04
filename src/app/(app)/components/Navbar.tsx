@@ -49,7 +49,7 @@ export default function Navbar() {
 
           <div className="ml-auto hidden items-center gap-5 md:flex">
             <Link
-              href="/salles-de-concert?city=biarritz"
+              href="/salles-de-concert/biarritz"
               className={cn(
                 darkerGrotesque.className,
                 'flex items-center gap-1.5 text-sm font-semibold leading-tight text-brand-orange hover:text-brand-orange-hover',
@@ -107,7 +107,7 @@ export default function Navbar() {
             <MobileLink href="/concerts/landes" onClick={() => setIsOpen(false)}>
               Landes
             </MobileLink>
-            <MobileLink href="/salles-de-concert?city=biarritz" onClick={() => setIsOpen(false)}>
+            <MobileLink href="/salles-de-concert/biarritz" onClick={() => setIsOpen(false)}>
               Les salles de concert
             </MobileLink>
             <MobileLink href="/formulaire" onClick={() => setIsOpen(false)} variant="primary">

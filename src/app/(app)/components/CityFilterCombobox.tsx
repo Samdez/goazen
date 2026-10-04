@@ -88,7 +88,7 @@ function CitiesList({
   const router = useRouter()
   const createHref = (city: CityOption) => {
     if (isLocationsPage) {
-      return `/salles-de-concert/${city.slug}`
+      return city.id === 'all' ? '/salles-de-concert' : `/salles-de-concert/${city.slug}`
     }
     if (city.id === 'all') {
       return params.region ? `/concerts/${params.region}` : '/concerts'

@@ -2,12 +2,18 @@ import LocationsGrid from '../components/LocationsGrid'
 import { getCities } from '../queries/get-cities'
 import { getLocationCards } from '../queries/get-locations'
 import { getPlaceholderImage } from '../queries/get-placeholder-image'
-import FilterByCity from '../components/FilterByCity'
 import { Suspense } from 'react'
 import { PacmanLoader } from 'react-spinners'
 import { CityFilterCombobox } from '../components/CityFilterCombobox'
 import UnifiedFilterSections from '../components/UnifiedFilterSection'
 import { OG_IMAGE } from '@/lib/structured-data'
+
+// Annuaire complet, sans filtre : en cache, régénéré seulement quand une salle
+// ou une ville change (tags `locations` et `cities`). Le filtre par ville vit
+// sur /salles-de-concert/[city] ; l'ancienne URL `?city=` y est redirigée par
+// next.config.ts. Ne pas relire `searchParams` ici : la page redeviendrait
+// dynamique (rendue à chaque requête).
+export const revalidate = false
 
 export async function generateMetadata() {
   const title = 'Salles de concert & bars — Pays Basque & Landes | Goazen'
@@ -31,11 +37,9 @@ export async function generateMetadata() {
   }
 }
 
-async function LocationsPage({ searchParams }: { searchParams: Promise<{ city: string }> }) {
-  const currSearchParams = await searchParams
-  const activeCity = currSearchParams.city
+async function LocationsPage() {
   const [locations, cities, defaultImage] = await Promise.all([
-    getLocationCards({ cityName: activeCity }),
+    getLocationCards({}),
     getCities(),
     getPlaceholderImage(),
   ])
@@ -46,14 +50,16 @@ async function LocationsPage({ searchParams }: { searchParams: Promise<{ city: s
         title={`Tous les bars et salles de concert du Pays Basque et des Landes`}
         subTitle={`Retrouve tous les lieux où écouter de la musique dans le Pays Basque et les Landes`}
         buttons={[
-          <CityFilterCombobox
-            key="city-filter"
-            cities={[
-              ...cities.docs,
-              { id: 'all', name: 'Toutes les villes', createdAt: '', updatedAt: '' },
-            ]}
-            isLocationsPage={true}
-          />,
+          <Suspense key="city-filter-suspense" fallback={<div>Loading...</div>}>
+            <CityFilterCombobox
+              key="city-filter"
+              cities={[
+                ...cities.docs,
+                { id: 'all', name: 'Toutes les villes', createdAt: '', updatedAt: '' },
+              ]}
+              isLocationsPage={true}
+            />
+          </Suspense>,
         ]}
       />
       <Suspense
@@ -62,14 +68,13 @@ async function LocationsPage({ searchParams }: { searchParams: Promise<{ city: s
             <PacmanLoader />
           </div>
         }
-        key={activeCity}
       >
         <LocationsGrid
           initialLocations={locations.docs}
           initialNextPage={locations.nextPage}
           hasNextPageProps={locations.hasNextPage}
           placeholderImageUrl={defaultImage || ''}
-          cityName={activeCity}
+          cityName=""
         />
       </Suspense>
     </>
