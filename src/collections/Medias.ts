@@ -5,7 +5,9 @@ const Medias: CollectionConfig = {
   slug: 'medias',
   access: {
     read: () => true,
-    create: () => true,
+    // Connecté uniquement (admins + editors de salle). Le formulaire public passe
+    // par la Local API dans create-event.ts, qui ignore cette règle.
+    create: ({ req: { user } }) => Boolean(user),
     delete: isAdmin,
     update: isAdmin,
   },
@@ -20,7 +22,8 @@ const Medias: CollectionConfig = {
       headers.set('Cache-Control', 'public, max-age=31536000, immutable')
       return headers
     },
-    mimeTypes: ['image/*'],
+    // Pas de 'image/*' : le SVG peut embarquer du script, servi depuis le domaine de l'admin.
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'],
     formatOptions: {
       format: 'webp',
     },
