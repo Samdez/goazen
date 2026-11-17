@@ -145,6 +145,7 @@ async function LocationPage({
   const events = await getCachedEvents({
     locationId: location.id,
     startDate: new Date().toISOString(),
+    limit: 50,
   })
   // Une salle sans date à venir n'affichait qu'un « rien de prévu » : page vide,
   // jamais citée par un moteur. On montre alors ce qui s'y est déjà joué.
